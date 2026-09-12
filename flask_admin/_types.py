@@ -48,7 +48,9 @@ if t.TYPE_CHECKING:
         InlineFieldListWidget as T_INLINE_FIELD_LIST_WIDGET,
     )
     from flask_admin.model.widgets import InlineFormWidget as T_INLINE_FORM_WIDGET
-    from flask_admin.model.widgets import XEditableWidget as T_INLINE_X_EDITABLE_WIDGET
+    from flask_admin.model.widgets import (
+        HTMXEditableWidget as T_INLINE_HTMX_EDITABLE_WIDGET,
+    )
 
     T_SQLALCHEMY_MODEL: t.TypeAlias = t.Union[
         T_SQLALCHEMY_LEGACY_MODEL, T_DECLARATIVE_BASE
@@ -110,7 +112,7 @@ else:
     T_INLINE_FIELD_LIST_WIDGET = "flask_admin.model.widgets.InlineFieldListWidget"
     T_INLINE_FORM_WIDGET = "flask_admin.model.widgets.InlineFormWidget"
     T_INLINE_AJAX_SELECT2_WIDGET = "flask_admin.model.widgets.AjaxSelect2Widget"
-    T_INLINE_X_EDITABLE_WIDGET = "flask_admin.model.widgets.XEditableWidget"
+    T_INLINE_HTMX_EDITABLE_WIDGET = "flask_admin.model.widgets.HTMXEditableWidget"
 
     T_FIELD_SET = "flask_admin.form.rules.FieldSet"
     T_BASE_RULE = "flask_admin.form.rules.BaseRule"
@@ -204,7 +206,7 @@ T_WIDGET = t.Union[
     T_INLINE_FIELD_LIST_WIDGET,
     T_INLINE_FORM_WIDGET,
     T_INLINE_AJAX_SELECT2_WIDGET,
-    T_INLINE_X_EDITABLE_WIDGET,
+    T_INLINE_HTMX_EDITABLE_WIDGET,
     WidgetProtocol,
 ]
 

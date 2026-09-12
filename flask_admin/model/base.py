@@ -38,6 +38,7 @@ from .._types import T_WIDGET
 from ..form.rules import RuleSet
 from .filters import BaseFilter
 from .template import BaseListRowAction
+from .widgets import HTMXEditableWidget
 
 try:
     import tablib
@@ -1441,9 +1442,9 @@ class BaseModelView(BaseView, ActionsMixin):
 
         Allows overriding the editable list view field/widget. For example::
 
-            from flask_admin.model.widgets import XEditableWidget
+            from flask_admin.model.widgets import HTMXEditableWidget
 
-            class CustomWidget(XEditableWidget):
+            class CustomWidget(HTMXEditableWidget):
                 def get_kwargs(self, subfield, kwargs):
                     if subfield.type == 'TextAreaField':
                         kwargs['data-type'] = 'textarea'
@@ -2697,39 +2698,59 @@ class BaseModelView(BaseView, ActionsMixin):
         ]
         return Response(json.dumps(data), mimetype="application/json")
 
+    @expose("/ajax/edit/", methods=("GET",))
+    def ajax_edit(self) -> tuple[str, int] | str:
+        """Fetches and renders the inline edit form popover for a single field."""
+        if not self.column_editable_list:
+            abort(404)
+
+        pk = request.args.get("pk")
+        field_name = request.args.get("field")
+
+        if not pk or not field_name:
+            abort(400)
+
+        record = self.get_one(pk)
+        if record is None:
+            return gettext("Record does not exist."), 404
+
+        # Generate the form populated with the record's current database values
+        form = self.list_form(obj=record)
+
+        # Restore the field's original input widget instead of the HTMX trigger widget
+        original_widget = getattr(form, "_original_widgets", {}).get(field_name)
+        if original_widget:
+            form[field_name].widget = original_widget
+
+        return self.render(
+            "admin/model/editable_cell_edit.html",
+            form=form,
+            field_name=field_name,
+            pk=pk,
+            errors=None,
+        )
+
     @expose("/ajax/update/", methods=("POST",))
-    def ajax_update(self) -> None | tuple[str, int] | str:
+    def ajax_update(self) -> str | tuple[str, int]:
         """
-        Edits a single column of a record in list view. Usually used with
-        `column_editable_list` that integrates with the x-editable library.
-
-        .. code-block:: javascript
-
-            // you can use jQuery to make ajax calls like this:
-
-            $.ajax({
-                url: '/admin/<your_model_view_endpoint>/ajax/update/',
-                type: 'POST',
-                data: {
-                    "list_form_pk" : "<primary_key_value>",
-                    "<column_name>": "<new_value>"
-                },
-                success: function(response) {
-                    // handle success
-                },
-                error: function(response) {
-                    // handle error
-                }
-            });
-
+        Validates and saves the inline modification, returning the updated cell markup.
         """
         if not self.column_editable_list:
             abort(404)
 
-        form = self.list_form()  # returns a form of all fields
+        pk = request.form.get("list_form_pk")
+        field_name = request.form.get("field_name")
 
-        # prevent validation issues due to submitting a single field
-        # delete all fields except the submitted fields and csrf token
+        if not pk or not field_name:
+            abort(400)
+
+        record = self.get_one(pk)
+        if record is None:
+            return gettext("Record does not exist."), 404
+
+        form = self.list_form()
+
+        # Prevent validation issues by dropping fields not present in the submission
         for field in list(form):
             if (field.name in request.form) or (field.name == "csrf_token"):
                 pass
@@ -2737,30 +2758,33 @@ class BaseModelView(BaseView, ActionsMixin):
                 form.__delitem__(field.name)
 
         if self.validate_form(form):
-            pk = form.list_form_pk.data  # type: ignore[attr-defined]
-            record = self.get_one(pk)
-
-            if record is None:
-                return gettext("Record does not exist."), 500
-
-            record = record
             if self.update_model(form, record):
-                # Success
-                return gettext("Record was successfully saved.")
+                # Render the updated outer HTML span for HTMX to swap in cleanly
+                try:
+                    display_value = self.get_list_value(None, record, field_name)
+                except Exception:
+                    display_value = getattr(record, field_name, "")
+
+                widget = HTMXEditableWidget()
+                return widget(form[field_name], pk=pk, display_value=display_value)
             else:
-                # Error: No records changed, or problem saving to database.
-                msgs = ", ".join([msg for msg in get_flashed_messages()])  # type: ignore[misc]
-                return gettext("Failed to update record. %(error)s", error=msgs), 500
-        else:
-            for field in form:
-                for error in field.errors:
-                    # return validation error to x-editable
-                    if isinstance(error, list):
-                        return gettext(
-                            "Failed to update record. %(error)s", error=", ".join(error)
-                        ), 500
-                    else:
-                        return gettext(
-                            "Failed to update record. %(error)s", error=error
-                        ), 500
-        return None
+                # Database execution failure handling
+                flash_msgs = ", ".join([msg for msg in get_flashed_messages()])
+                error_msg = gettext(
+                    "Failed to update record. %(error)s", error=flash_msgs
+                )
+                form[field_name].errors.append(error_msg)
+
+        # FAILURE / VALIDATION ERROR: Return popover markup with a 500 status code
+        # to trigger the vanilla JS `htmx:beforeSwap` error-rendering logic
+        original_widget = getattr(form, "_original_widgets", {}).get(field_name)
+        if original_widget:
+            form[field_name].widget = original_widget
+
+        return self.render(
+            "admin/model/editable_cell_edit.html",
+            form=form,
+            field_name=field_name,
+            pk=pk,
+            errors=form.errors,
+        ), 500

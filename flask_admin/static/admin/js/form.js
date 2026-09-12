@@ -281,18 +281,6 @@
                 return true;
         }
 
-        // make x-editable's POST compatible with WTForms
-        // for x-editable, x-editable-combodate, and x-editable-boolean cases
-        var overrideXeditableParams = function(params) {
-            var newParams = {};
-            newParams['list_form_pk'] = params.pk;
-            newParams[params.name] = params.value;
-            if ($(this).data('csrf')) {
-                newParams['csrf_token'] = $(this).data('csrf');
-            }
-            return newParams;
-        }
-
         switch (name) {
             case 'select2':
                 var opts = {
@@ -474,79 +462,6 @@
             case 'leaflet':
                 processLeafletWidget($el, name);
                 return true;
-            case 'x-editable':
-                $el.editable({
-                    params: overrideXeditableParams,
-                    combodate: {
-                        // prevent minutes from showing in 5 minute increments
-                        minuteStep: 1,
-                        maxYear: 2030,
-                    }
-                });
-                return true;
-            case 'x-editable-combodate':
-                // Fixes bootstrap4 issue where data-template breaks bs4 popover.
-                // https://github.com/pallets-eco/flask-admin/issues/2022
-                let template = $el.data('template');
-                $el.removeAttr('data-template');
-                $el.editable({
-                    params: overrideXeditableParams,
-                    template: template,
-                    combodate: {
-                        // prevent minutes from showing in 5 minute increments
-                        minuteStep: 1,
-                        maxYear: 2030,
-                    }
-                });
-                return true;
-            case 'x-editable-select2-multiple':
-                $el.editable({
-                    params: overrideXeditableParams,
-                    ajaxOptions: {
-                        // prevents keys with the same value from getting converted into arrays
-                        traditional: true
-                    },
-                    select2: {
-                        multiple: true
-                    },
-                    display: function(value) {
-                        // override to display text instead of ids on list view
-                        var html = [];
-                        // temporary patch to provide bs3 & bs4 compatibility
-                        var data = $.fn.editableutils.itemsByValue(value, $el.data('source'), 'id').concat(
-                            $.fn.editableutils.itemsByValue(value, $el.data('source'), 'value'));
-
-                        if(data.length) {
-                            $.each(data, function(i, v) { html.push($.fn.editableutils.escape(v.text)); });
-                            $(this).html(html.join(', '));
-                        } else {
-                            $(this).empty();
-                        }
-                    }
-                });
-                return true;
-            case 'x-editable-boolean':
-                $el.editable({
-                    params: overrideXeditableParams,
-                    display: function(value, response) {
-                      // display boolean value as an icon
-                      var glyph = (value == '1') ? 'ok-circle' : 'minus-sign';
-                      var fa = (value == '1') ? 'fa-check' : 'fa-minus-circle';
-                      $(this).empty().append($('<span />', {
-                        'class': `fa ${fa} glyphicon glyphicon-${glyph} icon-${glyph}`,
-                        'title': $(this).parent().data('title'),
-                      }));
-                    },
-                    success: function(response, newValue) {
-                      // update display
-                      var glyph = (newValue == '1') ? 'ok-circle' : 'minus-sign';
-                      var fa = (newValue  == '1') ? 'fa-check' : 'fa-minus-circle';
-                      $(this).empty().append($('<span />', {
-                        'class': `fa ${fa} glyphicon glyphicon-${glyph} icon-${glyph}`,
-                        'title': $(this).parent().data('title'),
-                      }));
-                    }
-                });
         }
       };
 
@@ -665,3 +580,132 @@
         faForm.applyGlobalStyles(document);
     });
 })();
+
+// ---------------------------------------------------------------------
+// HTMX-powered inline editing (column_editable_list).
+//
+// Markup shape produced by HTMXEditableWidget + editable_cell_edit.html:
+//
+//   <span id="editable-<field>-<pk>" class="editable-cell" hx-get=...>
+//     <display value>
+//     <div class="editable-popover">   <-- appended by GET /ajax/edit/
+//       <form class="editable-form" hx-post=... hx-swap="outerHTML">...</form>
+//     </div>
+//   </span>
+//
+// A successful POST to /ajax/update/ replaces the whole <span> (outerHTML),
+// which removes the popover and the stale display value in one swap. A
+// failing (500) POST re-renders just the popover fragment with validation
+// errors; htmx does not auto-swap error responses (see responseHandling),
+// so that case is handled by hand below.
+// ---------------------------------------------------------------------
+
+function closeEditablePopover() {
+    var popover = document.querySelector('.editable-popover');
+    if (!popover) return false;
+    popover.remove();
+    return true;
+}
+
+// Validation / update errors: re-render the popover in place instead of
+// letting htmx's default (no-op, swap:false) error handling apply.
+document.body.addEventListener('htmx:beforeSwap', function(event) {
+    if (event.detail.xhr.status !== 500) {
+        return;
+    }
+    var target = event.detail.target;
+    if (!target || !target.matches || !target.matches('.editable-cell')) {
+        return;
+    }
+
+    event.detail.isError = false;
+    event.detail.shouldSwap = false;
+
+    var existingPopover = target.querySelector('.editable-popover');
+    if (!existingPopover) {
+        return;
+    }
+
+    var doc = new DOMParser().parseFromString(event.detail.xhr.responseText, 'text/html');
+    var newPopover = doc.querySelector('.editable-popover');
+    if (!newPopover) {
+        return;
+    }
+    existingPopover.replaceWith(newPopover);
+
+    if (window.htmx) {
+        htmx.process(newPopover);
+    }
+    faForm.applyGlobalStyles(newPopover);
+});
+
+// Network failures (server unreachable, timeout, etc.)
+document.body.addEventListener('htmx:sendError', function(event) {
+    var elt = event.detail.elt;
+    if (!elt || !elt.closest('.editable-form, .editable-cell')) {
+        return;
+    }
+    closeEditablePopover();
+    alert('Network error: your change was not saved. Please try again.');
+});
+
+// Close any other open popover before opening a new one. Scoped to a
+// direct interaction with the cell itself (that's what triggers the GET
+// /ajax/edit/ request), not any descendant -- so submitting the
+// currently-open popover's own form doesn't close itself mid-request.
+document.body.addEventListener('htmx:beforeRequest', function(event) {
+    var elt = event.detail.elt;
+    if (!elt || !elt.matches || !elt.matches('.editable-cell')) {
+        return;
+    }
+    closeEditablePopover();
+});
+
+// Init widgets and position/focus the popover once fetched and inserted.
+// Fires for both the "open editor" (beforeend) and "save succeeded"
+// (outerHTML) swaps; positioning is a no-op for the latter.
+document.body.addEventListener('htmx:afterSwap', function(event) {
+    var target = event.target;
+    if (!target || !target.matches || !target.matches('.editable-cell')) {
+        return;
+    }
+
+    faForm.applyGlobalStyles(target);
+
+    var popover = target.querySelector('.editable-popover');
+    if (!popover) {
+        return;
+    }
+
+    var td = popover.closest('td');
+    if (td) {
+        var rect = td.getBoundingClientRect();
+        popover.style.left = rect.left + 'px';
+        popover.style.top = (rect.bottom + 8) + 'px';
+    }
+
+    var input = popover.querySelector('input:not([type="hidden"]), select, textarea');
+    if (input) {
+        input.focus();
+    }
+});
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeEditablePopover();
+    }
+});
+
+document.addEventListener('click', function(event) {
+    var popover = document.querySelector('.editable-popover');
+    if (!popover) return;
+    if (popover.contains(event.target)) return;
+    if (event.target.closest('.editable-cell')) return;
+    closeEditablePopover();
+});
+
+document.addEventListener('click', function(event) {
+    if (event.target.closest('.editable-popover-cancel')) {
+        closeEditablePopover();
+    }
+});
