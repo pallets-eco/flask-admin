@@ -24,6 +24,7 @@ from sqlalchemy import String
 from sqlalchemy import Table
 from sqlalchemy import Text
 from sqlalchemy import Time
+from sqlalchemy import TypeDecorator
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
@@ -2539,10 +2540,163 @@ def test_multiple_delete(
         client = app.test_client()
 
         rv = client.post(
-            "/admin/model1/action/", data=dict(action="delete", rowid=[1, 2, 3])
+            "/admin/model1/action/",
+            data=dict(action="delete", rowid=["1", "2", "3"]),
         )
         assert rv.status_code == 302
         assert sqla_db_ext.db.session.query(M1).count() == 0
+
+
+_u1, _u2, _u3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
+
+
+@pytest.mark.parametrize(
+    ("col_type", "records", "delete_ids", "expected_remaining_id"),
+    [
+        (Integer, [1, 2, 3], ["1", "2"], 3),
+        (String(50), ["s1", "s2", "s3"], ["s1", "s2"], "s3"),
+        (UUIDType(binary=False), [_u1, _u2, _u3], [str(_u1), str(_u2)], _u3),
+    ],
+)
+def test_multiple_delete_standard_pks(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+    col_type: t.Any,
+    records: list[t.Any],
+    delete_ids: list[str],
+    expected_remaining_id: t.Any,
+) -> None:
+    with app.app_context():
+
+        class DynamicModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "dynamic_pk_model"
+            id = Column(col_type, primary_key=True)
+            name = Column(String(50))
+
+        sqla_db_ext.create_all()
+
+        sqla_db_ext.db.session.add_all(
+            [DynamicModel(id=val, name=f"name_{val}") for val in records]
+        )
+        sqla_db_ext.db.session.commit()
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        admin.add_view(ModelView(DynamicModel, param))
+        client = app.test_client()
+
+        rv = client.post(
+            "/admin/dynamicmodel/action/",
+            data=dict(action="delete", rowid=delete_ids),
+        )
+        assert rv.status_code == 302
+        assert sqla_db_ext.db.session.query(DynamicModel).count() == 1
+        remaining = sqla_db_ext.db.session.query(DynamicModel).first()
+        assert remaining is not None
+        assert remaining.id == expected_remaining_id
+
+
+def test_multiple_delete_boolean_pk(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+
+        class BoolModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "bool_model_bulk_delete"
+            id = Column(Boolean, primary_key=True)
+            name = Column(String(50))
+
+        sqla_db_ext.create_all()
+
+        sqla_db_ext.db.session.add_all(
+            [
+                BoolModel(id=False, name="f_row"),
+                BoolModel(id=True, name="t_row"),
+            ]
+        )
+        sqla_db_ext.db.session.commit()
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        admin.add_view(ModelView(BoolModel, param))
+        client = app.test_client()
+
+        # "False" string must delete False record without affecting True record
+        rv = client.post(
+            "/admin/boolmodel/action/",
+            data=dict(action="delete", rowid=["False"]),
+        )
+        assert rv.status_code == 302
+        assert sqla_db_ext.db.session.query(BoolModel).count() == 1
+        model = sqla_db_ext.db.session.query(BoolModel).first()
+        assert model is not None
+        assert model.id == True  # noqa: E712
+        assert model.name == "t_row"
+
+
+def test_multiple_delete_type_decorator_pk(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+        if t.TYPE_CHECKING:
+            _HexIntBase = TypeDecorator[str]
+        else:
+            _HexIntBase = TypeDecorator
+
+        class HexInt(_HexIntBase):
+            impl = Integer
+            cache_ok = True
+
+            def process_bind_param(self, value: t.Any, dialect: t.Any) -> int | None:
+                if value is None:
+                    return None
+                if isinstance(value, str):
+                    return int(value, 16)
+                return int(value)
+
+            def process_result_value(self, value: t.Any, dialect: t.Any) -> str | None:
+                if value is None:
+                    return None
+                return hex(value)[2:]
+
+        class HexModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "hex_model_bulk_delete"
+            id = Column(HexInt, primary_key=True)
+            name = Column(String(50))
+
+        sqla_db_ext.create_all()
+
+        m1 = HexModel(id="10", name="hex16")
+        m2 = HexModel(id="20", name="hex32")
+        sqla_db_ext.db.session.add_all([m1, m2])
+        sqla_db_ext.db.session.commit()
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(HexModel, param)
+        admin.add_view(view)
+
+        # Retrieve row ID generated by the view (simulating real page checkbox value)
+        row_id = view.get_pk_value(m1)
+        assert row_id == "10"
+
+        client = app.test_client()
+
+        rv = client.post(
+            "/admin/hexmodel/action/",
+            data=dict(action="delete", rowid=[row_id]),
+        )
+        assert rv.status_code == 302
+        assert sqla_db_ext.db.session.query(HexModel).count() == 1
+        remaining = sqla_db_ext.db.session.query(HexModel).first()
+        assert remaining is not None
+        assert remaining.id == "20"
+        assert remaining.name == "hex32"
 
 
 def test_default_sort(

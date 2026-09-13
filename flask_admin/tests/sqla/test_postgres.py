@@ -1,3 +1,7 @@
+import os
+import typing as t
+
+import pytest
 from citext import CIText
 from flask import Flask
 from sqlalchemy import Boolean
@@ -9,7 +13,10 @@ from sqlalchemy.dialects.postgresql import HSTORE
 from sqlalchemy.dialects.postgresql import JSON
 
 from ... import Admin
+from ..conftest import configure_sqla
 from ..conftest import skip_or_return_session_or_db
+from ..conftest import sqla_db_exts
+from ..conftest import SQLAProvider
 from ..conftest import T_ANY_SQLA_PROVIDER
 from ..conftest import T_LITERAL_SESSION_OR_DB
 from .test_basic import CustomModelView
@@ -232,3 +239,134 @@ def test_boolean_filters(
         assert "true_val_1" in data
         assert "false_val_1" not in data
         assert "false_val_2" not in data
+
+
+def test_multiple_delete_integer_pk(
+    app: Flask,
+    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
+    postgres_admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+
+        class IntModel(sqla_postgres_db_ext.Base):  # type: ignore[name-defined, misc]
+            __tablename__ = "test_bulk_delete_int_model"
+            id = Column(Integer, primary_key=True, autoincrement=True)
+            name = Column(String(50))
+
+        sqla_postgres_db_ext.drop_all()
+        sqla_postgres_db_ext.create_all()
+
+        m1 = IntModel(name="a")
+        m2 = IntModel(name="b")
+        m3 = IntModel(name="c")
+        sqla_postgres_db_ext.db.session.add_all([m1, m2, m3])
+        sqla_postgres_db_ext.db.session.commit()
+
+        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
+        view = CustomModelView(IntModel, param)
+        postgres_admin.add_view(view)
+
+        client = app.test_client()
+
+        rv = client.post(
+            "/admin/intmodel/action/",
+            data=dict(action="delete", rowid=[str(m1.id), str(m2.id)]),
+        )
+        assert rv.status_code == 302
+        assert sqla_postgres_db_ext.db.session.query(IntModel).count() == 1
+        model = sqla_postgres_db_ext.db.session.query(IntModel).first()
+        assert model is not None
+        assert model.id == m3.id
+
+
+@pytest.fixture(params=sqla_db_exts)
+def sqla_postgres_psycopg3_db_ext(
+    app: Flask, request: pytest.FixtureRequest
+) -> t.Generator[T_ANY_SQLA_PROVIDER, None, None]:
+    try:
+        import psycopg  # noqa: F401
+    except ImportError:
+        pytest.skip("psycopg (v3) is not installed")
+
+    from sqlalchemy.dialects import registry
+    from sqlalchemy.exc import NoSuchModuleError
+
+    try:
+        registry.load("postgresql.psycopg")
+    except NoSuchModuleError:
+        pytest.skip("SQLAlchemy dialect postgresql.psycopg is not available")
+
+    base_uri = os.getenv(
+        "SQLALCHEMY_DATABASE_URI",
+        "postgresql://postgres:postgres@localhost/flask_admin_test",
+    )
+    if "://" in base_uri:
+        _, rest = base_uri.split("://", 1)
+        uri = f"postgresql+psycopg://{rest}"
+    else:
+        uri = "postgresql+psycopg://postgres:postgres@localhost/flask_admin_test"
+
+    configure_sqla(app, uri, request)
+    provider_class = request.param
+    if provider_class != SQLAProvider:
+        provider = provider_class(engine_options={})
+    else:
+        provider = provider_class()
+
+    provider.db.init_app(app)
+
+    with app.app_context():
+        try:
+            yield provider
+        finally:
+            provider.db.session.close()
+            if hasattr(provider.db, "engine"):
+                provider.db.engine.dispose()
+            elif hasattr(provider.db, "engines"):
+                engines = getattr(provider.db, "_engines", None) or getattr(
+                    provider.db, "engines", {}
+                )
+                for eng in engines.values():
+                    eng.dispose()
+
+
+def test_multiple_delete_integer_pk_psycopg3(
+    app: Flask,
+    sqla_postgres_psycopg3_db_ext: T_ANY_SQLA_PROVIDER,
+    postgres_admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+
+        class IntModel(sqla_postgres_psycopg3_db_ext.Base):  # type: ignore[name-defined, misc]
+            __tablename__ = "test_bulk_delete_int_model_psycopg3"
+            id = Column(Integer, primary_key=True, autoincrement=True)
+            name = Column(String(50))
+
+        sqla_postgres_psycopg3_db_ext.drop_all()
+        sqla_postgres_psycopg3_db_ext.create_all()
+
+        m1 = IntModel(name="a")
+        m2 = IntModel(name="b")
+        m3 = IntModel(name="c")
+        sqla_postgres_psycopg3_db_ext.db.session.add_all([m1, m2, m3])
+        sqla_postgres_psycopg3_db_ext.db.session.commit()
+
+        param = skip_or_return_session_or_db(
+            sqla_postgres_psycopg3_db_ext, session_or_db
+        )
+        view = CustomModelView(IntModel, param)
+        postgres_admin.add_view(view)
+
+        client = app.test_client()
+
+        rv = client.post(
+            "/admin/intmodel/action/",
+            data=dict(action="delete", rowid=[str(m1.id), str(m2.id)]),
+        )
+        assert rv.status_code == 302
+        assert sqla_postgres_psycopg3_db_ext.db.session.query(IntModel).count() == 1
+        model = sqla_postgres_psycopg3_db_ext.db.session.query(IntModel).first()
+        assert model is not None
+        assert model.id == m3.id
