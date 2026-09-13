@@ -73,11 +73,23 @@ def test_multiple_pk(
         assert rv.status_code == 500
         assert sqla_db_ext.db.session.query(Model).count() == 2
 
+        # Deleting selected composite PK record preserves unselected record
         encoded_id1 = tools.iterencode([1, "two"])
+        rv = client.post(
+            "/admin/model/action/",
+            data=dict(action="delete", rowid=[encoded_id1]),
+        )
+        assert rv.status_code == 302
+        assert sqla_db_ext.db.session.query(Model).count() == 1
+        remaining = sqla_db_ext.db.session.query(Model).first()
+        assert remaining is not None
+        assert remaining.id == 2
+        assert remaining.id2 == "three"
+
         encoded_id2 = tools.iterencode([2, "three"])
         rv = client.post(
             "/admin/model/action/",
-            data=dict(action="delete", rowid=[encoded_id1, encoded_id2]),
+            data=dict(action="delete", rowid=[encoded_id2]),
         )
         assert rv.status_code == 302
         assert sqla_db_ext.db.session.query(Model).count() == 0

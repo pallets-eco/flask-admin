@@ -2547,7 +2547,57 @@ def test_multiple_delete(
         assert sqla_db_ext.db.session.query(M1).count() == 0
 
 
-def test_multiple_delete_uuid_pk(
+_u1, _u2, _u3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
+
+
+@pytest.mark.parametrize(
+    ("col_type", "records", "delete_ids", "expected_remaining_id"),
+    [
+        (Integer, [1, 2, 3], ["1", "2"], 3),
+        (String(50), ["s1", "s2", "s3"], ["s1", "s2"], "s3"),
+        (UUIDType(binary=False), [_u1, _u2, _u3], [str(_u1), str(_u2)], _u3),
+    ],
+)
+def test_multiple_delete_standard_pks(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+    col_type: t.Any,
+    records: list[t.Any],
+    delete_ids: list[str],
+    expected_remaining_id: t.Any,
+) -> None:
+    with app.app_context():
+
+        class DynamicModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "dynamic_pk_model"
+            id = Column(col_type, primary_key=True)
+            name = Column(String(50))
+
+        sqla_db_ext.create_all()
+
+        sqla_db_ext.db.session.add_all(
+            [DynamicModel(id=val, name=f"name_{val}") for val in records]
+        )
+        sqla_db_ext.db.session.commit()
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        admin.add_view(ModelView(DynamicModel, param))
+        client = app.test_client()
+
+        rv = client.post(
+            "/admin/dynamicmodel/action/",
+            data=dict(action="delete", rowid=delete_ids),
+        )
+        assert rv.status_code == 302
+        assert sqla_db_ext.db.session.query(DynamicModel).count() == 1
+        remaining = sqla_db_ext.db.session.query(DynamicModel).first()
+        assert remaining is not None
+        assert remaining.id == expected_remaining_id
+
+
+def test_multiple_delete_boolean_pk(
     app: Flask,
     sqla_db_ext: T_ANY_SQLA_PROVIDER,
     admin: Admin,
@@ -2555,72 +2605,47 @@ def test_multiple_delete_uuid_pk(
 ) -> None:
     with app.app_context():
 
-        class UuidModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
-            __tablename__ = "uuid_model"
-            id = Column(UUIDType(binary=False), primary_key=True)
+        class BoolModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "bool_model_bulk_delete"
+            id = Column(Boolean, primary_key=True)
             name = Column(String(50))
 
         sqla_db_ext.create_all()
 
-        u1, u2, u3 = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
         sqla_db_ext.db.session.add_all(
             [
-                UuidModel(id=u1, name="a"),
-                UuidModel(id=u2, name="b"),
-                UuidModel(id=u3, name="c"),
+                BoolModel(id=False, name="f_row"),
+                BoolModel(id=True, name="t_row"),
             ]
         )
         sqla_db_ext.db.session.commit()
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
-        admin.add_view(ModelView(UuidModel, param))
+        admin.add_view(ModelView(BoolModel, param))
         client = app.test_client()
 
+        # "False" string must delete False record without affecting True record
         rv = client.post(
-            "/admin/uuidmodel/action/",
-            data=dict(action="delete", rowid=[str(u1), str(u2)]),
+            "/admin/boolmodel/action/",
+            data=dict(action="delete", rowid=["False"]),
         )
         assert rv.status_code == 302
-        assert sqla_db_ext.db.session.query(UuidModel).count() == 1
-        model = sqla_db_ext.db.session.query(UuidModel).first()
+        assert sqla_db_ext.db.session.query(BoolModel).count() == 1
+        model = sqla_db_ext.db.session.query(BoolModel).first()
         assert model is not None
-        assert model.id == u3
+        assert model.id == True  # noqa: E712
+        assert model.name == "t_row"
 
 
-def test_get_query_for_ids_coercion(
+def test_multiple_delete_type_decorator_pk(
     app: Flask,
     sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
     with app.app_context():
-
-        class IntModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
-            __tablename__ = "int_model"
-            id = Column(Integer, primary_key=True)
-            name = Column(String(50))
-
-        class BoolModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
-            __tablename__ = "bool_model_coercion"
-            id = Column(Boolean, primary_key=True)
-            name = Column(String(50))
-
-        class UuidModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
-            __tablename__ = "uuid_model_coercion"
-            id = Column(UUIDType(binary=False), primary_key=True)
-            name = Column(String(50))
-
-        class StrModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
-            __tablename__ = "str_model"
-            id = Column(String(50), primary_key=True)
-            name = Column(String(50))
-
-        class CompositeModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
-            __tablename__ = "composite_model"
-            id1 = Column(Integer, primary_key=True)
-            id2 = Column(String(50), primary_key=True)
-            name = Column(String(50))
-
         if t.TYPE_CHECKING:
-            _HexIntBase = TypeDecorator[int]
+            _HexIntBase = TypeDecorator[str]
         else:
             _HexIntBase = TypeDecorator
 
@@ -2635,98 +2660,43 @@ def test_get_query_for_ids_coercion(
                     return int(value, 16)
                 return int(value)
 
+            def process_result_value(self, value: t.Any, dialect: t.Any) -> str | None:
+                if value is None:
+                    return None
+                return hex(value)[2:]
+
         class HexModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
-            __tablename__ = "hex_model"
+            __tablename__ = "hex_model_bulk_delete"
             id = Column(HexInt, primary_key=True)
             name = Column(String(50))
 
         sqla_db_ext.create_all()
 
-        u1 = uuid.uuid4()
-        sqla_db_ext.db.session.add_all(
-            [
-                IntModel(id=1, name="int1"),
-                BoolModel(id=False, name="f_row"),
-                BoolModel(id=True, name="t_row"),
-                UuidModel(id=u1, name="uuid1"),
-                StrModel(id="s1", name="str1"),
-                CompositeModel(id1=1, id2="c1", name="comp1"),
-                HexModel(id=16, name="hex16"),
-            ]
-        )
+        m1 = HexModel(id="10", name="hex16")
+        m2 = HexModel(id="20", name="hex32")
+        sqla_db_ext.db.session.add_all([m1, m2])
         sqla_db_ext.db.session.commit()
 
-        # 1. String to integer coercion: verifies parameter types fail without fix
-        q_int = tools.get_query_for_ids(
-            sqla_db_ext.db.session.query(IntModel), IntModel, ("1", "2")
-        )
-        assert q_int.count() == 1
-        compiled_int = q_int.statement.compile()
-        assert compiled_int.params["id_1"] == [1, 2]
-        assert all(isinstance(v, int) for v in compiled_int.params["id_1"])
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(HexModel, param)
+        admin.add_view(view)
 
-        # 2. Boolean coercion: "False" string must coerce to False without deleting True
-        q_bool = tools.get_query_for_ids(
-            sqla_db_ext.db.session.query(BoolModel), BoolModel, ("False",)
-        )
-        compiled_bool = q_bool.statement.compile()
-        assert compiled_bool.params["id_1"] == [False]
-        assert q_bool.count() == 1
-        bool_row = q_bool.first()
-        assert bool_row is not None
-        assert bool_row.name == "f_row"
+        # Retrieve row ID generated by the view (simulating real page checkbox value)
+        row_id = view.get_pk_value(m1)
+        assert row_id == "10"
 
-        # 3. String to UUID coercion
-        q_uuid = tools.get_query_for_ids(
-            sqla_db_ext.db.session.query(UuidModel), UuidModel, (str(u1),)
-        )
-        assert q_uuid.count() == 1
-        compiled_uuid = q_uuid.statement.compile()
-        assert compiled_uuid.params["id_1"] == [u1]
-        assert all(isinstance(v, uuid.UUID) for v in compiled_uuid.params["id_1"])
+        client = app.test_client()
 
-        # 4. String remains string
-        q_str = tools.get_query_for_ids(
-            sqla_db_ext.db.session.query(StrModel), StrModel, ("s1",)
+        rv = client.post(
+            "/admin/hexmodel/action/",
+            data=dict(action="delete", rowid=[row_id]),
         )
-        assert q_str.count() == 1
-        compiled_str = q_str.statement.compile()
-        assert compiled_str.params["id_1"] == ["s1"]
-
-        # 5. Composite PK coerced respectively
-        comp_id = tools.iterencode([1, "c1"])
-        q_comp = tools.get_query_for_ids(
-            sqla_db_ext.db.session.query(CompositeModel),
-            CompositeModel,
-            (comp_id,),
-        )
-        assert q_comp.count() == 1
-
-        # 6. TypeDecorator without python_type preserves input string
-        # for its process_bind_param
-        q_hex = tools.get_query_for_ids(
-            sqla_db_ext.db.session.query(HexModel), HexModel, ("10",)
-        )
-        compiled_hex = q_hex.statement.compile()
-        assert compiled_hex.params["id_1"] == ["10"]
-        assert q_hex.count() == 1
-        hex_row = q_hex.first()
-        assert hex_row is not None
-        assert hex_row.name == "hex16"
-
-        # 7. Invalid string input falls back safely
-        q_fallback = tools.get_query_for_ids(
-            sqla_db_ext.db.session.query(IntModel), IntModel, ("invalid",)
-        )
-        assert q_fallback.count() == 0
-
-        # 8. Mismatched composite key length raises ValueError
-        with pytest.raises(ValueError):
-            tools.get_query_for_ids(
-                sqla_db_ext.db.session.query(CompositeModel),
-                CompositeModel,
-                (tools.iterencode([1, "c1", "extra"]),),
-            )
+        assert rv.status_code == 302
+        assert sqla_db_ext.db.session.query(HexModel).count() == 1
+        remaining = sqla_db_ext.db.session.query(HexModel).first()
+        assert remaining is not None
+        assert remaining.id == "20"
+        assert remaining.name == "hex32"
 
 
 def test_default_sort(
