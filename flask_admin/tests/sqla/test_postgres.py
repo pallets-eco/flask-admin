@@ -290,10 +290,11 @@ def sqla_postgres_psycopg3_db_ext(
         pytest.skip("psycopg (v3) is not installed")
 
     from sqlalchemy.dialects import registry
+    from sqlalchemy.exc import NoSuchModuleError
 
     try:
         registry.load("postgresql.psycopg")
-    except Exception:
+    except NoSuchModuleError:
         pytest.skip("SQLAlchemy dialect postgresql.psycopg is not available")
 
     base_uri = os.getenv(
