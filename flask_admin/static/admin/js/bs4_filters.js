@@ -3,6 +3,14 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
     var $container = $('.filters', $root);
     var lastCount = 0;
 
+    function updateActionVisibility() {
+        if ($container.find('.filter-item').length === 0) {
+            $('button', $root).addClass('d-none');
+        } else {
+            $('button', $root).removeClass('d-none');
+        }
+    }
+
     function getCount(name) {
         var idx = name.indexOf('_');
 
@@ -20,40 +28,34 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
     }
 
     function removeFilter() {
-        $(this).closest('tr').remove();
-        if($('.filters tr').length == 0) {
-            $('button', $root).addClass('d-none');
-            $('.filters tbody').remove();
-        } else {
-            $('button', $root).removeClass('d-none');
-        }
-
+        $(this).closest('.filter-item').remove();
+        updateActionVisibility();
         return false;
     }
 
-    // triggered when the filter operation (equals, not equals, etc) is changed
-    function changeOperation(subfilters, $el, filter, $select) {
-        // get the filter_group subfilter based on the index of the selected option
-        var selectedFilter = subfilters[$select.select2('data').element[0].index];
-        var $inputContainer = $el.find('td').last();
+    function changeOperation(subfilters, $el, $select) {
+        var selectData = $select.select2('data');
+        var selectedIndex = selectData.length ? selectData[0].element[0].index : 0;
+        var selectedFilter = subfilters[selectedIndex];
+        var $inputContainer = $el.find('.filter-field').first();
 
-        // recreate and style the input field (turn into date range or select2 if necessary)
         var $field = createFilterInput($inputContainer, null, selectedFilter);
         styleFilterInput(selectedFilter, $field);
 
         $('button', $root).removeClass('d-none');
     }
 
-    // generate HTML for filter input - allows changing filter input type to one with options or tags
     function createFilterInput(inputContainer, filterValue, filter) {
+        inputContainer.empty();
+        var $field;
+
         if (filter.type == "select2-tags") {
-            var $field = $('<input type="hidden" class="filter-val form-control" />').attr('name', makeName(filter.arg));
+            $field = $('<input type="hidden" class="filter-val form-control" />').attr('name', makeName(filter.arg));
             $field.val(filterValue);
         } else if (filter.options) {
-            var $field = $('<select class="filter-val" />').attr('name', makeName(filter.arg));
+            $field = $('<select class="filter-val form-control" />').attr('name', makeName(filter.arg));
 
             $(filter.options).each(function() {
-                // for active filter inputs with options, add "selected" if there is a matching active filter
                 if (filterValue && (filterValue == this[0])) {
                     $field.append($('<option/>')
                         .val(this[0]).text(this[1]).attr('selected', true));
@@ -63,12 +65,12 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
                 }
             });
         } else {
-            var $field = $('<input type="text" class="filter-val form-control" />').attr('name', makeName(filter.arg));
+            $field = $('<input type="text" class="filter-val form-control" />').attr('name', makeName(filter.arg));
             $field.val(filterValue);
         }
-        inputContainer.replaceWith($('<td/>').append($field));
 
-        // show "Apply Filter" button when filter input is changed
+        inputContainer.append($field);
+
         $field.on('input change', function() {
             $('button', $root).removeClass('d-none');
         });
@@ -76,7 +78,6 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
         return $field;
     }
 
-    // add styling to input field, accommodates filters that change the input field's HTML
     function styleFilterInput(filter, field) {
         if (filter.type) {
             if ((filter.type == "datepicker") || (filter.type == "daterangepicker")) {
@@ -91,7 +92,6 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
                     filter.options.forEach(function(option) {
                         options.push({id:option[0], text:option[1]});
                     });
-                    // save tag options as json on data attribute
                     field.attr('data-tags', JSON.stringify(options));
                 }
             }
@@ -105,25 +105,20 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
     }
 
     function addFilter(name, subfilters, selectedIndex, filterValue) {
-        var $el = $('<tr class="form-horizontal" />').appendTo($container);
+        var $el = $('<div class="filter-item form-horizontal" />').appendTo($container);
 
-        // Filter list
-        $el.append(
-            $('<td/>').append(
-                $('<a href="#" class="btn btn-secondary remove-filter" />')
-                    .append($('<span class="close-icon">&times;</span>'))
-                    .append('&nbsp;')
-                    .append(name)
-                    .click(removeFilter)
-                )
-        );
+        var $labelWrapper = $('<div class="filter-label" />').appendTo($el);
+        var $labelLink = $('<a href="#" class="btn btn-secondary remove-filter" />')
+            .append($('<span class="close-icon">&times;</span>'))
+            .append('&nbsp;')
+            .append(name)
+        $labelWrapper.append($labelLink);
 
-        // Filter operation <select> (equal, not equal, etc)
-        var $select = $('<select class="filter-op" />');
+        var $opContainer = $('<div class="filter-operation" />').appendTo($el);
+        var $select = $('<select class="filter-op form-control" />').appendTo($opContainer);
 
-        // if one of the subfilters are selected, use that subfilter to create the input field
         var filterSelection = 0;
-        $.each(subfilters, function( subfilterIndex, subfilter ) {
+        $.each(subfilters, function(subfilterIndex, subfilter) {
             if (this.index == selectedIndex) {
                 $select.append($('<option/>').attr('value', subfilter.arg).attr('selected', true).text(subfilter.operation));
                 filterSelection = subfilterIndex;
@@ -132,53 +127,50 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
             }
         });
 
-        $el.append(
-            $('<td/>').append($select)
-        );
-
-        // select2 for filter-op (equal, not equal, etc)
-        $select.select2({width: 'resolve'}).on("change", function(e) {
-            changeOperation(subfilters, $el, filter, $select);
+        $select.select2({width: 'resolve'}).on("change", function() {
+            changeOperation(subfilters, $el, $select);
         });
 
-        // get filter option from filter_group, only for new filter creation
         var filter = subfilters[filterSelection];
-        var $inputContainer = $('<td/>').appendTo($el);
+        var $fieldContainer = $('<div class="filter-field" />').appendTo($el);
+        var $newFilterField = createFilterInput($fieldContainer, filterValue, filter).focus();
+        styleFilterInput(filter, $newFilterField);
 
-        var $newFilterField = createFilterInput($inputContainer, filterValue, filter).focus();
-        var $styledFilterField = styleFilterInput(filter, $newFilterField);
+        updateActionVisibility();
 
-        return $styledFilterField;
+        return $newFilterField;
     }
 
-    // Add Filter Button, new filter
     $('a.filter', filtersElement).click(function() {
         var name = ($(this).text().trim !== undefined ? $(this).text().trim() : $(this).text().replace(/^\s+|\s+$/g,''));
 
         addFilter(name, filterGroups[name], false, null);
 
         $('button', $root).removeClass('d-none');
+
+        return false;
     });
 
-    // on page load - add active filters
-    $.each(activeFilters, function( activeIndex, activeFilter ) {
+    $.each(activeFilters, function(activeIndex, activeFilter) {
         var idx = activeFilter[0],
             name = activeFilter[1],
             filterValue = activeFilter[2];
-        var $activeField = addFilter(name, filterGroups[name], idx, filterValue);
+        addFilter(name, filterGroups[name], idx, filterValue);
     });
 
-    // show "Apply Filter" button when filter input is changed
+    updateActionVisibility();
+
     $('.filter-val', $root).on('input change', function() {
         $('button', $root).removeClass('d-none');
     });
 
-    $('.remove-filter', $root).click(removeFilter);
+    $container.on('click', '.remove-filter', removeFilter);
 
     $('.filter-val', $root).not('.select2-container').each(function() {
         var count = getCount($(this).attr('name'));
-        if (count > lastCount)
+        if (count > lastCount) {
             lastCount = count;
+        }
     });
 
     lastCount += 1;
@@ -198,5 +190,4 @@ var AdminFilters = function(element, filtersElement, filterGroups, activeFilters
             );
         }
     });
-    $(document).trigger('adminFormReady');  // trigger event to allow dynamic filter form to function properly
 })(jQuery);
