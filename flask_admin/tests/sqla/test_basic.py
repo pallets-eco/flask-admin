@@ -859,6 +859,55 @@ def test_details_view(
         assert "test1_val_1" not in data
 
 
+def test_single_pk_multiple_ids_in_query(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view_no_details = CustomModelView(Model1, param)
+        admin.add_view(view_no_details)
+
+        # fields are scaffolded
+        view_w_details = CustomModelView(Model2, param, can_view_details=True)
+        admin.add_view(view_w_details)
+
+        # show only specific fields in details w/ column_details_list
+        string_field_view = CustomModelView(
+            Model2,
+            param,
+            can_view_details=True,
+            column_details_list=["string_field"],
+            endpoint="sf_view",
+        )
+        admin.add_view(string_field_view)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # test single-PK query string
+        rv = client.get("/admin/model2/details/?id=1")
+        data = rv.data.decode("utf-8")
+        assert "String Field" in data
+        assert "test2_val_1" in data
+        assert "test1_val_1" in data
+
+        # test single-PK with multiple IDs in query string
+        rv = client.get("/admin/model2/details/?id=1,2", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        assert "Record does not exist" in data
+
+        # test single-PK with multiple IDs in query string
+        rv = client.get("/admin/model2/edit/?id=1,2", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        assert "Record does not exist" in data
+
+
 def test_editable_list_special_pks(
     app: Flask,
     sqla_db_ext: T_ANY_SQLA_PROVIDER,
