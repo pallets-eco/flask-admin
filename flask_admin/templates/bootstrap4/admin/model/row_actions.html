@@ -31,8 +31,24 @@
   {% elif csrf_token is defined and csrf_token %}
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   {% endif %}
-  <button onclick="return faHelpers.safeConfirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="{{ _gettext('Delete Record') }}">
+  <button
+    id="btn-delete-{{ row_id }}" class="btn-delete-row"
+    data-msg="{{ _gettext('Are you sure you want to delete this record?') }}, (id= {{ row_id }})"
+    title="{{ _gettext('Delete Record') }}">
     <span class="fa fa-trash glyphicon glyphicon-trash"></span>
   </button>
 </form>
+
+<script {{ admin_csp_nonce_attribute }} >
+
+  document.addEventListener('DOMContentLoaded', function ()
+  {
+      $('#btn-delete-{{ row_id }}').on('click', function (e)
+      {
+          const msg = $(this).data('msg');
+          return faHelpers.safeConfirm(msg);
+      });
+  });
+</script>
+
 {% endmacro %}
