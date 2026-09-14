@@ -1,0 +1,18 @@
+{% extends admin_base_template %}
+{% block body %}
+  <div class="ui text container very padded segment">
+    <h2 class="ui header">
+      {{ admin_view.admin.name }} with <b>"{{ admin_view.admin.theme.__str__().title() }}"</b>
+    </h2>
+    <div>Go through the views.</div>
+    <br>
+    <a href="{{ url_for("basicadmin.index") }}" class="mt-5">Go to BasicAdmin</a>
+    <br>
+    <br>
+    <a href="{{ url_for("superadmin.index") }}">Go to SuperAdmin</a>
+    <br>
+    <br>
+    <a href="{{ url_for("proadmin.index") }}">Go to ProAdmin</a>
+    <br>
+  </div>
+{% endblock %}

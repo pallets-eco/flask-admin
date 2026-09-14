@@ -1,0 +1,88 @@
+{% macro menu_icon(item) -%}
+  {% set icon_type = item.get_icon_type() %}
+  {% set icon_value = item.get_icon_value() %}
+  {% if icon_value %}
+    {% if icon_type == 'default' or not icon_type %}
+      <i class="{{ icon_value }} icon"></i>
+    {% elif icon_type == 'image' %}
+      <img src="{{ url_for('static', filename=icon_value) }}" alt="menu image" />
+    {% elif icon_type == 'image-url' %}
+      <img src="{{ icon_value }}" alt="menu image" />
+    {% endif %}
+  {% endif %}
+{%- endmacro %}
+
+{% macro menu(menu_root=None) %}
+  {% set is_main_nav = menu_root == None %}
+  {% if menu_root is none %}
+    {% set menu_root = admin_view.admin.menu() %}
+  {% endif %}
+  {%- for item in menu_root %}
+    {%- if item.is_category() -%}
+      {% set children = item.get_children() %}
+      {%- if children %}
+        {% set class_name = item.get_class_name() or '' %}
+        <div class="item {# ' active' if item.is_active(admin_view) #}{{ class_name }}">
+          {% if item.class_name %}<span class="{{ item.class_name }}"></span>{% endif %}
+          {{ menu_icon(item) }}
+          {{ item.name }}
+          <div class="menu">
+            {%- for child in children -%}
+              {%- if child.is_category() -%}
+                {{ menu(menu_root=[child]) }}
+              {% else %}
+                {% set class_name = child.get_class_name() %}
+                <a class="item {{ 'active' if child.is_active(admin_view) }}" href="{{ child.get_url() }}" {% if child.target
+                  %}target="{{ child.target }}" {% endif %}>
+                  {{ menu_icon(child) }}
+                  {{ child.name }}
+                </a>
+              {%- endif %}
+            {%- endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {%- else %}
+      {%- if item.is_accessible() and item.is_visible() -%}
+        {% set class_name = item.get_class_name() or '' %}
+        <a href="{{ item.get_url() }}"
+           {% if item.target %}target="{{ item.target }}"{% endif %}
+           class="item {{- ' active' if item.is_active(admin_view) -}} {{ class_name }}">
+          {{ menu_icon(item) }}
+          {{ item.name }}
+        </a>
+      {%- endif -%}
+    {% endif -%}
+  {%- endfor %}
+{% endmacro %}
+
+{% macro menu_links(links=None) %}
+  {% if links is none %}
+    {% set links = admin_view.admin.menu_links() %}
+  {% endif %}
+  {% for item in links %}
+    {% set class_name = item.get_class_name() %}
+    {% if item.is_accessible() and item.is_visible() %}
+      <a href="{{ item.get_url() }}"
+         class="item"
+         {% if item.target %}target="{{ item.target }}"{% endif %}>
+        {{ menu_icon(item) }}
+        {{ item.name }}
+      </a>
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{% macro messages () %}
+  {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+      {% for category, m in messages %}
+        {% set mapping = {"message": "info", "None": ""} %}
+        <div class="ui {{ mapping.get(category, category) }} message">
+          <i class="close icon"></i>
+          {{ m }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+{% endmacro %}
