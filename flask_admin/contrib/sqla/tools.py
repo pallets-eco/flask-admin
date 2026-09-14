@@ -133,24 +133,21 @@ def _coerce_pk_value(col: t.Any, val: t.Any) -> t.Any:
     Falls back gracefully if python_type is not implemented or coercion fails.
     """
     try:
-        type_ = getattr(col, "type", None)
-        python_type = getattr(type_, "python_type", None)
+        python_type = col.type.python_type
 
-        if python_type is not None:
-            if isinstance(val, python_type):
+        if isinstance(val, python_type):
+            return val
+        if python_type is bool:
+            if isinstance(val, str):
+                v = val.strip().lower()
+                if v in ("true", "1", "t", "yes", "y"):
+                    return True
+                elif v in ("false", "0", "f", "no", "n"):
+                    return False
                 return val
-            if python_type is bool:
-                if isinstance(val, str):
-                    v = val.strip().lower()
-                    if v in ("true", "1", "t", "yes", "y"):
-                        return True
-                    elif v in ("false", "0", "f", "no", "n"):
-                        return False
-                    return val
-            return python_type(val)
+        return python_type(val)
     except (NotImplementedError, AttributeError, ValueError, TypeError):
         return val
-    return val
 
 
 def get_query_for_ids(
