@@ -134,10 +134,7 @@ def _coerce_pk_value(col: t.Any, val: t.Any) -> t.Any:
     """
     try:
         type_ = getattr(col, "type", None)
-        try:
-            python_type = getattr(type_, "python_type", None)
-        except NotImplementedError:
-            python_type = None
+        python_type = getattr(type_, "python_type", None)
 
         if python_type is not None:
             if isinstance(val, python_type):
