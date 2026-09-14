@@ -70,7 +70,9 @@ def index():
 <p><a href="/admin/?lang=ru">Click me to get to Admin! (Russian)</a></p>
 <p><a href="/admin/?lang=tr">Click me to get to Admin! (Turkish)</a></p>
 <p><a href="/admin/?lang=pa">Click me to get to Admin! (Punjabi)</a></p>
-<p><a href="/admin/?lang=zh_CN">Click me to get to Admin! (Chinese - Simplified)</a></p>
+<p>
+  <a href="/admin/?lang=zh_CN">Click me to get to Admin! (Chinese - Simplified)</a>
+</p>
 <p>
 <a href="/admin/?lang=zh_TW">Click me to get to Admin! (Chinese - Traditional)</a>
 </p>
@@ -78,12 +80,12 @@ def index():
     return tmp
 
 
+# admin.locale_selector(get_locale)
+admin.add_view(ModelView(User, db))
+admin.add_view(ModelView(Post, db))
+
+with app.app_context():
+    db.create_all()
+
 if __name__ == "__main__":
-    # admin.locale_selector(get_locale)
-    admin.add_view(ModelView(User, db))
-    admin.add_view(ModelView(Post, db))
-
-    with app.app_context():
-        db.create_all()
-
     app.run(debug=True)
