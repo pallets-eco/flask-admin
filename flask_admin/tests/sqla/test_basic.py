@@ -2569,6 +2569,7 @@ def test_multiple_delete_standard_pks(
     expected_remaining_id: t.Any,
 ) -> None:
     with app.app_context():
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
 
         class DynamicModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "dynamic_pk_model"
@@ -2582,7 +2583,6 @@ def test_multiple_delete_standard_pks(
         )
         sqla_db_ext.db.session.commit()
 
-        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         admin.add_view(ModelView(DynamicModel, param))
         client = app.test_client()
 
@@ -2604,6 +2604,7 @@ def test_multiple_delete_boolean_pk(
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
     with app.app_context():
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
 
         class BoolModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "bool_model_bulk_delete"
@@ -2620,7 +2621,6 @@ def test_multiple_delete_boolean_pk(
         )
         sqla_db_ext.db.session.commit()
 
-        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         admin.add_view(ModelView(BoolModel, param))
         client = app.test_client()
 
@@ -2644,6 +2644,8 @@ def test_multiple_delete_type_decorator_pk(
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
     with app.app_context():
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+
         if t.TYPE_CHECKING:
             _HexIntBase = TypeDecorator[str]
         else:
@@ -2677,7 +2679,6 @@ def test_multiple_delete_type_decorator_pk(
         sqla_db_ext.db.session.add_all([m1, m2])
         sqla_db_ext.db.session.commit()
 
-        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         view = CustomModelView(HexModel, param)
         admin.add_view(view)
 

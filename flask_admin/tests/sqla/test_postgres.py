@@ -248,6 +248,7 @@ def test_multiple_delete_integer_pk(
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
     with app.app_context():
+        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
 
         class IntModel(sqla_postgres_db_ext.Base):  # type: ignore[name-defined, misc]
             __tablename__ = "test_bulk_delete_int_model"
@@ -263,7 +264,6 @@ def test_multiple_delete_integer_pk(
         sqla_postgres_db_ext.db.session.add_all([m1, m2, m3])
         sqla_postgres_db_ext.db.session.commit()
 
-        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
         view = CustomModelView(IntModel, param)
         postgres_admin.add_view(view)
 
@@ -338,6 +338,9 @@ def test_multiple_delete_integer_pk_psycopg3(
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
     with app.app_context():
+        param = skip_or_return_session_or_db(
+            sqla_postgres_psycopg3_db_ext, session_or_db
+        )
 
         class IntModel(sqla_postgres_psycopg3_db_ext.Base):  # type: ignore[name-defined, misc]
             __tablename__ = "test_bulk_delete_int_model_psycopg3"
@@ -353,9 +356,6 @@ def test_multiple_delete_integer_pk_psycopg3(
         sqla_postgres_psycopg3_db_ext.db.session.add_all([m1, m2, m3])
         sqla_postgres_psycopg3_db_ext.db.session.commit()
 
-        param = skip_or_return_session_or_db(
-            sqla_postgres_psycopg3_db_ext, session_or_db
-        )
         view = CustomModelView(IntModel, param)
         postgres_admin.add_view(view)
 
