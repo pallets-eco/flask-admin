@@ -1,7 +1,7 @@
 Changelog
 =========
 
-[unreleased]
+2.3.0
 ------------------
 
 Bugfixes:
