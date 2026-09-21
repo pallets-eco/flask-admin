@@ -4,7 +4,7 @@ version = "2.2.1"
 description = "Simple and extensible admin interface framework for Flask"
 readme = "README.md"
 license = { file = "LICENSE.txt" }
-author = [{ name = "Flask-Admin team" }]
+authors = [{ name = "Flask-Admin team" }]
 maintainers = [{ name = "Pallets Ecosystem", email = "contact@palletsprojects.com" }]
 classifiers = [
     'Development Status :: 5 - Production/Stable',
@@ -129,7 +129,7 @@ Source = "https://github.com/pallets-eco/flask-admin/"
 Chat = "https://discord.gg/pallets"
 
 [build-system]
-requires = ["flit_core<4"]
+requires = ["flit_core<5"]
 build-backend = "flit_core.buildapi"
 
 [tool.flit.module]
