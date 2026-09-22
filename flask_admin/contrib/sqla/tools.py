@@ -127,6 +127,27 @@ def tuple_operator_in(
         return None
 
 
+def _coerce_pk_value(col: t.Any, val: t.Any) -> t.Any:
+    """
+    Coerce string value from HTTP request into the column's native python_type.
+    Falls back gracefully if python_type is not implemented or coercion fails.
+    """
+    try:
+        python_type = col.type.python_type
+
+        if isinstance(val, python_type):
+            return val
+        if python_type is bool:
+            if val == "True":
+                return True
+            if val == "False":
+                return False
+            return val
+        return python_type(val)
+    except (NotImplementedError, AttributeError, ValueError, TypeError):
+        return val
+
+
 def get_query_for_ids(
     modelquery: t.Any, model: type[T_SQLALCHEMY_MODEL], ids: tuple[str, ...]
 ) -> t.Any:
@@ -160,7 +181,8 @@ def get_query_for_ids(
             model,
             get_primary_key(model),  # type: ignore[arg-type]
         )
-        query = modelquery.filter(model_pk.in_(ids))
+        coerced_ids = [_coerce_pk_value(model_pk, v) for v in ids]
+        query = modelquery.filter(model_pk.in_(coerced_ids))
 
     return query
 
