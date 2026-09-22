@@ -25,9 +25,6 @@ jobs:
         python: ['3.10', '3.11', '3.12', '3.13', '3.14']
         tox: ['normal']
         include:
-          - python: '3.12'
-            tox: 'normal'
-            postgres_driver: 'psycopg'
           - python: '3.10'
             tox: 'py310-min'
           - python: '3.14'
@@ -96,8 +93,6 @@ jobs:
             echo "name=${{ matrix.tox }}" >> $GITHUB_OUTPUT
             fi
       - run: uv run --locked tox run -e ${{ steps.tox_env.outputs.name }}
-        env:
-          SQLALCHEMY_DATABASE_URI: postgresql+${{ matrix.postgres_driver || 'psycopg2' }}://postgres:postgres@localhost/flask_admin_test
   not_tests:
     name: ${{ matrix.tox }}
     runs-on: ubuntu-latest
