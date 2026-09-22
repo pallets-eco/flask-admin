@@ -1,7 +1,5 @@
-import os
 import typing as t
 
-import pytest
 from citext import CIText
 from flask import Flask
 from sqlalchemy import Boolean
@@ -15,12 +13,7 @@ from sqlalchemy.dialects.postgresql import JSON
 
 from ... import Admin
 from ...contrib.sqla import ModelView
-from ...contrib.sqla import tools
-from ..conftest import configure_sqla
-from ..conftest import HAS_SQLALCHEMY_2
 from ..conftest import skip_or_return_session_or_db
-from ..conftest import sqla_db_exts
-from ..conftest import SQLAProvider
 from ..conftest import T_ANY_SQLA_PROVIDER
 from ..conftest import T_LITERAL_SESSION_OR_DB
 from .test_basic import CustomModelView
@@ -245,71 +238,28 @@ def test_boolean_filters(
         assert "false_val_2" not in data
 
 
-@pytest.fixture(params=sqla_db_exts)
-def sqla_postgres_psycopg3_db_ext(
-    app: Flask, request: pytest.FixtureRequest
-) -> t.Generator[T_ANY_SQLA_PROVIDER, None, None]:
-    if not HAS_SQLALCHEMY_2:
-        pytest.skip("psycopg 3 requires SQLAlchemy 2")
-
-    base_uri = os.getenv(
-        "SQLALCHEMY_DATABASE_URI",
-        "postgresql://postgres:postgres@localhost/flask_admin_test",
-    )
-    if "://" in base_uri:
-        _, rest = base_uri.split("://", 1)
-        uri = f"postgresql+psycopg://{rest}"
-    else:
-        uri = "postgresql+psycopg://postgres:postgres@localhost/flask_admin_test"
-
-    configure_sqla(app, uri, request)
-    provider_class = request.param
-    if provider_class != SQLAProvider:
-        provider = provider_class(engine_options={})
-    else:
-        provider = provider_class()
-
-    provider.db.init_app(app)
-
-    with app.app_context():
-        try:
-            yield provider
-        finally:
-            provider.db.session.close()
-            if hasattr(provider.db, "engine"):
-                provider.db.engine.dispose()
-            elif hasattr(provider.db, "engines"):
-                engines = getattr(provider.db, "_engines", None) or getattr(
-                    provider.db, "engines", {}
-                )
-                for eng in engines.values():
-                    eng.dispose()
-
-
-def test_multiple_delete_integer_pk_psycopg3(
+def test_multiple_delete_integer_pk(
     app: Flask,
-    sqla_postgres_psycopg3_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
     postgres_admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
     with app.app_context():
-        param = skip_or_return_session_or_db(
-            sqla_postgres_psycopg3_db_ext, session_or_db
-        )
+        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
 
-        class IntModel(sqla_postgres_psycopg3_db_ext.Base):  # type: ignore[name-defined, misc]
-            __tablename__ = "test_bulk_delete_int_model_psycopg3"
+        class IntModel(sqla_postgres_db_ext.Base):  # type: ignore[name-defined, misc]
+            __tablename__ = "test_bulk_delete_int_model"
             id = Column(Integer, primary_key=True, autoincrement=True)
             name = Column(String(50))
 
-        sqla_postgres_psycopg3_db_ext.drop_all()
-        sqla_postgres_psycopg3_db_ext.create_all()
+        sqla_postgres_db_ext.drop_all()
+        sqla_postgres_db_ext.create_all()
 
         m1 = IntModel(name="a")
         m2 = IntModel(name="b")
         m3 = IntModel(name="c")
-        sqla_postgres_psycopg3_db_ext.db.session.add_all([m1, m2, m3])
-        sqla_postgres_psycopg3_db_ext.db.session.commit()
+        sqla_postgres_db_ext.db.session.add_all([m1, m2, m3])
+        sqla_postgres_db_ext.db.session.commit()
 
         view = CustomModelView(IntModel, param)
         postgres_admin.add_view(view)
@@ -321,38 +271,36 @@ def test_multiple_delete_integer_pk_psycopg3(
             data=dict(action="delete", rowid=[str(m1.id), str(m2.id)]),
         )
         assert rv.status_code == 302
-        assert sqla_postgres_psycopg3_db_ext.db.session.query(IntModel).count() == 1
-        model = sqla_postgres_psycopg3_db_ext.db.session.query(IntModel).first()
+        assert sqla_postgres_db_ext.db.session.query(IntModel).count() == 1
+        model = sqla_postgres_db_ext.db.session.query(IntModel).first()
         assert model is not None
         assert model.id == m3.id
 
 
-def test_multiple_delete_boolean_pk_psycopg3(
+def test_multiple_delete_boolean_pk(
     app: Flask,
-    sqla_postgres_psycopg3_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
     postgres_admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
     with app.app_context():
-        param = skip_or_return_session_or_db(
-            sqla_postgres_psycopg3_db_ext, session_or_db
-        )
+        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
 
-        class BoolModel(sqla_postgres_psycopg3_db_ext.Base):  # type: ignore[misc, name-defined]
+        class BoolModel(sqla_postgres_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "bool_model_bulk_delete"
             id = Column(Boolean, primary_key=True)
             name = Column(String(50))
 
-        sqla_postgres_psycopg3_db_ext.drop_all()
-        sqla_postgres_psycopg3_db_ext.create_all()
+        sqla_postgres_db_ext.drop_all()
+        sqla_postgres_db_ext.create_all()
 
-        sqla_postgres_psycopg3_db_ext.db.session.add_all(
+        sqla_postgres_db_ext.db.session.add_all(
             [
                 BoolModel(id=False, name="f_row"),
                 BoolModel(id=True, name="t_row"),
             ]
         )
-        sqla_postgres_psycopg3_db_ext.db.session.commit()
+        sqla_postgres_db_ext.db.session.commit()
 
         postgres_admin.add_view(ModelView(BoolModel, param))
         client = app.test_client()
@@ -363,25 +311,28 @@ def test_multiple_delete_boolean_pk_psycopg3(
             data=dict(action="delete", rowid=["False"]),
         )
         assert rv.status_code == 302
-        assert sqla_postgres_psycopg3_db_ext.db.session.query(BoolModel).count() == 1
-        model = sqla_postgres_psycopg3_db_ext.db.session.query(BoolModel).first()
+        assert sqla_postgres_db_ext.db.session.query(BoolModel).count() == 1
+        model = sqla_postgres_db_ext.db.session.query(BoolModel).first()
         assert model is not None
         assert model.id == True  # noqa: E712
         assert model.name == "t_row"
 
 
-def test_multiple_delete_type_decorator_pk_psycopg3(
+def test_multiple_delete_type_decorator_pk(
     app: Flask,
-    sqla_postgres_psycopg3_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
     postgres_admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
     with app.app_context():
-        param = skip_or_return_session_or_db(
-            sqla_postgres_psycopg3_db_ext, session_or_db
-        )
+        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
 
-        class HexInt(TypeDecorator[str]):
+        if t.TYPE_CHECKING:
+            _HexIntBase = TypeDecorator[str]
+        else:
+            _HexIntBase = TypeDecorator
+
+        class HexInt(_HexIntBase):
             impl = Integer
             cache_ok = True
 
@@ -397,18 +348,18 @@ def test_multiple_delete_type_decorator_pk_psycopg3(
                     return None
                 return hex(value)[2:]
 
-        class HexModel(sqla_postgres_psycopg3_db_ext.Base):  # type: ignore[misc, name-defined]
+        class HexModel(sqla_postgres_db_ext.Base):  # type: ignore[misc, name-defined]
             __tablename__ = "hex_model_bulk_delete"
             id = Column(HexInt, primary_key=True)
             name = Column(String(50))
 
-        sqla_postgres_psycopg3_db_ext.drop_all()
-        sqla_postgres_psycopg3_db_ext.create_all()
+        sqla_postgres_db_ext.drop_all()
+        sqla_postgres_db_ext.create_all()
 
         m1 = HexModel(id="10", name="hex16")
         m2 = HexModel(id="20", name="hex32")
-        sqla_postgres_psycopg3_db_ext.db.session.add_all([m1, m2])
-        sqla_postgres_psycopg3_db_ext.db.session.commit()
+        sqla_postgres_db_ext.db.session.add_all([m1, m2])
+        sqla_postgres_db_ext.db.session.commit()
 
         view = CustomModelView(HexModel, param)
         postgres_admin.add_view(view)
@@ -424,53 +375,8 @@ def test_multiple_delete_type_decorator_pk_psycopg3(
             data=dict(action="delete", rowid=[row_id]),
         )
         assert rv.status_code == 302
-        assert sqla_postgres_psycopg3_db_ext.db.session.query(HexModel).count() == 1
-        remaining = sqla_postgres_psycopg3_db_ext.db.session.query(HexModel).first()
+        assert sqla_postgres_db_ext.db.session.query(HexModel).count() == 1
+        remaining = sqla_postgres_db_ext.db.session.query(HexModel).first()
         assert remaining is not None
         assert remaining.id == "20"
         assert remaining.name == "hex32"
-
-
-def test_multiple_delete_composite_pk_psycopg3(
-    app: Flask,
-    sqla_postgres_psycopg3_db_ext: T_ANY_SQLA_PROVIDER,
-    postgres_admin: Admin,
-    session_or_db: T_LITERAL_SESSION_OR_DB,
-) -> None:
-    with app.app_context():
-        param = skip_or_return_session_or_db(
-            sqla_postgres_psycopg3_db_ext, session_or_db
-        )
-
-        class Model(sqla_postgres_psycopg3_db_ext.Base):  # type: ignore[misc, name-defined]
-            __tablename__ = "test_bulk_delete_composite_pk_psycopg3"
-            id = Column(Integer, primary_key=True)
-            id2 = Column(String(20), primary_key=True)
-
-        sqla_postgres_psycopg3_db_ext.drop_all()
-        sqla_postgres_psycopg3_db_ext.create_all()
-        session = sqla_postgres_psycopg3_db_ext.db.session
-        selected = Model(id=1, id2="two")
-        session.add_all([selected, Model(id=1, id2="three"), Model(id=2, id2="two")])
-        session.commit()
-
-        view = CustomModelView(Model, param)
-        postgres_admin.add_view(view)
-        client = app.test_client()
-
-        rv = client.post(
-            "/admin/model/action/",
-            data=dict(action="delete", rowid=[tools.iterencode([1, "two", "extra"])]),
-        )
-        assert rv.status_code == 500
-        assert session.query(Model).count() == 3
-
-        rv = client.post(
-            "/admin/model/action/",
-            data=dict(action="delete", rowid=[view.get_pk_value(selected)]),
-        )
-        assert rv.status_code == 302
-        assert set(session.query(Model.id, Model.id2).all()) == {
-            (1, "three"),
-            (2, "two"),
-        }

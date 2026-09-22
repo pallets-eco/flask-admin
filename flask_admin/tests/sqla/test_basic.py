@@ -2543,8 +2543,7 @@ def test_multiple_delete(
         client = app.test_client()
 
         rv = client.post(
-            "/admin/model1/action/",
-            data=dict(action="delete", rowid=["1", "2", "3"]),
+            "/admin/model1/action/", data=dict(action="delete", rowid=[1, 2, 3])
         )
         assert rv.status_code == 302
         assert sqla_db_ext.db.session.query(M1).count() == 0

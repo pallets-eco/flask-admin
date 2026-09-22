@@ -5,7 +5,7 @@ Changelog
 ------------------
 
 * Support building with ``flit_core`` v4: use the PEP 621 ``authors`` key instead of the invalid singular ``author`` in ``pyproject.toml``, and widen the build-system pin from ``flit_core<4`` to ``flit_core<5`` (closes #2956).
-* SQLAlchemy backend: ``get_query_for_ids()`` now coerces string IDs to their model primary key column type when a ``python_type`` is defined. Bulk delete of records with integer primary keys no longer fails on PostgreSQL with psycopg 3 (closes #2951).
+* SQLAlchemy backend: ``get_query_for_ids()`` now coerces string IDs for single-column primary keys to the column type when a ``python_type`` is defined. Bulk delete of records with integer primary keys no longer fails on PostgreSQL with psycopg 3 (closes #2951).
 
 2.2.1
 ------------------

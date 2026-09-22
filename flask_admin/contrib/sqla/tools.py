@@ -138,13 +138,11 @@ def _coerce_pk_value(col: t.Any, val: t.Any) -> t.Any:
         if isinstance(val, python_type):
             return val
         if python_type is bool:
-            if isinstance(val, str):
-                v = val.strip().lower()
-                if v in ("true", "1", "t", "yes", "y"):
-                    return True
-                elif v in ("false", "0", "f", "no", "n"):
-                    return False
-                return val
+            if val == "True":
+                return True
+            if val == "False":
+                return False
+            return val
         return python_type(val)
     except (NotImplementedError, AttributeError, ValueError, TypeError):
         return val
@@ -166,22 +164,8 @@ def get_query_for_ids(
         # Get model primary key property references
         model_pk = [getattr(model, name) for name in get_primary_key(model)]
 
-        coerced_decoded_ids = []
-        for key_tuple in decoded_ids:
-            if len(key_tuple) != len(model_pk):
-                raise ValueError(
-                    f"Mismatch between expected primary key count ({len(model_pk)}) "
-                    f"and input key fields ({len(key_tuple)})."
-                )
-            coerced_decoded_ids.append(
-                tuple(
-                    _coerce_pk_value(col, val)
-                    for col, val in zip(model_pk, key_tuple, strict=True)
-                )
-            )
-
         try:
-            query = modelquery.filter(tuple_(*model_pk).in_(coerced_decoded_ids))
+            query = modelquery.filter(tuple_(*model_pk).in_(decoded_ids))
             # Only the execution of the query will tell us, if the tuple_
             # operator really works
             query.all()
@@ -189,7 +173,7 @@ def get_query_for_ids(
             query = modelquery.filter(
                 tuple_operator_in(
                     model_pk,
-                    coerced_decoded_ids,  # type: ignore[arg-type]
+                    decoded_ids,  # type: ignore[arg-type]
                 )
             )
     else:
