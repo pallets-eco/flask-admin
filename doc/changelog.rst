@@ -3,6 +3,8 @@ Changelog
 
 [unreleased]
 ------------------
+New Features:
+* Added experimental TablerTheme
 
 * Support building with ``flit_core`` v4: use the PEP 621 ``authors`` key instead of the invalid singular ``author`` in ``pyproject.toml``, and widen the build-system pin from ``flit_core<4`` to ``flit_core<5`` (closes #2956).
 

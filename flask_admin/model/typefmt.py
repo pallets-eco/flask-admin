@@ -38,9 +38,11 @@ def bool_formatter(view: T_MODEL_VIEW, value: t.Any, name: str) -> str:
     """
     glyph = "ok-circle" if value else "minus-sign"
     fa = "fa-check-circle" if value else "fa-minus-circle"
+    ti = "circle-check" if value else "circle-minus"
     label = f'{name}: {"true" if value else "false"}'
+    color = "text-success" if value else "text-muted"
     return Markup(
-        f'<span class="fa {fa} glyphicon glyphicon-{glyph} '
+        f'<span class="fa {fa} glyphicon glyphicon-{glyph} ti ti-{ti} {color} '
         f'icon-{glyph}" title="{label}"></span>'
     )
 
