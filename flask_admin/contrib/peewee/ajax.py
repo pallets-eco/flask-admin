@@ -1,5 +1,7 @@
 import typing as t
 
+from peewee import DoesNotExist
+
 from flask_admin._compat import as_unicode
 from flask_admin._compat import string_types
 from flask_admin.model.ajax import AjaxModelLoader
@@ -55,7 +57,10 @@ class QueryAjaxModelLoader(AjaxModelLoader):
         return (getattr(model, self.pk), as_unicode(model))
 
     def get_one(self, pk: t.Any) -> t.Any:
-        return self.model.get(**{self.pk: pk})
+        try:
+            return self.model.get(**{self.pk: pk})
+        except DoesNotExist:
+            return None
 
     def get_list(
         self, term: str, offset: int = 0, limit: int = DEFAULT_PAGE_SIZE
