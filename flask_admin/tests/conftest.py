@@ -1,7 +1,12 @@
 import sys
 import typing as t
 
-import flask_sqlalchemy
+try:
+    import flask_sqlalchemy
+
+    HAS_FLASK_SQLALCHEMY = True
+except ImportError:
+    HAS_FLASK_SQLALCHEMY = False
 import pytest
 from flask import Flask
 from jinja2 import StrictUndefined
@@ -43,31 +48,32 @@ if sys.version_info < (3, 12):
         event.remove(Engine, "connect", _sqlite_connect)
 
 
-class SQLAProvider:
-    def __init__(
-        self,
-    ) -> None:  # must be in __init__ to avoid leaking db instances btw tests
-        from flask_sqlalchemy import SQLAlchemy
+if HAS_FLASK_SQLALCHEMY:
 
-        self.db = SQLAlchemy()
-        self.Base = self.db.Model
+    class SQLAProvider:
+        def __init__(
+            self,
+        ) -> None:  # must be in __init__ to avoid leaking db instances btw tests
+            from flask_sqlalchemy import SQLAlchemy
 
-    def create_all(self) -> None:
-        return self.db.create_all()
+            self.db = SQLAlchemy()
+            self.Base = self.db.Model
 
-    def drop_all(self) -> None:
-        return self.db.drop_all()
+        def create_all(self) -> None:
+            return self.db.create_all()
 
+        def drop_all(self) -> None:
+            return self.db.drop_all()
 
-if t.TYPE_CHECKING:
-    # Only used for type checking; at runtime SQLALiteProvider may not exist
-    T_ANY_SQLA_PROVIDER = t.Union[SQLAProvider, "SQLALiteProvider"]
-    T_SCOPED_SESSION_FLASK_SQLA = scoped_session[flask_sqlalchemy.Session.session]
-else:
-    T_ANY_SQLA_PROVIDER = object
-    T_SCOPED_SESSION_FLASK_SQLA = scoped_session
+    if t.TYPE_CHECKING:
+        # Only used for type checking; at runtime SQLALiteProvider may not exist
+        T_ANY_SQLA_PROVIDER = t.Union[SQLAProvider, "SQLALiteProvider"]
+        T_SCOPED_SESSION_FLASK_SQLA = scoped_session[flask_sqlalchemy.Session.session]
+    else:
+        T_ANY_SQLA_PROVIDER = object
+        T_SCOPED_SESSION_FLASK_SQLA = scoped_session
 
-sqla_db_exts: list[type[T_ANY_SQLA_PROVIDER]] = [SQLAProvider]
+    sqla_db_exts: list[type[T_ANY_SQLA_PROVIDER]] = [SQLAProvider]
 
 if HAS_SQLALCHEMY_2:
 
