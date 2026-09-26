@@ -266,6 +266,7 @@ order-by-type = false
 [tool.tox]
 env_list = [
     "py310", "py311", "py312", "py313", "py314",
+    "py314-flask-sqlalchemy-lite",
     "py310-sqlalchemy1", "py314-sqlalchemy1",
     "py314-noflaskbabel",
     "py310-min",
@@ -322,6 +323,19 @@ commands = [
         "tablib==3.0.0",
         "redis==4.0.0",
     ],
+    [
+        "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
+        {replace = "posargs", default = [], extend = true},
+    ],
+]
+
+[tool.tox.env.py314-flask-sqlalchemy-lite]
+description = "pytest with flask-sqlalchemy-lite"
+base = ["env_run_base"]
+base_python = ["3.14"]
+commands = [
+    ["uv", "pip", "uninstall", "flask-sqlalchemy"],
+    ["uv", "pip", "install", "flask-sqlalchemy-lite"],
     [
         "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
         {replace = "posargs", default = [], extend = true},
