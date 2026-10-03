@@ -35,7 +35,7 @@ class BasePeeweeFilter(filters.BaseFilter):
         """
         super().__init__(name, options, data_type)
 
-        self.column = column
+        self.column: t.Any = column
 
 
 # Common filters

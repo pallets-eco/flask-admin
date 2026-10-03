@@ -386,6 +386,8 @@ def test_url_for(
         d1 = filter_value
         filtered_url = view.url_for(filters=[(FilterClass(col, "f1"), d1)])
         assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
+
+
 def test_query_ajax_model_loader_format_handles_dbref(db: t.Any) -> None:
     """Regression test for #2917: ``QueryAjaxModelLoader.format`` must not
     crash with ``AttributeError`` when MongoEngine cannot dereference a
