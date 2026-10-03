@@ -39,40 +39,6 @@ class CustomModelView(ModelView):
 class BaseModel(peewee.Model):
     id: peewee.AutoField
 
-    class Model1(BaseModel):
-        def __init__(
-            self,
-            test1: t.Any = None,
-            test2: t.Any = None,
-            test3: t.Any = None,
-            test4: t.Any = None,
-            date_field: t.Any = None,
-            timeonly_field: t.Any = None,
-            datetime_field: t.Any = None,
-            bool_field: t.Any = None,
-            **kwargs: t.Any,
-        ) -> None:
-            super().__init__(**kwargs)
-
-            self.test1 = test1
-            self.test2 = test2
-            self.test3 = test3
-            self.test4 = test4
-            self.date_field = date_field
-            self.timeonly_field = timeonly_field
-            self.datetime_field = datetime_field
-            self.bool_field = bool_field
-
-        test1 = peewee.CharField(max_length=20, null=True)
-        test2 = peewee.CharField(max_length=20, null=True)
-        test3 = peewee.TextField(null=True)
-        test4 = peewee.TextField(null=True)
-        date_field = peewee.DateField(null=True)
-        timeonly_field = peewee.TimeField(null=True)
-        datetime_field = peewee.DateTimeField(null=True)
-        bool_field = peewee.BooleanField(null=True)
-        int_field = peewee.IntegerField(null=True)
-        float_field = peewee.FloatField(null=True)
     class Meta:
         database = peewee.SqliteDatabase(None)
 
@@ -87,6 +53,7 @@ class Model1(BaseModel):
         date_field: t.Any = None,
         timeonly_field: t.Any = None,
         datetime_field: t.Any = None,
+        bool_field: t.Any = None,
         **kwargs: t.Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -98,6 +65,7 @@ class Model1(BaseModel):
         self.date_field = date_field
         self.timeonly_field = timeonly_field
         self.datetime_field = datetime_field
+        self.bool_field = bool_field
 
     test1 = peewee.CharField(max_length=20, null=True)
     test2 = peewee.CharField(max_length=20, null=True)
@@ -106,6 +74,9 @@ class Model1(BaseModel):
     date_field = peewee.DateField(null=True)
     timeonly_field = peewee.TimeField(null=True)
     datetime_field = peewee.DateTimeField(null=True)
+    bool_field = peewee.BooleanField(null=True)
+    int_field = peewee.IntegerField(null=True)
+    float_field = peewee.FloatField(null=True)
 
     def __str__(self) -> str:
         # "or ''" fixes error when loading choices for relation field:
@@ -1350,7 +1321,11 @@ def create_filter_params() -> list[tuple[t.Any, ...]]:
             "flt0_int_field_smaller_than",
             "10",
         ),
-        (filters.FilterEmpty, "int_field", 10, "flt0_4", "flt0_int_field_empty", "1"),
+        (filters.FilterEmpty, "int_field", 10, "flt0_4", "flt0_int_field_empty", "0"),
+        (filters.FilterEmpty, "int_field", 0, "flt0_4", "flt0_int_field_empty", "0"),
+        (filters.FilterEmpty, "int_field", 1, "flt0_4", "flt0_int_field_empty", "1"),
+        (filters.FilterEmpty, "int_field", "1", "flt0_4", "flt0_int_field_empty", "1"),
+        (filters.FilterEmpty, "int_field", "0", "flt0_4", "flt0_int_field_empty", "0"),
         (
             filters.IntInListFilter,
             "int_field",
@@ -1405,7 +1380,7 @@ def create_filter_params() -> list[tuple[t.Any, ...]]:
             10,
             "flt0_4",
             "flt0_float_field_empty",
-            "1",
+            "0",
         ),
         (
             filters.FloatInListFilter,
@@ -1477,7 +1452,7 @@ def create_filter_params() -> list[tuple[t.Any, ...]]:
             (date(2025, 11, 1), date(2025, 11, 15)),
             "flt0_6",
             "flt0_date_field_empty",
-            "1",
+            "0",
         ),
         (
             filters.TimeEqualFilter,
@@ -1533,7 +1508,7 @@ def create_filter_params() -> list[tuple[t.Any, ...]]:
             (datetime(2025, 11, 1), datetime(2025, 11, 15)),
             "flt0_6",
             "flt0_timeonly_field_empty",
-            "1",
+            "0",
         ),
         (
             filters.DateTimeEqualFilter,
@@ -1589,7 +1564,7 @@ def create_filter_params() -> list[tuple[t.Any, ...]]:
             (datetime(2025, 11, 1), datetime(2025, 11, 15)),
             "flt0_6",
             "flt0_datetime_field_empty",
-            "1",
+            "0",
         ),
     ]
     return params
@@ -1631,6 +1606,8 @@ def test_url_for(
         d1 = filter_value
         filtered_url = view.url_for(filters=[(FilterClass(col, "f1"), d1)])
         assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
+
+
 def test_inline_admin_form_extra_fields(
     app: Flask, db: peewee.SqliteDatabase, admin: Admin
 ) -> None:
