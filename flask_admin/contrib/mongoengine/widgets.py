@@ -33,7 +33,7 @@ class MongoFileInput:
 
             placeholder = self.template % {
                 "name": escape(data.name),
-                "content_type": escape(data.content_type),
+                "content_type": escape(helpers.gridfs_content_type(data) or ""),
                 "size": data.length // 1024,
                 "marker": f"_{field.name}-delete",
             }

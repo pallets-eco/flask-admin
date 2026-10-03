@@ -24,22 +24,22 @@ if t.TYPE_CHECKING:
     from flask_sqlalchemy import Model as T_SQLALCHEMY_LEGACY_MODEL
     from sqlalchemy.orm import DeclarativeBase as T_DECLARATIVE_BASE
 
-    from flask_admin.base import BaseView as T_VIEW
+    from flask_admin.base import BaseView as T_VIEW  # noqa: F401
     from flask_admin.contrib.sqla.validators import InputRequired as T_INPUT_REQUIRED
     from flask_admin.contrib.sqla.validators import (
         TimeZoneValidator as T_TIMEZONE_VALIDATOR,
     )
     from flask_admin.contrib.sqla.validators import Unique as T_UNIQUE
-    from flask_admin.form import FormOpts as T_FORM_OPTS
+    from flask_admin.form import FormOpts as T_FORM_OPTS  # noqa: F401
     from flask_admin.form.rules import BaseRule as T_BASE_RULE
     from flask_admin.form.rules import Field as T_FLASK_ADMIN_FIELD
     from flask_admin.form.rules import FieldSet as T_FIELD_SET
     from flask_admin.form.rules import Header as T_HEADER
     from flask_admin.form.rules import Macro as T_MACRO
     from flask_admin.model import BaseModelView as T_MODEL_VIEW
-    from flask_admin.model.ajax import AjaxModelLoader as T_AJAX_MODEL_LOADER
-    from flask_admin.model.fields import AjaxSelectField as T_AJAX_SELECT_FIELD
-    from flask_admin.model.form import InlineBaseFormAdmin as T_INLINE_BASE_FORM_ADMIN
+    from flask_admin.model.ajax import AjaxModelLoader as T_AJAX_MODEL_LOADER  # noqa: F401
+    from flask_admin.model.fields import AjaxSelectField as T_AJAX_SELECT_FIELD  # noqa: F401
+    from flask_admin.model.form import InlineBaseFormAdmin as T_INLINE_BASE_FORM_ADMIN  # noqa: F401
     from flask_admin.model.form import InlineFormAdmin as T_INLINE_FORM_ADMIN
     from flask_admin.model.widgets import (
         AjaxSelect2Widget as T_INLINE_AJAX_SELECT2_WIDGET,
@@ -77,8 +77,8 @@ if t.TYPE_CHECKING:
         T_SQLALCHEMY_COLUMN = Column  # type: ignore[misc]
 
     T_MONGO_CLIENT = MongoClient[t.Any]
-    from PIL.Image import Image as T_PIL_IMAGE
-    from redis import Redis as T_REDIS
+    from PIL.Image import Image as T_PIL_IMAGE  # noqa: F401
+    from redis import Redis as T_REDIS  # noqa: F401
 
     from flask_admin.contrib.peewee.ajax import (
         QueryAjaxModelLoader as T_PEEWEE_QUERY_AJAX_MODEL_LOADER,
@@ -280,3 +280,7 @@ class _T_MONGOENGINE_FIELD_PROTOCOL(t.Protocol):
     id: t.Any
     data: t.Any
     name: str
+
+
+class T_FIELD_ARGS_VALIDATORS_COERCE(T_FIELD_ARGS_VALIDATORS, total=False):
+    coerce: t.Callable[[t.Any], t.Any]
