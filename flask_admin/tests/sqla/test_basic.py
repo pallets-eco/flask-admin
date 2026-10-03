@@ -2356,7 +2356,6 @@ def test_form_columns(
                 "secret",
                 "text_field",
                 "int_field",
-                "id",
                 "datetime_field",
             ]
             form_extra_fields = {
