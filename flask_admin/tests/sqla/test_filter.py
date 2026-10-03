@@ -1373,7 +1373,7 @@ def create_filter_params() -> list[tuple[t.Any, ...]]:
 
 
 @pytest.mark.parametrize(
-    "FilterClass, col, filter_value, arg_key, arg_named_key, expected_value",
+    "FilterClass, col_name, filter_value, arg_key, arg_named_key, expected_value",
     create_filter_params(),
 )
 def test_url_for(
@@ -1382,7 +1382,7 @@ def test_url_for(
     sqla_db_ext: T_ANY_SQLA_PROVIDER,
     session_or_db: T_LITERAL_SESSION_OR_DB,
     FilterClass: type[filters.BaseSQLAFilter],
-    col: str,
+    col_name: str,
     filter_value: t.Any,
     arg_key: str,
     arg_named_key: str,
@@ -1391,7 +1391,7 @@ def test_url_for(
     # with app.app_context():
     Model1, Model2 = create_models(sqla_db_ext)
 
-    col = getattr(Model1, col)
+    col = getattr(Model1, col_name)
 
     param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = CustomModelView(Model1, param, endpoint="user", column_filters=[col])
@@ -1399,13 +1399,19 @@ def test_url_for(
 
     with app.test_request_context("http://localhost/admin/user/"):
         d1 = filter_value
-        filtered_url = view.url_for(filters=[(FilterClass(col, "f1"), d1)])
+        flt = FilterClass(col, "f1")
+        assert flt.name == "f1"
+        assert flt.column_name() == col_name
+
+        filtered_url = view.url_for(filters=[(flt, d1)])
         assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
 
         view.named_filter_urls = True
 
         d1 = filter_value
-        filtered_url = view.url_for(filters=[(FilterClass(col, "f1"), d1)])
+        flt = FilterClass(col, "f1")
+
+        filtered_url = view.url_for(filters=[(flt, d1)])
         assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"
 
 
@@ -1496,7 +1502,7 @@ def create_filter_params_enums_and_choices() -> list[tuple[t.Any, ...]]:
 
 
 @pytest.mark.parametrize(
-    "FilterClass, col, filter_value, arg_key, arg_named_key, expected_value",
+    "FilterClass, col_name, filter_value, arg_key, arg_named_key, expected_value",
     create_filter_params_enums_and_choices(),
 )
 def test_url_for_enums_and_choices(
@@ -1505,7 +1511,7 @@ def test_url_for_enums_and_choices(
     sqla_db_ext: T_ANY_SQLA_PROVIDER,
     session_or_db: T_LITERAL_SESSION_OR_DB,
     FilterClass: type[filters.BaseSQLAFilter],
-    col: str,
+    col_name: str,
     filter_value: t.Any,
     arg_key: str,
     arg_named_key: str,
@@ -1513,7 +1519,7 @@ def test_url_for_enums_and_choices(
 ) -> None:
     Model1, Model2 = create_models(sqla_db_ext)
 
-    col = getattr(Model1, col)
+    col = getattr(Model1, col_name)
 
     param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = CustomModelView(Model1, param, endpoint="user", column_filters=[col])
@@ -1525,6 +1531,7 @@ def test_url_for_enums_and_choices(
         assert filtered_url == f"/admin/user/?{arg_key}={expected_value}"
 
         view.named_filter_urls = True
+
         d1 = filter_value
         filtered_url = view.url_for(filters=[(FilterClass(col, "f1"), d1)])
         assert filtered_url == f"/admin/user/?{arg_named_key}={expected_value}"

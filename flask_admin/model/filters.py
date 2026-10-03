@@ -190,15 +190,33 @@ class BaseBooleanFilter(BaseFilter):
         return value in ("0", "1")
 
     def stringify(self, value: t.Any) -> str:
-        return "1" if value else "0"
+        return "1" if str(value).lower() in ("1", "true") else "0"
 
 
-class BaseEmptyFilter(BaseBooleanFilter):
+class BaseEmptyFilter(BaseFilter):
     """
     Filter empty values, uses fixed list of options.
     """
 
-    pass
+    def __init__(
+        self,
+        name: str,
+        options: T_OPTIONS = None,
+        data_type: T_WIDGET_TYPE = None,
+        column: t.Any | None = None,
+    ) -> None:
+        super().__init__(
+            name,
+            (("1", lazy_gettext("Yes")), ("0", lazy_gettext("No"))),
+            data_type,
+            column,
+        )
+
+    def validate(self, value: str) -> bool:
+        return value in ("0", "1")
+
+    def stringify(self, value: t.Any) -> str:
+        return "1" if str(value).lower() in ("1", "true") else "0"
 
 
 class BaseIntFilter(BaseFilter):
@@ -210,7 +228,8 @@ class BaseIntFilter(BaseFilter):
     """
 
     def clean(self, value: str) -> int:
-        return int(value) if value else 0
+        return int(value)
+        # return int(value) if value else 0
 
 
 class BaseFloatFilter(BaseFilter):
@@ -219,7 +238,7 @@ class BaseFloatFilter(BaseFilter):
     """
 
     def clean(self, value: str) -> float:
-        return float(value) if value else 0.0
+        return float(value)
 
 
 class BaseIntListFilter(BaseFilter):
