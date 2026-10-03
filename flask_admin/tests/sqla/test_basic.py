@@ -2289,6 +2289,7 @@ def test_form_columns(
             int_field = Column(Integer)
             datetime_field = Column(DateTime)
             text_field = Column(Text)
+            secret = Column(String)
             excluded_column = Column(String)
 
         class ChildModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
@@ -2350,11 +2351,28 @@ def test_form_columns(
         assert type(form3.sqla_utils_enum).__name__ == "Select2Field"  # type: ignore[attr-defined]
 
         # test form_columns with model objects
-        view4 = CustomModelView(
-            Model, param, endpoint="view1", form_columns=[Model.int_field]
+        class ExtraFieldMV(CustomModelView):
+            form_columns = [
+                "secret",
+                "text_field",
+                Model.int_field,
+                Model.id,
+                "datetime_field",
+            ]
+            form_extra_fields = {
+                "secret": fields.PasswordField("secret"),
+            }
+
+        view4 = ExtraFieldMV(
+            Model,
+            param,
+            endpoint="view1",
         )
         form4 = view4.create_form()
         assert "int_field" in form4._fields
+
+        expected_order = ["secret", "text_field", "int_field", "datetime_field"]
+        assert list(form4._fields.keys()) == expected_order
 
 
 @pytest.mark.xfail(raises=Exception)
