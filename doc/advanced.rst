@@ -359,6 +359,9 @@ There's currently no way to sort, filter, or search on geometric fields
 in the admin. It's not clear that there's a good way to do so.
 If you have any ideas or suggestions, make a pull request!
 
+
+.. _rendering-rules:
+
 Customising Builtin Forms Via Rendering Rules
 ---------------------------------------------
 
