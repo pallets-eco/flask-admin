@@ -229,7 +229,21 @@ class TestS3FileAdmin(Base.FileAdminTests):
 
         client = app.test_client()
 
-        # upload to deep path
+        # upload to root path (xx/yy/)
+        rv = client.post(
+            "/admin/myfileadmin/upload/",
+            data=dict(upload=(BytesIO(b"test content"), "test_upload.txt")),
+            follow_redirects=True,
+        )
+        assert rv.status_code == 200
+        assert "Successfully saved file: test_upload.txt" in rv.text
+
+        # check that the file is uploaded to the xx/yy/
+        rv = client.get("/admin/myfileadmin/")
+        assert rv.status_code == 200
+        assert "path=test_upload.txt" in rv.text
+
+        # upload to deep path (xx/yy/zz/)
         rv = client.post(
             "/admin/myfileadmin/upload/zz/",
             data=dict(upload=(BytesIO(b"test content"), "test_upload.txt")),
@@ -238,6 +252,7 @@ class TestS3FileAdmin(Base.FileAdminTests):
         assert rv.status_code == 200
         assert "Successfully saved file: test_upload.txt" in rv.text
 
+        # check that the file is uploaded to the xx/yy/zz/
         rv = client.get("/admin/myfileadmin/b/zz/")
         assert rv.status_code == 200
         assert "path=zz/test_upload.txt" in rv.text
