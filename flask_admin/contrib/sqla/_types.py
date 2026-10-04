@@ -7,13 +7,13 @@ try:
     from flask_sqlalchemy_lite import SQLAlchemy as T_SQLALCHEMY_LITE
 except ImportError:
     T_SQLALCHEMY_LITE: t.Any | None = None  # type: ignore[no-redef]
-
+    
 try:
     from flask_sqlalchemy import SQLAlchemy as T_SQLALCHEMY
     from flask_sqlalchemy.session import Session as T_SESSION
 except ImportError:
     T_SQLALCHEMY: t.Any | None = None  # type: ignore[no-redef]
-
+    T_SESSION: t.Any | None = None # type: ignore[no-redef]
 
 if t.TYPE_CHECKING:  # sqlalchemy 2.x types are subscriptable
     T_SQLALCHEMY_QUERY = Query[t.Any]
