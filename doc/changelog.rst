@@ -11,13 +11,13 @@ Bugfixes:
 Dev:
 
 * Support building with ``flit_core`` v4: use the PEP 621 ``authors`` key instead of the invalid singular ``author`` in ``pyproject.toml``, and widen the build-system pin from ``flit_core<4`` to ``flit_core<5`` (closes #2956).
+* Prevent double-clicking of submit buttons in forms by disabling the button on submit. This applies to regular forms and forms in modals (e.g. file edit form in FileAdmin). This should help prevent duplicate records from being created when users double-click the submit button.
 
 2.2.1
 ------------------
 
 Bugfixes:
-
-* ``BaseTimeBetweenFilter.validate()`` now returns ``False`` on invalid input instead of raising an exception.
+* Prevent double-clicking of submit buttons in forms by disabling the button on submit. This applies to regular forms and forms in modals (e.g. file edit form in FileAdmin). This should help prevent duplicate records from being created when users double-click the submit button.
 * Fix encoding for editing file in FileAdmin. Now it uses UTF-8 and accepts non-ASCII characters.
 * SQLAlchemy backend: ``conv_ARRAY`` now infers the array element's ``python_type`` and passes it through as the ``Select2TagsField`` ``coerce`` callable. Saving a Postgres ``ARRAY(Integer)`` / ``ARRAY(Float)`` column no longer fails with ``column "x" is of type integer[] but expression is of type text[]`` (closes #1724).
 * Fix sorting arrow direction in admin list view. Now it reflects the current sorting state (closes #2933).
