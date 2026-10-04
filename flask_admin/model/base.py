@@ -942,6 +942,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
              - `flask_admin.consts.ICON_TYPE_GLYPH` - Bootstrap glyph icon
              - `flask_admin.consts.ICON_TYPE_FONT_AWESOME` - Font Awesome icon
+             - `flask_admin.consts.ICON_TYPE_TABLER` - Tabler icon
              - `flask_admin.consts.ICON_TYPE_IMAGE` - Image relative to Flask
                 static directory
              - `flask_admin.consts.ICON_TYPE_IMAGE_URL` - Image with full URL
