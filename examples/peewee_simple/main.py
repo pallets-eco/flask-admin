@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 import peewee
@@ -114,42 +115,36 @@ def index():
     return '<a href="/admin/">Click me to get to Admin!</a>'
 
 
+logging.basicConfig()
+logging.getLogger().setLevel(logging.DEBUG)
+
+admin = Admin(app, name="Example: Peewee")
+
+admin.add_view(UserAdmin(User))
+admin.add_view(PostAdmin(Post))
+
+admin.add_view(ViewWithPk(Book))
+admin.add_view(ModelView(Category))
+admin.add_view(ViewWithPk(BookCategory))
+
+# Create tables first
+with db:
+    db.drop_tables([BookCategory, Post, UserInfo, Book, Category, User], safe=True)
+    db.create_tables([User, UserInfo, Post, Book, Category, BookCategory], safe=True)
+
+with db.atomic():
+    # Create sample books
+    book1, created = Book.get_or_create(isbn="111", defaults={"name": "Sample Book 1"})
+    book2, created = Book.get_or_create(isbn="222", defaults={"name": "Sample Book 2"})
+
+    # Create sample categories
+    cat1, created = Category.get_or_create(name="Fiction")
+    cat2, created = Category.get_or_create(name="Science")
+
+    # Create relationships
+    BookCategory.get_or_create(isbn=book1, category=cat1)
+    BookCategory.get_or_create(isbn=book2, category=cat2)
+
+
 if __name__ == "__main__":
-    import logging
-
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.DEBUG)
-
-    admin = Admin(app, name="Example: Peewee")
-
-    admin.add_view(UserAdmin(User))
-    admin.add_view(PostAdmin(Post))
-
-    admin.add_view(ViewWithPk(Book))
-    admin.add_view(ModelView(Category))
-    admin.add_view(ViewWithPk(BookCategory))
-
-    # Create tables first
-    with db:
-        db.drop_tables([BookCategory, Post, UserInfo, Book, Category, User], safe=True)
-        db.create_tables(
-            [User, UserInfo, Post, Book, Category, BookCategory], safe=True
-        )
-    with db.atomic():
-        # Create sample books
-        book1, created = Book.get_or_create(
-            isbn="111", defaults={"name": "Sample Book 1"}
-        )
-        book2, created = Book.get_or_create(
-            isbn="222", defaults={"name": "Sample Book 2"}
-        )
-
-        # Create sample categories
-        cat1, created = Category.get_or_create(name="Fiction")
-        cat2, created = Category.get_or_create(name="Science")
-
-        # Create relationships
-        BookCategory.get_or_create(isbn=book1, category=cat1)
-        BookCategory.get_or_create(isbn=book2, category=cat2)
-
     app.run(debug=True)

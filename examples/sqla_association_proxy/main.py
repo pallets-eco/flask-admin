@@ -103,18 +103,18 @@ class KeywordAdmin(ModelView):
     column_list = ("id", "keyword")
 
 
+admin.add_view(UserAdmin(User, db))
+admin.add_view(KeywordAdmin(Keyword, db))
+
+with app.app_context():
+    db.create_all()
+    user = User("log")
+
+    for kw in (Keyword("new_from_blammo"), Keyword("its_big")):
+        user.keywords.append(kw)
+
+    db.session.add(user)
+    db.session.commit()
+
 if __name__ == "__main__":
-    admin.add_view(UserAdmin(User, db))
-    admin.add_view(KeywordAdmin(Keyword, db))
-
-    with app.app_context():
-        db.create_all()
-        user = User("log")
-
-        for kw in (Keyword("new_from_blammo"), Keyword("its_big")):
-            user.keywords.append(kw)
-
-        db.session.add(user)
-        db.session.commit()
-
     app.run(debug=True)
