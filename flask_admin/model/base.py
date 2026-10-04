@@ -1392,6 +1392,87 @@ class BaseModelView(BaseView, ActionsMixin):
 
         return None
 
+    def _find_filter_arg(self, flt: BaseFilter) -> tuple[int, BaseFilter] | None:
+        """
+        Given a filter `flt`, return the unique name for that filter in
+        this view.
+
+        :param flt:
+            Filter instance
+        """
+        if not self._filter_args:
+            return None
+
+        filter_arg_key = None
+        for k, (_index, filter_arg) in self._filter_args.items():
+            c1 = flt.column_name().lower()
+            c2 = filter_arg.column_name().lower()
+
+            c2_is_a_c1 = issubclass(type(filter_arg), type(flt))
+            if c2 == c1 and c2_is_a_c1:
+                filter_arg_key = k
+                break
+
+        return self._filter_args[filter_arg_key] if filter_arg_key else None
+
+    def url_for(
+        self,
+        search: str | None = None,
+        filters: list[tuple[BaseFilter, t.Any]] | None = None,
+    ) -> str:
+        """Return URL for the view with applied filters and search query.
+
+        :param search:
+            Optional search query string.
+        :param filters:
+            List of tuples containing (BaseFilter instance, filter value).
+            If duplicate filters are provided (filter type/same column), they
+            both will be included in the URL with different parameter names.
+            Both filters will be applied with an AND condition. Note that
+            the order of filters in the list does not matter.
+            Example::
+
+                filters = [
+                    (FilterLike(column='first_name'), 'John'),
+                    (FilterLike(column='first_name'), 'Jane')
+                ]
+                myview.url_for(filters=filters)
+                # Output: /admin/myview?flt0_0=John&flt1_0=Jane
+
+        :return:
+            URL string with filter and search parameters applied.
+        """
+        url_args = {}
+        if search:
+            url_args["search"] = search
+
+        if filters is None:
+            filters = []
+
+        for i, (flt, value) in enumerate(filters):
+            found_arg = self._find_filter_arg(flt)
+            if not found_arg:
+                warnings.warn(
+                    f"The filter {flt.__class__.__name__}('{flt.name}') is not found "
+                    "in filter arguments, did you forget to add it in column_filters?",
+                    stacklevel=2,
+                )
+                continue
+            else:
+                idx, filter_arg = found_arg
+
+                farg = self.get_filter_arg(
+                    idx,
+                    self._filters[idx],  # type: ignore[index]
+                )
+
+                k, v = flt.get_url_argument(i, farg, value)
+                url_args[k] = v
+
+        url = self.get_url(f"{self.endpoint}.index_view", _external=False, **url_args)
+
+        return url
+
     # Form helpers
     def scaffold_form(self) -> type[Form]:
         """
@@ -2007,8 +2088,8 @@ class BaseModelView(BaseView, ActionsMixin):
         kwargs: dict[str, str] = {}
 
         if filters:
-            for i, pair in enumerate(filters):
-                idx, flt_name, value = pair
+            for i, flt in enumerate(filters):
+                idx, flt_name, value = flt
 
                 key = "flt%d_%s" % (
                     i,
