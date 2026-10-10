@@ -16,6 +16,7 @@ from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
 from flask_admin._types import T_PEEWEE_MODEL
 from flask_admin.contrib.peewee import ModelView
+from flask_admin.form.widgets import Select2Widget
 
 
 class CustomModelView(ModelView):
@@ -1040,6 +1041,212 @@ def test_form_args(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None:
         )
         == 1
     )
+
+
+def test_form_choices(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None:
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Model(BaseModel):
+        title = peewee.CharField(max_length=200)
+        status = peewee.CharField(max_length=20, default="draft")
+        priority = peewee.CharField(max_length=20, null=True)
+
+    Model.create_table()
+
+    status_choices = [
+        ("draft", "Draft"),
+        ("review", "In Review"),
+        ("published", "Published"),
+    ]
+    priority_choices = [
+        ("low", "Low"),
+        ("high", "High"),
+    ]
+    view = CustomModelView(
+        Model,
+        form_choices={
+            "status": status_choices,
+            "priority": priority_choices,
+        },
+    )
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    # Check that select field is rendered with correct choices
+    assert isinstance(form_obj.status, form.Select2Field)  # type: ignore[attr-defined]
+    assert form_obj.status.choices == status_choices  # type: ignore[attr-defined]
+
+    # Nullable field should allow blank
+    assert isinstance(form_obj.priority, form.Select2Field)  # type: ignore[attr-defined]
+    assert form_obj.priority.choices == priority_choices  # type: ignore[attr-defined]
+    assert form_obj.priority.allow_blank is True  # type: ignore[attr-defined]
+
+    # Non-nullable field should not allow blank
+    assert form_obj.status.allow_blank is False  # type: ignore[attr-defined]
+
+    # Fields not in form_choices should convert normally
+    assert isinstance(form_obj.title, StringField)  # type: ignore[attr-defined]
+
+
+def test_form_choices_persists_and_prepopulates(
+    app: Flask, db: peewee.SqliteDatabase, admin: Admin
+) -> None:
+    class BaseModel(peewee.Model):
+        id: peewee.AutoField
+
+        class Meta:
+            database = db
+
+    class Model(BaseModel):
+        title = peewee.CharField(max_length=200)
+        status = peewee.CharField(max_length=20, default="draft")
+
+    Model.create_table()
+
+    view = CustomModelView(
+        Model,
+        form_choices={
+            "status": [
+                ("draft", "Draft"),
+                ("published", "Published"),
+            ],
+        },
+    )
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.post(
+        "/admin/model/new/",
+        data={"title": "Hello", "status": "published"},
+    )
+    assert rv.status_code == 302
+
+    model = Model.select().get()
+    assert model.status == "published"
+
+    rv = client.get(f"/admin/model/edit/?id={model.id}")
+    assert rv.status_code == 200
+    assert b'<option selected value="published">' in rv.data
+    edit_form = view.edit_form(obj=model)
+    assert edit_form.status.data == "published"  # type: ignore[attr-defined]
+
+
+def test_form_choices_with_form_overrides(
+    app: Flask, db: peewee.SqliteDatabase, admin: Admin
+) -> None:
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Model(BaseModel):
+        status = peewee.CharField(max_length=20, default="draft")
+
+    Model.create_table()
+
+    view = CustomModelView(
+        Model,
+        form_choices={
+            "status": [("draft", "Draft"), ("published", "Published")],
+        },
+        form_overrides={"status": fields.TextAreaField},
+    )
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    # form_overrides should take priority over form_choices
+    assert isinstance(form_obj.status, fields.TextAreaField)  # type: ignore[attr-defined]
+
+
+def test_form_choices_with_custom_converter_field(
+    app: Flask, db: peewee.SqliteDatabase, admin: Admin
+) -> None:
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Model(BaseModel):
+        day = peewee.DateField(null=True)
+
+    Model.create_table()
+
+    choices = [("2020-01-01", "New Year")]
+    view = CustomModelView(Model, form_choices={"day": choices})
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    # DateField goes through a converter that returns a plain tuple
+    assert isinstance(form_obj.day, form.Select2Field)  # type: ignore[attr-defined]
+    assert form_obj.day.choices == choices  # type: ignore[attr-defined]
+    assert isinstance(form_obj.day.widget, Select2Widget)  # type: ignore[attr-defined]
+
+
+def test_form_choices_drops_converter_specific_kwargs(
+    app: Flask, db: peewee.SqliteDatabase, admin: Admin
+) -> None:
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Owner(BaseModel):
+        name = peewee.CharField(max_length=20)
+
+    class Model(BaseModel):
+        # wtfpeewee passes 'places'/'rounding' for decimals and 'model' for FKs
+        amount = peewee.DecimalField(null=True)
+        owner = peewee.ForeignKeyField(Owner, null=True)
+
+    db.create_tables([Owner, Model])
+
+    amount_choices = [("1.50", "Small"), ("9.99", "Large")]
+    owner_choices = [("1", "First owner")]
+    view = CustomModelView(
+        Model,
+        form_choices={"amount": amount_choices, "owner": owner_choices},
+    )
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    assert isinstance(form_obj.amount, form.Select2Field)  # type: ignore[attr-defined]
+    assert form_obj.amount.choices == amount_choices  # type: ignore[attr-defined]
+    assert isinstance(form_obj.owner, form.Select2Field)  # type: ignore[attr-defined]
+    assert form_obj.owner.choices == owner_choices  # type: ignore[attr-defined]
+
+
+def test_form_choices_not_applied_to_inline_models(
+    app: Flask, db: peewee.SqliteDatabase, admin: Admin
+) -> None:
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Parent(BaseModel):
+        status = peewee.CharField(max_length=20)
+
+    class Child(BaseModel):
+        parent = peewee.ForeignKeyField(Parent)
+        status = peewee.CharField(max_length=20)
+
+    db.create_tables([Parent, Child])
+
+    view = CustomModelView(
+        Parent,
+        form_choices={"status": [("draft", "Draft")]},
+        inline_models=(Child,),
+    )
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    assert isinstance(form_obj.status, form.Select2Field)  # type: ignore[attr-defined]
+    inline_form_class = form_obj.child_set.unbound_field.args[0]  # type: ignore[attr-defined]
+    assert inline_form_class.status.field_class is StringField
 
 
 def test_ajax_fk(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None:

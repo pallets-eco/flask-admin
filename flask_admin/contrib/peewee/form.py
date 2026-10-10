@@ -10,6 +10,7 @@ from peewee import TimeField
 from wtforms import Field
 from wtforms import fields
 from wtforms.form import BaseForm
+from wtfpeewee.orm import FieldInfo
 from wtfpeewee.orm import model_form
 from wtfpeewee.orm import ModelConverter
 
@@ -124,6 +125,10 @@ class InlineModelFormList(InlineFieldList):
 
 
 class CustomModelConverter(ModelConverter):  # type: ignore[misc]
+    _choice_field_kwargs = frozenset(
+        ("label", "validators", "filters", "description", "id", "default", "render_kw")
+    )
+
     def __init__(self, view: t.Any, additional: t.Any = None) -> None:
         super().__init__(additional)
         self.view = view
@@ -141,6 +146,39 @@ class CustomModelConverter(ModelConverter):  # type: ignore[misc]
             self.converters[BinaryJSONField] = self.handle_json
 
         self.overrides = getattr(self.view, "form_overrides", None) or {}
+
+    def convert(self, model: t.Any, field: t.Any, field_args: t.Any) -> t.Any:
+        # Custom handlers return plain tuples, wtfpeewee returns FieldInfo
+        name, unbound_field = info = super().convert(model, field, field_args)
+
+        # Override field type if necessary - form_overrides take priority
+        if field.name in self.overrides or unbound_field is None:
+            return info
+
+        # Check if a list of 'form_choices' are specified. Inline models share
+        # this converter, so only apply them to the view's own model.
+        form_choices = getattr(self.view, "form_choices", None)
+        if form_choices and model is self.view.model:
+            choices = form_choices.get(field.name)
+            if choices:
+                # Keep only generic Field arguments; converter-specific ones
+                # (e.g. 'places' for DecimalField, 'model' for ForeignKeyField)
+                # are not accepted by Select2Field
+                kwargs = {
+                    k: v
+                    for k, v in unbound_field.kwargs.items()
+                    if k in self._choice_field_kwargs
+                }
+                return FieldInfo(
+                    name,
+                    form.Select2Field(
+                        choices=choices,
+                        allow_blank=field.null,
+                        **kwargs,
+                    ),
+                )
+
+        return info
 
     def handle_foreign_key(
         self, model: t.Any, field: t.Any, **kwargs: t.Any

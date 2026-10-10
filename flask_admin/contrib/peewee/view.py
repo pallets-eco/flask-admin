@@ -131,6 +131,18 @@ class ModelView(BaseModelView):
         Override this attribute to use non-default converter.
     """
 
+    form_choices: dict[str, list[tuple[str, str]]] | None = None
+    """
+        Map choices to form fields
+
+        Example::
+
+            class MyModelView(BaseModelView):
+                form_choices = {'my_form_field': [
+                    ('db_value', 'display_value'),
+                ]}
+    """
+
     fast_mass_delete: bool = False
     """
         If set to `False` and user deletes more than one model using actions,
