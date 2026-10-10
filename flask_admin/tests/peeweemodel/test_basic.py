@@ -1080,7 +1080,7 @@ def test_form_choices(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> No
     assert form_obj.status.choices == status_choices  # type: ignore[attr-defined]
 
     # Nullable field should allow blank
-    assert type(form_obj.priority).__name__ == "Select2Field"  # type: ignore[attr-defined]
+    assert isinstance(form_obj.priority, form.Select2Field)  # type: ignore[attr-defined]
     assert form_obj.priority.choices == priority_choices  # type: ignore[attr-defined]
     assert form_obj.priority.allow_blank is True  # type: ignore[attr-defined]
 
@@ -1088,7 +1088,7 @@ def test_form_choices(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> No
     assert form_obj.status.allow_blank is False  # type: ignore[attr-defined]
 
     # Fields not in form_choices should convert normally
-    assert type(form_obj.title).__name__ == "StringField"  # type: ignore[attr-defined]
+    assert isinstance(form_obj.title, StringField)  # type: ignore[attr-defined]
 
 
 def test_form_choices_persists_and_prepopulates(
@@ -1130,7 +1130,7 @@ def test_form_choices_persists_and_prepopulates(
 
     rv = client.get(f"/admin/model/edit/?id={model.id}")
     assert rv.status_code == 200
-    assert b"published" in rv.data
+    assert b'<option selected value="published">' in rv.data
     edit_form = view.edit_form(obj=model)
     assert edit_form.status.data == "published"  # type: ignore[attr-defined]
 
@@ -1159,7 +1159,7 @@ def test_form_choices_with_form_overrides(
     form_obj = view.create_form()
 
     # form_overrides should take priority over form_choices
-    assert type(form_obj.status).__name__ == "TextAreaField"  # type: ignore[attr-defined]
+    assert isinstance(form_obj.status, fields.TextAreaField)  # type: ignore[attr-defined]
 
 
 def test_form_choices_with_custom_converter_field(
@@ -1184,6 +1184,69 @@ def test_form_choices_with_custom_converter_field(
     assert isinstance(form_obj.day, form.Select2Field)  # type: ignore[attr-defined]
     assert form_obj.day.choices == choices  # type: ignore[attr-defined]
     assert isinstance(form_obj.day.widget, Select2Widget)  # type: ignore[attr-defined]
+
+
+def test_form_choices_drops_converter_specific_kwargs(
+    app: Flask, db: peewee.SqliteDatabase, admin: Admin
+) -> None:
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Owner(BaseModel):
+        name = peewee.CharField(max_length=20)
+
+    class Model(BaseModel):
+        # wtfpeewee passes 'places'/'rounding' for decimals and 'model' for FKs
+        amount = peewee.DecimalField(null=True)
+        owner = peewee.ForeignKeyField(Owner, null=True)
+
+    db.create_tables([Owner, Model])
+
+    amount_choices = [("1.50", "Small"), ("9.99", "Large")]
+    owner_choices = [("1", "First owner")]
+    view = CustomModelView(
+        Model,
+        form_choices={"amount": amount_choices, "owner": owner_choices},
+    )
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    assert isinstance(form_obj.amount, form.Select2Field)  # type: ignore[attr-defined]
+    assert form_obj.amount.choices == amount_choices  # type: ignore[attr-defined]
+    assert isinstance(form_obj.owner, form.Select2Field)  # type: ignore[attr-defined]
+    assert form_obj.owner.choices == owner_choices  # type: ignore[attr-defined]
+
+
+def test_form_choices_not_applied_to_inline_models(
+    app: Flask, db: peewee.SqliteDatabase, admin: Admin
+) -> None:
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Parent(BaseModel):
+        status = peewee.CharField(max_length=20)
+
+    class Child(BaseModel):
+        parent = peewee.ForeignKeyField(Parent)
+        status = peewee.CharField(max_length=20)
+
+    db.create_tables([Parent, Child])
+
+    view = CustomModelView(
+        Parent,
+        form_choices={"status": [("draft", "Draft")]},
+        inline_models=(Child,),
+    )
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    assert isinstance(form_obj.status, form.Select2Field)  # type: ignore[attr-defined]
+    inline_form_class = form_obj.child_set.unbound_field.args[0]  # type: ignore[attr-defined]
+    assert inline_form_class.status.field_class is StringField
 
 
 def test_ajax_fk(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None:

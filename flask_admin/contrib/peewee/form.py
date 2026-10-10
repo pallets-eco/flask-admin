@@ -125,6 +125,10 @@ class InlineModelFormList(InlineFieldList):
 
 
 class CustomModelConverter(ModelConverter):  # type: ignore[misc]
+    _choice_field_kwargs = frozenset(
+        ("label", "validators", "filters", "description", "id", "default", "render_kw")
+    )
+
     def __init__(self, view: t.Any, additional: t.Any = None) -> None:
         super().__init__(additional)
         self.view = view
@@ -151,14 +155,20 @@ class CustomModelConverter(ModelConverter):  # type: ignore[misc]
         if field.name in self.overrides or unbound_field is None:
             return info
 
-        # Check if a list of 'form_choices' are specified
+        # Check if a list of 'form_choices' are specified. Inline models share
+        # this converter, so only apply them to the view's own model.
         form_choices = getattr(self.view, "form_choices", None)
-        if form_choices:
+        if form_choices and model is self.view.model:
             choices = form_choices.get(field.name)
             if choices:
-                kwargs = dict(unbound_field.kwargs)
-                for k in ("choices", "allow_blank", "coerce", "widget"):
-                    kwargs.pop(k, None)
+                # Keep only generic Field arguments; converter-specific ones
+                # (e.g. 'places' for DecimalField, 'model' for ForeignKeyField)
+                # are not accepted by Select2Field
+                kwargs = {
+                    k: v
+                    for k, v in unbound_field.kwargs.items()
+                    if k in self._choice_field_kwargs
+                }
                 return FieldInfo(
                     name,
                     form.Select2Field(
