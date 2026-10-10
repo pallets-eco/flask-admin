@@ -34,6 +34,7 @@ services:
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite:latest
     restart: unless-stopped
+    command: azurite --skipApiVersionCheck --blobHost 0.0.0.0
     volumes:
       - azurite-data:/data
 
