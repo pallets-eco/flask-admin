@@ -11,6 +11,7 @@ from wtforms import Field
 from wtforms import fields
 from wtforms.form import BaseForm
 from wtforms.form import Form
+from wtfpeewee.orm import FieldInfo
 from wtfpeewee.orm import model_form
 from wtfpeewee.orm import ModelConverter
 
@@ -144,10 +145,11 @@ class CustomModelConverter(ModelConverter):  # type: ignore[misc]
         self.overrides = getattr(self.view, "form_overrides", None) or {}
 
     def convert(self, model: t.Any, field: t.Any, field_args: t.Any) -> t.Any:
-        info = super().convert(model, field, field_args)
+        # Custom handlers return plain tuples, wtfpeewee returns FieldInfo
+        name, unbound_field = info = super().convert(model, field, field_args)
 
         # Override field type if necessary - form_overrides take priority
-        if field.name in self.overrides:
+        if field.name in self.overrides or unbound_field is None:
             return info
 
         # Check if a list of 'form_choices' are specified
@@ -155,15 +157,16 @@ class CustomModelConverter(ModelConverter):  # type: ignore[misc]
         if form_choices:
             choices = form_choices.get(field.name)
             if choices:
-                kwargs = dict(info.field.kwargs)
-                for k in ("choices", "allow_blank", "coerce"):
+                kwargs = dict(unbound_field.kwargs)
+                for k in ("choices", "allow_blank", "coerce", "widget"):
                     kwargs.pop(k, None)
-                return info._replace(
-                    field=form.Select2Field(
+                return FieldInfo(
+                    name,
+                    form.Select2Field(
                         choices=choices,
                         allow_blank=field.null,
                         **kwargs,
-                    )
+                    ),
                 )
 
         return info

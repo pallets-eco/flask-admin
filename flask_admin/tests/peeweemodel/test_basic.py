@@ -15,6 +15,7 @@ from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
 from flask_admin._types import T_PEEWEE_MODEL
 from flask_admin.contrib.peewee import ModelView
+from flask_admin.form.widgets import Select2Widget
 
 
 class CustomModelView(ModelView):
@@ -1096,6 +1097,30 @@ def test_form_choices_with_form_overrides(
 
     # form_overrides should take priority over form_choices
     assert type(form_obj.status).__name__ == "TextAreaField"  # type: ignore[attr-defined]
+
+
+def test_form_choices_with_custom_converter_field(
+    app: Flask, db: peewee.SqliteDatabase, admin: Admin
+) -> None:
+    class BaseModel(peewee.Model):
+        class Meta:
+            database = db
+
+    class Model(BaseModel):
+        day = peewee.DateField(null=True)
+
+    Model.create_table()
+
+    choices = [("2020-01-01", "New Year")]
+    view = CustomModelView(Model, form_choices={"day": choices})
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    # DateField goes through a converter that returns a plain tuple
+    assert isinstance(form_obj.day, form.Select2Field)  # type: ignore[attr-defined]
+    assert form_obj.day.choices == choices  # type: ignore[attr-defined]
+    assert isinstance(form_obj.day.widget, Select2Widget)  # type: ignore[attr-defined]
 
 
 def test_ajax_fk(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None:
