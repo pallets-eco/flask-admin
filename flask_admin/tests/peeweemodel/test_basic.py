@@ -1095,6 +1095,8 @@ def test_form_choices_persists_and_prepopulates(
     app: Flask, db: peewee.SqliteDatabase, admin: Admin
 ) -> None:
     class BaseModel(peewee.Model):
+        id: peewee.AutoField
+
         class Meta:
             database = db
 
@@ -1123,7 +1125,7 @@ def test_form_choices_persists_and_prepopulates(
     )
     assert rv.status_code == 302
 
-    model = Model.select().get()  # type: ignore[no-untyped-call]
+    model = Model.select().get()
     assert model.status == "published"
 
     rv = client.get(f"/admin/model/edit/?id={model.id}")
