@@ -963,6 +963,35 @@ def test_editable_custom_list_widget_used_after_update(
         assert "updated value" in data
 
 
+@flask_babel_test_decorator
+def test_editable_boolean_options_localized(
+    request: pytest.FixtureRequest,
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """The Yes/No options of the inline boolean editor are translated."""
+    app.config["BABEL_DEFAULT_LOCALE"] = "tr"
+    admin = request.getfixturevalue("admin")
+
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(Model1, param, column_editable_list=["bool_field"])
+        admin.add_view(view)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        rv = client.get("/admin/model1/ajax/edit/?pk=1&field=bool_field")
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert ">Evet</option>" in data
+        assert ">Hayır</option>" in data
+
+
 def test_editable_list_field_types(
     app: Flask,
     sqla_db_ext: T_ANY_SQLA_PROVIDER,

@@ -13,8 +13,8 @@
       {% endif %}
       {% if form[field_name].type == 'BooleanField' %}
       <select name="{{ field_name }}" class="form-control" style="min-width: 8em">
-        <option value="y" {{ 'selected' if form[field_name].data else '' }}>Yes</option>
-        <option value="" {{ 'selected' if not form[field_name].data else '' }}>No</option>
+        <option value="y" {{ 'selected' if form[field_name].data else '' }}>{{ _gettext('Yes') }}</option>
+        <option value="" {{ 'selected' if not form[field_name].data else '' }}>{{ _gettext('No') }}</option>
       </select>
       {% else %}
       {{ form[field_name](class="form-control" + (" is-invalid" if errors and field_name in errors else ""), style="min-width: 10em") }}
