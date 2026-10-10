@@ -7,6 +7,7 @@ Changelog
 Bugfixes:
 
 * Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist
+* Peewee backend: support ``form_choices`` in ``ModelView``, rendering a ``Select2Field`` like the SQLAlchemy backend (closes #2235)
 
 Dev:
 
