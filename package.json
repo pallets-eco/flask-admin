@@ -1,0 +1,12 @@
+{
+    "name": "flask-admin",
+    "version": "2.0.0a4",
+    "description": "flask-admin",
+    "scripts": {},
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "6.5.2",
+        "@tabler/core": "1.4.0",
+        "@tabler/icons": "3.34.1",
+        "X-editable": "github:skycyclone/x-editable"
+    }
+}
