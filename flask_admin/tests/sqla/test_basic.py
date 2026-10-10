@@ -918,6 +918,51 @@ def test_editable_endpoints_require_can_edit(
         assert rv.status_code == 404
 
 
+def test_editable_custom_list_widget_used_after_update(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """A custom display widget passed to ``scaffold_list_form`` must also render
+    the cell returned by ``ajax_update``, not only the initial list view."""
+    from markupsafe import Markup
+
+    from flask_admin.model.widgets import HTMXEditableWidget
+
+    class CustomWidget(HTMXEditableWidget):
+        def __call__(self, field: t.Any, **kwargs: t.Any) -> str:
+            return Markup("<custom-cell>") + super().__call__(field, **kwargs)
+
+    class CustomListWidgetView(CustomModelView):
+        def get_list_form(self) -> type[Form]:
+            return self.scaffold_list_form(widget=CustomWidget())
+
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomListWidgetView(Model1, param, column_editable_list=["test1"])
+        admin.add_view(view)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        rv = client.get("/admin/model1/")
+        assert rv.status_code == 200
+        assert "<custom-cell>" in rv.data.decode("utf-8")
+
+        rv = client.post(
+            "/admin/model1/ajax/update/",
+            data={"list_form_pk": "1", "test1": "updated value"},
+        )
+        data = rv.data.decode("utf-8")
+        assert rv.status_code == 200
+        assert "<custom-cell>" in data
+        assert "updated value" in data
+
+
 def test_editable_list_field_types(
     app: Flask,
     sqla_db_ext: T_ANY_SQLA_PROVIDER,

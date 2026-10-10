@@ -38,7 +38,6 @@ from .._types import T_WIDGET
 from ..form.rules import RuleSet
 from .filters import BaseFilter
 from .template import BaseListRowAction
-from .widgets import HTMXEditableWidget
 
 try:
     import tablib
@@ -1403,7 +1402,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
     def scaffold_list_form(
         self,
-        widget: type[T_WIDGET] | None = None,
+        widget: T_WIDGET | None = None,
         validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
     ) -> type[Form]:
         """
@@ -1411,7 +1410,7 @@ class BaseModelView(BaseView, ActionsMixin):
         `self.column_editable_list`.
 
         :param widget:
-            WTForms widget class. Defaults to `HTMXEditableWidget`.
+            WTForms widget instance. Defaults to `HTMXEditableWidget()`.
         :param validators:
             `form_args` dict with only validators
             {'name': {'validators': [DataRequired()]}}
@@ -1451,7 +1450,7 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 def get_list_form(self):
-                    return self.scaffold_list_form(widget=CustomWidget)
+                    return self.scaffold_list_form(widget=CustomWidget())
         """
         validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None
         if self.form_args:
@@ -2853,6 +2852,8 @@ class BaseModelView(BaseView, ActionsMixin):
         record = self.get_one(pk)
         display_value = self.get_list_value(None, record, field_name)
 
-        # Return HTMX cell replacement
-        widget = HTMXEditableWidget()
-        return widget(form[field_name], pk=pk, display_value=display_value)
+        # Return HTMX cell replacement using the list form's own display widget,
+        # so a custom widget passed to scaffold_list_form() is honoured
+        return form[field_name].widget(
+            form[field_name], pk=pk, display_value=display_value
+        )
