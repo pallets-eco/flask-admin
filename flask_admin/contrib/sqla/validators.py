@@ -15,6 +15,7 @@ from flask_admin._types import T_TRANSLATABLE
 from flask_admin.babel import lazy_gettext
 from flask_admin.contrib.sqla._compat import _get_deprecated_session
 from flask_admin.contrib.sqla._types import T_SESSION_OR_DB
+from flask_admin.model.fields import InlineFieldList
 
 
 class Unique:
@@ -89,7 +90,11 @@ class Unique:
 class ItemsRequired(InputRequired):
     """
     A version of the ``InputRequired`` validator that works with relations,
-    to require a minimum number of related items.
+    to require a minimum number of related items. Inline entries marked
+    for deletion do not count towards the minimum.
+
+    .. versionchanged:: 2.2.2
+        Support multi-select relation fields as well as inline forms.
     """
 
     def __init__(self, min: int = 1, message: T_TRANSLATABLE | None = None) -> None:
@@ -97,10 +102,10 @@ class ItemsRequired(InputRequired):
         self.min = min
 
     def __call__(self, form: BaseForm, field: Field) -> None:
-        items = filter_list(
-            lambda e: not field.should_delete(e),  # type:ignore[attr-defined]
-            field.entries,  # type:ignore[attr-defined]
-        )
+        if isinstance(field, InlineFieldList):
+            items = filter_list(lambda e: not field.should_delete(e), field.entries)
+        else:
+            items = field.data or []
         if len(items) < self.min:
             if self.message is None:
                 message = field.ngettext(
