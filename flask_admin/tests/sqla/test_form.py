@@ -10,6 +10,7 @@ from sqlalchemy import Float
 from sqlalchemy import Integer
 from sqlalchemy import String
 from werkzeug.datastructures import MultiDict
+from wtforms.fields import FieldList
 from wtforms.fields.simple import StringField
 
 from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
@@ -172,3 +173,43 @@ def test_items_required_query_select_multiple(
     assert form.validate() is valid
     assert form.choices.data == selected
     assert form.choices.errors == ([] if valid else ["Select more items."])
+
+
+@pytest.mark.parametrize(
+    ("selected", "minimum", "valid"),
+    [
+        ([], 1, False),
+        (["deleted"], 1, False),
+        (["one", "deleted"], 1, True),
+        (["one", "deleted"], 2, False),
+        (["one", "two", "deleted"], 2, True),
+    ],
+)
+def test_items_required_custom_deletion_protocol(
+    selected: list[str], minimum: int, valid: bool
+) -> None:
+    class DeletionAwareFieldList(FieldList):  # type: ignore[type-arg]
+        def should_delete(self, field: wtforms.Field) -> bool:
+            return field.data == "deleted"
+
+    class SelectionForm(wtforms.Form):
+        choices = DeletionAwareFieldList(
+            StringField(),
+            validators=[ItemsRequired(min=minimum, message="Select more items.")],
+        )
+
+    form = SelectionForm(
+        MultiDict((f"choices-{index}", value) for index, value in enumerate(selected))
+    )
+
+    assert form.validate() is valid
+    assert form.choices.errors == ([] if valid else ["Select more items."])
+
+
+def test_items_required_field_list_without_deletion_protocol() -> None:
+    class SelectionForm(wtforms.Form):
+        choices = FieldList(StringField(), validators=[ItemsRequired()])
+
+    form = SelectionForm(MultiDict({"choices-0": "one"}))
+
+    assert form.validate()
