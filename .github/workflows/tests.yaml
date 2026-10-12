@@ -114,6 +114,9 @@ jobs:
       - name: Install Playwright system dependencies
         if: matrix.tox == 'e2e'
         run: uv run --locked --group e2e playwright install --with-deps chromium
+      - name: Install Tabler theme assets
+        if: matrix.tox == 'e2e'
+        run: make setup-assets
       - name: cache mypy
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:

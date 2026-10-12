@@ -8,6 +8,7 @@ from playwright.sync_api import Page
 
 from flask_admin.tests.e2e.app_factory import Author
 from flask_admin.tests.e2e.app_factory import Book
+from flask_admin.tests.e2e.app_factory import db
 
 
 def _base_url(live_server: dict[str, t.Any]) -> str:
@@ -137,3 +138,48 @@ def test_edit_can_delete_inline_entry(
     assert _book_titles(live_server) == []
     with live_server["app"].app_context():
         assert Author.query.filter_by(name="Jane Austen").count() == 1
+
+
+def test_model_list_sorting_toggles_order(
+    page: Page, live_server: dict[str, t.Any]
+) -> None:
+    # NOTE: asserts toggling, not absolute direction: first-click direction
+    # is upstream flask-admin behavior and identical under Bootstrap.
+    page.goto(f"{_base_url(live_server)}/admin/author/")
+    rows = page.locator("table.model-list tbody tr")
+    first_row_default = " ".join(rows.nth(0).inner_text().split())
+    name_header_link = page.locator("th.column-header", has_text="Name").locator("a")
+    name_header_link.click()
+    page.wait_for_url("**/admin/author/**")
+    assert " ".join(rows.nth(0).inner_text().split()) != first_row_default
+    name_header_link.click()
+    page.wait_for_url("**/admin/author/**")
+    expect(rows.nth(0)).to_contain_text("Jane Austen")
+
+
+def test_model_list_pagination(page: Page, live_server: dict[str, t.Any]) -> None:
+    with live_server["app"].app_context():
+        for index in range(25):
+            db.session.add(Author(name=f"Bulk Author {index:02d}"))
+        db.session.commit()
+    page.goto(f"{_base_url(live_server)}/admin/author/")
+    rows = page.locator("table.model-list tbody tr")
+    expect(rows).to_have_count(20)
+    first_row_page_one = rows.nth(0).inner_text()
+    with page.expect_navigation():
+        page.locator("ul.pagination").get_by_role("link", name="2", exact=True).click()
+    expect(rows).to_have_count(7)
+    assert rows.nth(0).inner_text() != first_row_page_one
+
+
+def test_model_list_filter_narrows_results(
+    page: Page, live_server: dict[str, t.Any]
+) -> None:
+    page.goto(f"{_base_url(live_server)}/admin/author/")
+    page.get_by_role("button", name="Add Filter").click()
+    page.locator("a.filter", has_text="Name").click()
+    page.locator("input.filter-val").fill("Dickens")
+    with page.expect_navigation():
+        page.get_by_role("button", name="Apply", exact=True).click()
+    expect(page.get_by_text("Charles Dickens")).to_be_visible()
+    expect(page.get_by_text("Jane Austen")).not_to_be_visible()

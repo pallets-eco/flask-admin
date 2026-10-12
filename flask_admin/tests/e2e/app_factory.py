@@ -39,6 +39,7 @@ class Book(db.Model):  # type: ignore[misc, name-defined]
 
 class AuthorView(ModelView):
     can_view_details = True
+    column_filters = ["name"]
     column_searchable_list = ["name"]
     form_args = {
         "name": {"validators": [InputRequired()]},
