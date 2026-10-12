@@ -611,6 +611,19 @@
             me.attr('name', name);
         });
 
+        // Fix label associations to match the rewritten IDs, so that
+        // clicking a label focuses its input and assistive technologies
+        // can associate the two.
+        $('label[for]', $template).each(function() {
+            var me = $(this);
+
+            var htmlFor = me.attr('for');
+
+            if (htmlFor) {
+                me.attr('for', prefix + '-' + htmlFor);
+            }
+        });
+
         $template.appendTo($fieldList);
 
         // Select first field

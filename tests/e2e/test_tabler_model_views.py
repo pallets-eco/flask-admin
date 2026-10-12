@@ -20,9 +20,6 @@ def _book_titles(live_server):
 
 
 def _inline_card(page, heading):
-    # NOTE: the inline ``<label for>`` attributes are not rewritten by the
-    # add-row JavaScript, so the title inputs cannot be found by label.
-    # Scope to the card inside the field list instead.
     return page.locator(".inline-field-list .inline-field", has_text=heading)
 
 
@@ -69,7 +66,9 @@ def test_create_author_with_inline_book(page, live_server):
     page.get_by_role("button", name="Add Books").click()
     new_card = _inline_card(page, "New Books")
     expect(new_card).to_be_visible()
-    new_card.locator('input[type="text"]').fill("Mrs Dalloway")
+    # Found by label: the add-row JavaScript must rewrite ``<label for>``
+    # to match the cloned input's id.
+    new_card.get_by_label("Title *").fill("Mrs Dalloway")
     with page.expect_navigation():
         page.get_by_role("button", name="Save", exact=True).click()
     expect(page.get_by_text("Virginia Woolf")).to_be_visible()
@@ -104,7 +103,9 @@ def test_edit_can_add_inline_entry(page, live_server):
     page.get_by_role("button", name="Add Books").click()
     new_card = _inline_card(page, "New Books")
     expect(new_card).to_be_visible()
-    new_card.locator('input[type="text"]').fill("Emma")
+    # The remove control is icon-only, so it must expose an accessible name.
+    expect(new_card.get_by_role("link", name="Remove")).to_be_visible()
+    new_card.get_by_label("Title *").fill("Emma")
     with page.expect_navigation():
         page.get_by_role("button", name="Save", exact=True).click()
     assert _book_titles(live_server) == ["Emma", "Pride and Prejudice"]
