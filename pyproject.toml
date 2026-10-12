@@ -149,7 +149,8 @@ flask-admin = { workspace = true }
 [tool.pytest.ini_options]
 testpaths = ["flask_admin/tests"]
 markers = [
-    "flask_babel: requires Flask-Babel to be installed"
+    "flask_babel: requires Flask-Babel to be installed",
+    "e2e: end-to-end browser tests (require Playwright and Flask-Babel)",
 ]
 filterwarnings = [
     "error",
@@ -406,7 +407,7 @@ base = ["env_run_base"]
 dependency_groups = ["e2e"]
 commands = [
     ["playwright", "install", "chromium"],
-    ["pytest", "tests/e2e", "-v", "--tb=short", "--basetemp={env_tmp_dir}"],
+    ["pytest", "flask_admin/tests/e2e", "-v", "--tb=short", "--basetemp={env_tmp_dir}"],
 ]
 
 # [tool.tox.env.docs-auto]

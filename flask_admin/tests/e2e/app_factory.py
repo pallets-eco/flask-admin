@@ -4,33 +4,36 @@ Builds a small SQLAlchemy-backed admin (Author with inline Books, plus a
 FileAdmin instance) rendered with the Tabler theme.
 """
 
+from pathlib import Path
+
 from flask import Flask
-from flask_admin import Admin
-from flask_admin.contrib.fileadmin import FileAdmin
-from flask_admin.contrib.sqla import ModelView
-from flask_admin.theme import TablerTheme
 from flask_babel import Babel
 from flask_sqlalchemy import SQLAlchemy
 from wtforms.validators import InputRequired
 
+from flask_admin import Admin
+from flask_admin.contrib.fileadmin import FileAdmin
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.theme import TablerTheme
+
 db = SQLAlchemy()
 
 
-class Author(db.Model):
+class Author(db.Model):  # type: ignore[misc, name-defined]
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
-class Book(db.Model):
+class Book(db.Model):  # type: ignore[misc, name-defined]
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey(Author.id))
     author = db.relationship(Author, backref="books")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
 
 
@@ -43,7 +46,7 @@ class AuthorView(ModelView):
     inline_models = (Book,)
 
 
-def create_app(workdir):
+def create_app(workdir: Path) -> Flask:
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "tabler-e2e-secret"
     app.config["WTF_CSRF_ENABLED"] = False

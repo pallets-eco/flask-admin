@@ -1,36 +1,41 @@
 """End-to-end tests for model views rendered with the Tabler theme."""
 
-from app_factory import Author
-from app_factory import Book
+import typing as t
+
 from playwright.sync_api import expect
+from playwright.sync_api import Locator
+from playwright.sync_api import Page
+
+from flask_admin.tests.e2e.app_factory import Author
+from flask_admin.tests.e2e.app_factory import Book
 
 
-def _base_url(live_server):
+def _base_url(live_server: dict[str, t.Any]) -> str:
     return live_server["url"]
 
 
-def _author_id(live_server, name):
+def _author_id(live_server: dict[str, t.Any], name: str) -> int:
     with live_server["app"].app_context():
         return Author.query.filter_by(name=name).first().id
 
 
-def _book_titles(live_server):
+def _book_titles(live_server: dict[str, t.Any]) -> list[str]:
     with live_server["app"].app_context():
         return sorted(book.title for book in Book.query.all())
 
 
-def _inline_card(page, heading):
+def _inline_card(page: Page, heading: str) -> Locator:
     return page.locator(".inline-field-list .inline-field", has_text=heading)
 
 
-def test_admin_home_renders(page, live_server):
+def test_admin_home_renders(page: Page, live_server: dict[str, t.Any]) -> None:
     response = page.goto(f"{_base_url(live_server)}/admin/")
     assert response is not None and response.ok
     expect(page.get_by_role("link", name="Author")).to_be_visible()
     expect(page.get_by_role("link", name="Files")).to_be_visible()
 
 
-def test_model_list_renders_rows(page, live_server):
+def test_model_list_renders_rows(page: Page, live_server: dict[str, t.Any]) -> None:
     # Regression test: the Tabler list template used a missing
     # ``admin_static.get_url`` macro and returned HTTP 500.
     response = page.goto(f"{_base_url(live_server)}/admin/author/")
@@ -42,7 +47,9 @@ def test_model_list_renders_rows(page, live_server):
     expect(page.locator('a.btn[title="Create New Record"]')).to_be_visible()
 
 
-def test_model_list_search_filters_rows(page, live_server):
+def test_model_list_search_filters_rows(
+    page: Page, live_server: dict[str, t.Any]
+) -> None:
     page.goto(f"{_base_url(live_server)}/admin/author/")
     page.locator('input[name="search"]').fill("Dickens")
     with page.expect_navigation():
@@ -51,7 +58,7 @@ def test_model_list_search_filters_rows(page, live_server):
     expect(page.get_by_text("Jane Austen")).not_to_be_visible()
 
 
-def test_model_details_renders(page, live_server):
+def test_model_details_renders(page: Page, live_server: dict[str, t.Any]) -> None:
     author_id = _author_id(live_server, "Jane Austen")
     response = page.goto(
         f"{_base_url(live_server)}/admin/author/details/?id={author_id}"
@@ -60,7 +67,9 @@ def test_model_details_renders(page, live_server):
     expect(page.get_by_text("Jane Austen")).to_be_visible()
 
 
-def test_create_author_with_inline_book(page, live_server):
+def test_create_author_with_inline_book(
+    page: Page, live_server: dict[str, t.Any]
+) -> None:
     page.goto(f"{_base_url(live_server)}/admin/author/new/")
     page.get_by_label("Name *").fill("Virginia Woolf")
     page.get_by_role("button", name="Add Books").click()
@@ -75,7 +84,7 @@ def test_create_author_with_inline_book(page, live_server):
     assert _book_titles(live_server) == ["Mrs Dalloway", "Pride and Prejudice"]
 
 
-def test_create_requires_name(page, live_server):
+def test_create_requires_name(page: Page, live_server: dict[str, t.Any]) -> None:
     page.goto(f"{_base_url(live_server)}/admin/author/new/")
     # Bypass browser-native validation to exercise the server-side path.
     # A validation failure re-renders the form, so no navigation happens.
@@ -87,7 +96,9 @@ def test_create_requires_name(page, live_server):
         assert Author.query.count() == 2
 
 
-def test_edit_shows_existing_inline_entry(page, live_server):
+def test_edit_shows_existing_inline_entry(
+    page: Page, live_server: dict[str, t.Any]
+) -> None:
     author_id = _author_id(live_server, "Jane Austen")
     response = page.goto(f"{_base_url(live_server)}/admin/author/edit/?id={author_id}")
     assert response is not None and response.ok
@@ -97,7 +108,7 @@ def test_edit_shows_existing_inline_entry(page, live_server):
     expect(page.get_by_label("Delete?")).to_be_visible()
 
 
-def test_edit_can_add_inline_entry(page, live_server):
+def test_edit_can_add_inline_entry(page: Page, live_server: dict[str, t.Any]) -> None:
     author_id = _author_id(live_server, "Jane Austen")
     page.goto(f"{_base_url(live_server)}/admin/author/edit/?id={author_id}")
     page.get_by_role("button", name="Add Books").click()
@@ -115,7 +126,9 @@ def test_edit_can_add_inline_entry(page, live_server):
     assert _book_titles(live_server) == ["Emma", "Pride and Prejudice"]
 
 
-def test_edit_can_delete_inline_entry(page, live_server):
+def test_edit_can_delete_inline_entry(
+    page: Page, live_server: dict[str, t.Any]
+) -> None:
     author_id = _author_id(live_server, "Jane Austen")
     page.goto(f"{_base_url(live_server)}/admin/author/edit/?id={author_id}")
     page.get_by_label("Delete?").check()

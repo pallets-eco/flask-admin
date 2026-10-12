@@ -1,18 +1,29 @@
 """Shared fixtures for Tabler-theme end-to-end tests."""
 
 import threading
+import typing as t
 
 import pytest
-from app_factory import Author
-from app_factory import Book
-from app_factory import create_app
-from app_factory import db
+
+pytest.importorskip("playwright")
+
+from playwright.sync_api import Browser
+from playwright.sync_api import Page
 from playwright.sync_api import sync_playwright
 from werkzeug.serving import make_server
 
+from flask_admin.tests.e2e.app_factory import Author
+from flask_admin.tests.e2e.app_factory import Book
+from flask_admin.tests.e2e.app_factory import create_app
+from flask_admin.tests.e2e.app_factory import db
+
+pytestmark = pytest.mark.e2e
+
 
 @pytest.fixture(scope="session")
-def live_server(tmp_path_factory):
+def live_server(
+    tmp_path_factory: pytest.TempPathFactory,
+) -> t.Generator[dict[str, t.Any], None, None]:
     workdir = tmp_path_factory.mktemp("tabler-e2e")
     app = create_app(workdir)
     server = make_server("127.0.0.1", 0, app)
@@ -28,7 +39,9 @@ def live_server(tmp_path_factory):
 
 
 @pytest.fixture(autouse=True)
-def seeded_database(live_server):
+def seeded_database(
+    live_server: dict[str, t.Any],
+) -> t.Generator[dict[str, t.Any], None, None]:
     app = live_server["app"]
     with app.app_context():
         db.drop_all()
@@ -45,11 +58,11 @@ def seeded_database(live_server):
             child.unlink()
     (files_dir / "hello.txt").write_text("hello e2e")
 
-    return live_server
+    yield live_server
 
 
 @pytest.fixture(scope="session")
-def browser():
+def browser() -> t.Generator[Browser, None, None]:
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch()
         yield browser
@@ -57,7 +70,7 @@ def browser():
 
 
 @pytest.fixture()
-def page(browser):
+def page(browser: Browser) -> t.Generator[Page, None, None]:
     page = browser.new_page()
     yield page
     page.close()
