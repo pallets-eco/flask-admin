@@ -4,6 +4,10 @@ Changelog
 [unreleased]
 ------------------
 
+New functionality:
+
+* MongoEngine backend: support ``form_choices`` in ``ModelView``, rendering a ``Select2Field`` like the SQLAlchemy and Peewee backends. ``form_choices`` is now defined on ``BaseModelView``, and all backends build the field through a shared ``flask_admin.model.form.get_form_choices_field()`` helper (closes #2967).
+
 Bugfixes:
 
 * Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist

@@ -34,6 +34,7 @@ from flask_admin.model.fields import AjaxSelectField
 from flask_admin.model.fields import AjaxSelectMultipleField
 from flask_admin.model.fields import InlineFieldList
 from flask_admin.model.form import FieldPlaceholder
+from flask_admin.model.form import get_form_choices_field
 
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
 from ..._types import T_ITER_CHOICES
@@ -319,6 +320,15 @@ class CustomModelConverter:
             kwargs["validators"].append(validators.Optional())
 
         ftype = type(field).__name__
+
+        # Check if a list of 'form_choices' are specified - form_overrides
+        # take priority
+        if not self._get_field_override(field.name):
+            choices_field = get_form_choices_field(
+                self.view, model, field.name, not field.required, **kwargs
+            )
+            if choices_field is not None:
+                return choices_field
 
         if field.choices:
             kwargs["choices"] = list(self._convert_choices(field.choices))
