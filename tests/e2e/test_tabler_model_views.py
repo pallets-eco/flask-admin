@@ -40,7 +40,9 @@ def test_model_list_renders_rows(page, live_server):
     assert response is not None and response.ok
     expect(page.get_by_text("Jane Austen")).to_be_visible()
     expect(page.get_by_text("Charles Dickens")).to_be_visible()
-    expect(page.get_by_role("link", name="Create", exact=True)).to_be_visible()
+    # NOTE: located by CSS because the tab-bar "Create" link and the header
+    # "Create" button share an accessible name (icon fonts render as text).
+    expect(page.locator('a.btn[title="Create New Record"]')).to_be_visible()
 
 
 def test_model_list_search_filters_rows(page, live_server):
