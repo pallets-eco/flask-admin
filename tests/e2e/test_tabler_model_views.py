@@ -104,7 +104,11 @@ def test_edit_can_add_inline_entry(page, live_server):
     new_card = _inline_card(page, "New Books")
     expect(new_card).to_be_visible()
     # The remove control is icon-only, so it must expose an accessible name.
-    expect(new_card.get_by_role("link", name="Remove")).to_be_visible()
+    # Asserted by attribute: without icon fonts loaded the link has no
+    # rendered size, so a visibility assertion would be environment-bound.
+    expect(new_card.locator("a.inline-remove-field")).to_have_attribute(
+        "aria-label", "Remove"
+    )
     new_card.get_by_label("Title *").fill("Emma")
     with page.expect_navigation():
         page.get_by_role("button", name="Save", exact=True).click()
