@@ -178,4 +178,4 @@ setup-assets:
 	cp -a $(NODE_MODULES)/@tabler/core/dist/. $(VENDOR_PATH)/tabler/
 	@echo "Copying X-editable..."
 	mkdir -p $(VENDOR_PATH)/skycyclone/x-editable
-	cp -a $(NODE_MODULES)/x-editable/dist/. $(VENDOR_PATH)/skycyclone/x-editable/
+	cp -a $(NODE_MODULES)/X-editable/dist/. $(VENDOR_PATH)/skycyclone/x-editable/
