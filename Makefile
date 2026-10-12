@@ -160,3 +160,22 @@ test-in-docker:
 .PHONY: tox-in-docker
 tox-in-docker:
 	docker compose -f .devcontainer/tests/docker-compose.yaml run --remove-orphans app uv run tox
+
+# Tabler theme assets (NPM dependencies are listed in package.json).
+# The copied directories are git-ignored (see flask_admin/static/vendor/.gitignore).
+NODE_MODULES = node_modules
+VENDOR_PATH = flask_admin/static/vendor
+
+.PHONY: setup-tabler-theme-assets
+setup-tabler-theme-assets:
+	@echo "Installing dependencies..."
+	npm install --no-optional
+	@echo "Copying Font Awesome..."
+	mkdir -p $(VENDOR_PATH)/fontawesome
+	cp -a $(NODE_MODULES)/@fortawesome/fontawesome-free/. $(VENDOR_PATH)/fontawesome/
+	@echo "Copying Tabler..."
+	mkdir -p $(VENDOR_PATH)/tabler
+	cp -a $(NODE_MODULES)/@tabler/core/dist/. $(VENDOR_PATH)/tabler/
+	@echo "Copying X-editable..."
+	mkdir -p $(VENDOR_PATH)/skycyclone/x-editable
+	cp -a $(NODE_MODULES)/x-editable/dist/. $(VENDOR_PATH)/skycyclone/x-editable/

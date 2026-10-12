@@ -10,23 +10,3 @@ VENDOR_PATH = "{{ [env.STATIC_PATH] | concat(with='vendor') | join_path }}"
 node = "{{ env['NODE_VERSION'] | default(value='lts') }}"
 uv = "latest"
 
-
-[tasks.setup-tabler-theme-assets]
-description = "Setup Tabler Theme Assets"
-run = '''
-#!/usr/bin/env bash
-echo - Installing Dependencies
-mise exec npm -- npm install  --no-optional
-
-echo - Copying Font Awesome
-mkdir -p ${VENDOR_PATH}/fontawesome
-cp -a ${NODE_MODULES}/@fortawesome/fontawesome-free/. ${VENDOR_PATH}/fontawesome/
-
-echo - Copying Tabler
-mkdir -p ${VENDOR_PATH}/tabler
-cp -a ${NODE_MODULES}/@tabler/core/dist/. ${VENDOR_PATH}/tabler/
-
-echo - "Copying X-editable"
-mkdir -p ${VENDOR_PATH}/skycyclone/x-editable
-cp -a ${NODE_MODULES}/x-editable/dist/. ${VENDOR_PATH}/skycyclone/x-editable/
-'''
