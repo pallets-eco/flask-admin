@@ -1,12 +1,3 @@
-[env]
-PROJECT_NAME = "{{ config_root | basename }}"
-NODE_MODULES = "{{ ['.'] | concat(with='node_modules') | join_path }}"
-FLASK_ADMIN_PATH = "{{ ['.'] | concat(with='flask_admin') | join_path }}"
-STATIC_PATH = "{{ [env.FLASK_ADMIN_PATH] | concat(with='static') | join_path }}"
-VENDOR_PATH = "{{ [env.STATIC_PATH] | concat(with='vendor') | join_path }}"
-
-
 [tools]
 node = "{{ env['NODE_VERSION'] | default(value='lts') }}"
 uv = "latest"
-
