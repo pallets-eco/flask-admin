@@ -166,8 +166,8 @@ tox-in-docker:
 NODE_MODULES = node_modules
 VENDOR_PATH = flask_admin/static/vendor
 
-.PHONY: setup-tabler-theme-assets
-setup-tabler-theme-assets:
+.PHONY: setup-assets
+setup-assets:
 	@echo "Installing dependencies..."
 	npm install --no-optional
 	@echo "Copying Font Awesome..."
