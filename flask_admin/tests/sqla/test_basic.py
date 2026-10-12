@@ -2357,6 +2357,39 @@ def test_form_columns(
         assert "int_field" in form4._fields
 
 
+def test_form_columns_order_with_extra_fields(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+
+        class Model(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "model"
+            id = Column(Integer, primary_key=True)
+            int_field = Column(Integer)
+            datetime_field = Column(DateTime)
+            text_field = Column(Text)
+            secret = Column(String)
+
+        class ExtraFieldModelView(CustomModelView):
+            form_columns = ["secret", "text_field", "int_field", "datetime_field"]
+            form_extra_fields = {"secret": fields.PasswordField("secret")}
+
+        sqla_db_ext.create_all()
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = ExtraFieldModelView(Model, param)
+        generated_form = view.create_form()
+
+        assert isinstance(generated_form._fields["secret"], PasswordField)
+        assert list(generated_form._fields) == [
+            "secret",
+            "text_field",
+            "int_field",
+            "datetime_field",
+        ]
+
+
 @pytest.mark.xfail(raises=Exception)
 def test_complex_form_columns(
     app: Flask,
