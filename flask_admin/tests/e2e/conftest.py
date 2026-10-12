@@ -5,17 +5,19 @@ import typing as t
 
 import pytest
 
+# NOTE: keep this guard before the imports below so unit-test environments
+# without Playwright skip this directory instead of failing collection.
 pytest.importorskip("playwright")
 
-from playwright.sync_api import Browser
-from playwright.sync_api import Page
-from playwright.sync_api import sync_playwright
-from werkzeug.serving import make_server
+from playwright.sync_api import Browser  # noqa: E402
+from playwright.sync_api import Page  # noqa: E402
+from playwright.sync_api import sync_playwright  # noqa: E402
+from werkzeug.serving import make_server  # noqa: E402
 
-from flask_admin.tests.e2e.app_factory import Author
-from flask_admin.tests.e2e.app_factory import Book
-from flask_admin.tests.e2e.app_factory import create_app
-from flask_admin.tests.e2e.app_factory import db
+from flask_admin.tests.e2e.app_factory import Author  # noqa: E402
+from flask_admin.tests.e2e.app_factory import Book  # noqa: E402
+from flask_admin.tests.e2e.app_factory import create_app  # noqa: E402
+from flask_admin.tests.e2e.app_factory import db  # noqa: E402
 
 pytestmark = pytest.mark.e2e
 

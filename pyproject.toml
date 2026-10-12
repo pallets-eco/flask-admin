@@ -124,6 +124,7 @@ typing = [
     "types-WTForms", # for WTForms 3.2.1
     "types-shapely", # for shapely==2.1.*
     {include-group = "tests"},
+    {include-group = "e2e"}, # e2e imports must resolve for type checking
 ]
 
 [project.urls]
