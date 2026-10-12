@@ -40,7 +40,7 @@
                     <li class="nav-item">
                         <a href="javascript:void(0)" class="nav-link active disabled">
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                <i class="fa fa-list"></i>
+                                <i class="fa fa-list" aria-hidden="true"></i>
                             </span>
                             {{ _gettext("List") }}
                             {% if count %}({{ count }}){% endif %}
@@ -50,7 +50,7 @@
                         <li class="nav-item">
                             {%- if admin_view.create_modal -%}
                                 {# djlint:off #}
-                                {% set content = "<span class='nav-link-icon d-md-none d-lg-inline-block'><i class='fa fa-plus'></i></span>" | safe + _gettext("Create") %}
+                                {% set content = "<span class='nav-link-icon d-md-none d-lg-inline-block'><i class='fa fa-plus' aria-hidden='true'></i></span>" | safe + _gettext("Create") %}
                                 {# djlint:on #}
                                 {{ lib.add_modal_button(url=get_url('.create_view', url=return_url, modal=True) , btn_class='nav-link', title=_gettext('Create New Record'), content=content) }}
                             {% else %}
@@ -58,7 +58,7 @@
                                    title="{{ _gettext("Create New Record") }}"
                                    class="nav-link">
                                     <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                        <i class="fa fa-plus"></i>
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
                                     </span>
                                     {{ _gettext("Create") }}
                                 </a>
@@ -112,9 +112,9 @@
                                                        title="{{ _gettext('Sort by %(name)s', name=name) }}">
                                                         {{ name }}
                                                         {% if sort_desc %}
-                                                            <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up"></span>
+                                                            <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
                                                         {% else %}
-                                                            <span class="fa fa-chevron-down glyphicon glyphicon-chevron-down"></span>
+                                                            <span class="fa fa-chevron-down glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
                                                         {% endif %}
                                                     </a>
                                                 {% else %}

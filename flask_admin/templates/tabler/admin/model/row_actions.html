@@ -4,7 +4,7 @@
        href="{{ url }}"
        title="{{ action.title or '' }}">
         <span class="nav-link-icon d-md-none d-lg-inline-block">
-            <i class="{{ icon_class or action.icon_class }}"></i>
+            <i class="{{ icon_class or action.icon_class }}" aria-hidden="true"></i>
         </span>
         {{ action.title or '' }}
     </a>
@@ -13,14 +13,14 @@
     <a class="dropdown-item"
        href="{{ get_url('.details_view', id=row_id, url=return_url) }}">
         <span class="nav-link-icon d-md-none d-lg-inline-block">
-            <i class="fa fa-eye"></i>
+            <i class="fa fa-eye" aria-hidden="true"></i>
         </span>
         {{ _gettext("View Record") }}
     </a>
 {% endmacro %}
 {% macro view_row_popup(action, row_id, row) %}
     {# djlint:off #}
-    {% set content = "<span class='nav-link-icon d-md-none d-lg-inline-block'><i class='fa fa-eye'></i></span>" | safe + _gettext("View Record") %}
+    {% set content = "<span class='nav-link-icon d-md-none d-lg-inline-block'><i class='fa fa-eye' aria-hidden='true'></i></span>" | safe + _gettext("View Record") %}
     {# djlint:on #}
     {{ lib.add_modal_button(url=get_url('.details_view', id=row_id, url=return_url, modal=True) , title=action.title, content=content, btn_class="dropdown-item") }}
 {% endmacro %}
@@ -29,7 +29,7 @@
 {% endmacro %}
 {% macro edit_row_popup(action, row_id, row) %}
     {# djlint:off #}
-    {% set content = "<span class='nav-link-icon d-md-none d-lg-inline-block'><i class='fa fa-edit'></i></span>" | safe + action.title %}
+    {% set content = "<span class='nav-link-icon d-md-none d-lg-inline-block'><i class='fa fa-edit' aria-hidden='true'></i></span>" | safe + action.title %}
     {# djlint:on #}
     {{ lib.add_modal_button(url=get_url('.edit_view', id=row_id, url=return_url, modal=True) , title=action.title, content=content, btn_class="dropdown-item") }}
 {% endmacro %}
@@ -47,7 +47,7 @@
                 class="dropdown-item"
                 onclick="return faHelpers.safeConfirm('{{ confirmation }}');">
             <span class="nav-link-icon d-md-none d-lg-inline-block">
-                <i class="fa fa-trash"></i>
+                <i class="fa fa-trash" aria-hidden="true"></i>
             </span>
             {{ _gettext("Delete Record") }}
         </button>

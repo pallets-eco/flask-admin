@@ -6,7 +6,7 @@
        aria-haspopup="true"
        aria-expanded="false">
         <span class="nav-link-icon d-md-none d-lg-inline-block">
-            <i class="fa fa-filter"></i>
+            <i class="fa fa-filter" aria-hidden="true"></i>
         </span>
         {{ _gettext("Add Filter") }}
     </a>
@@ -88,7 +88,8 @@
             <button class="btn" type="submit">{{ _gettext("Search") }}</button>
             <a href="{{ clear_search_url }}"
                class="btn {% if not search %}disabled{% endif %}"
-               type="button"><i class="fa-solid fa-times"></i></a>
+               type="button"
+               aria-label="{{ _gettext("Clear search") }}"><i class="fa-solid fa-times" aria-hidden="true"></i></a>
         </div>
     </form>
 {% endmacro %}

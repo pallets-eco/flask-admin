@@ -92,7 +92,7 @@
                                            data-bs-placement="bottom"
                                            aria-label="{{ _gettext("Enable dark mode") }}"
                                            data-bs-original-title="{{ _gettext("Enable dark mode") }}">
-                                            <i class="fa-solid fa-moon"></i>
+                                             <i class="fa-solid fa-moon" aria-hidden="true"></i>
                                         </a>
                                         <a href="?theme=light"
                                            class="nav-link px-0 hide-theme-light"
@@ -100,7 +100,7 @@
                                            data-bs-placement="bottom"
                                            aria-label="{{ _gettext("Enable light mode") }}"
                                            data-bs-original-title="{{ _gettext("Enable light mode") }}">
-                                            <i class="fa-solid fa-sun"></i>
+                                             <i class="fa-solid fa-sun" aria-hidden="true"></i>
                                         </a>
                                     {% endblock theme_switcher %}
                                     {% block navbar_control %}

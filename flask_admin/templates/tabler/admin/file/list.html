@@ -54,9 +54,9 @@
                                                        title="{{ _gettext('Sort by %(name)s', name=column) }}">
                                                         {{ admin_view.column_label(column) }}
                                                         {% if sort_desc %}
-                                                            <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up"></span>
+                                                            <span class="fa fa-chevron-up glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
                                                         {% else %}
-                                                            <span class="fa fa-chevron-down glyphicon glyphicon-chevron-down"></span>
+                                                            <span class="fa fa-chevron-down glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
                                                         {% endif %}
                                                     </a>
                                                 {% else %}
@@ -93,7 +93,7 @@
                                                         {% if admin_view.can_rename and path and name != '..' %}
                                                             {%- if admin_view.rename_modal -%}
                                                                 {# djlint:off #}
-                                                                {% set content = "<span class='nav-link-icon d-md-none d-lg-inline-block'><i class='fa fa-pencil'></i></span>" | safe + _gettext("Rename File") %}
+                                                                {% set content = "<span class='nav-link-icon d-md-none d-lg-inline-block'><i class='fa fa-pencil' aria-hidden='true'></i></span>" | safe + _gettext("Rename File") %}
                                                                 {# djlint:on #}
                                                                 {{ lib.add_modal_button(url=get_url('.rename', path=path, modal=True) , title=_gettext('Rename File'), content=content, btn_class='dropdown-item') }}
                                                             {% else %}
@@ -101,7 +101,7 @@
                                                                    href="{{ get_url('.rename', path=path) }}"
                                                                    title="{{ _gettext("Rename File") }}">
                                                                     <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                                                        <i class="fa fa-pencil"></i>
+                                                                         <i class="fa fa-pencil" aria-hidden="true"></i>
                                                                     </span>
                                                                     {{ _gettext("Rename File") }}
                                                                 </a>
@@ -120,7 +120,7 @@
                                                                         {% set confirmation = _gettext('Are you sure you want to delete \\\'%(name) s\\\' recursively?', name=name) %}
                                                                         <button class="dropdown-item" onclick="return confirm('{{ confirmation }}');">
                                                                             <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                                                                <i class="fa fa-times"></i>
+                                                                                 <i class="fa fa-times" aria-hidden="true"></i>
                                                                             </span>
                                                                             {{ _gettext("Delete Record") }}
                                                                         </button>
@@ -137,7 +137,7 @@
                                                                     {% set confirmation = _gettext('Are you sure you want to delete \\\'%(name) s\\\'?', name=name) %}
                                                                     <button class="dropdown-item" onclick="return confirm('{{ confirmation }}');">
                                                                         <span class="nav-link-icon d-md-none d-lg-inline-block">
-                                                                            <i class="fa fa-trash"></i>
+                                                                                 <i class="fa fa-trash" aria-hidden="true"></i>
                                                                         </span>
                                                                         {{ _gettext("Delete Record") }}
                                                                     </button>
@@ -152,7 +152,7 @@
                                     {% if is_dir %}
                                         <td colspan="2">
                                             <a href="{{ get_dir_url('.index_view', path) |safe }}">
-                                                <i class="fa fa-folder-o glyphicon glyphicon-folder-close"></i> <span>{{ name }}</span>
+                                                 <i class="fa fa-folder-o glyphicon glyphicon-folder-close" aria-hidden="true"></i> <span>{{ name }}</span>
                                             </a>
                                         </td>
                                     {% else %}

@@ -3,9 +3,9 @@
     {%- if icon_type %}
         {% set icon_value = item.get_icon_value() %}
         {% if icon_type == 'glyph' %}
-            <i class="glyphicon {{ icon_value }}"></i>
+            <i class="glyphicon {{ icon_value }}" aria-hidden="true"></i>
         {% elif icon_type == 'fa' %}
-            <i class="fa {{ icon_value }}"></i>
+            <i class="fa {{ icon_value }}" aria-hidden="true"></i>
         {% elif icon_type == 'image' %}
             <img src="{{ url_for('static', filename=icon_value) }}" alt="menu image">
         {% elif icon_type == 'image-url' %}
@@ -82,7 +82,7 @@
                      role="alert">
                     <div class="d-flex">
                         <div class="alert-icon me-3">
-                            <i class="fa fa-{{ icon_mapping.get(category, category) }}"></i>
+                            <i class="fa fa-{{ icon_mapping.get(category, category) }}" aria-hidden="true"></i>
                         </div>
                         <div>{{ m }}</div>
                         <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
