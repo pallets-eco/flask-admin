@@ -111,6 +111,10 @@ tests = [
     "beautifulsoup4",
     "azure-storage-blob",
 ]
+e2e = [
+    "playwright",
+    {include-group = "tests"},
+]
 typing = [
     "flask-admin[all]",
     "mypy",
@@ -272,6 +276,7 @@ env_list = [
     "style",
     "typing",
     "docs",
+    "e2e",
 ]
 
 [tool.tox.env_run_base]
@@ -394,6 +399,15 @@ commands = [
 description = "build docs"
 dependency_groups = ["docs"]
 commands = [["sphinx-build", "-E", "-W", "-b", "dirhtml", "doc", "doc/_build/dirhtml"]]
+
+[tool.tox.env.e2e]
+description = "run Playwright end-to-end tests for the Tabler theme"
+base = ["env_run_base"]
+dependency_groups = ["e2e"]
+commands = [
+    ["playwright", "install", "chromium"],
+    ["pytest", "tests/e2e", "-v", "--tb=short", "--basetemp={env_tmp_dir}"],
+]
 
 # [tool.tox.env.docs-auto]
 # description = "continuously rebuild docs and start a local server"
