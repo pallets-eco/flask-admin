@@ -7,9 +7,6 @@ from playwright.sync_api import Page
 
 
 def test_theme_switcher_links(page: Page, live_server: dict[str, t.Any]) -> None:
-    # Asserts the switcher wiring. NOTE: the linked ``demo-theme.js`` is not
-    # shipped in the ``@tabler/core`` NPM package, so the toggle has no
-    # effect until theme switching is implemented (no 404-free script).
     # Located by CSS: the inactive toggle is ``display: none`` and therefore
     # absent from the accessibility tree by design.
     page.goto(f"{live_server['url']}/admin/author/")
@@ -19,3 +16,17 @@ def test_theme_switcher_links(page: Page, live_server: dict[str, t.Any]) -> None
     expect(page.locator('a[href="?theme=light"]')).to_have_attribute(
         "aria-label", "Enable light mode"
     )
+
+
+def test_theme_switcher_toggles_theme(
+    page: Page, live_server: dict[str, t.Any]
+) -> None:
+    # The ``?theme=`` switcher links are wired to ``tabler_theme.js``, which
+    # applies the choice as ``data-bs-theme`` on ``<html>`` and persists it.
+    page.goto(f"{live_server['url']}/admin/author/")
+    with page.expect_navigation():
+        page.locator('a[href="?theme=dark"]').click()
+    expect(page.locator("html")).to_have_attribute("data-bs-theme", "dark")
+    with page.expect_navigation():
+        page.locator('a[href="?theme=light"]').click()
+    expect(page.locator("html")).to_have_attribute("data-bs-theme", "light")

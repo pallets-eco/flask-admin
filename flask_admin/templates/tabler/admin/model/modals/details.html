@@ -47,8 +47,8 @@
     </div>
 {% endblock body %}
 {% block tail %}
-    <script src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
-    <script>
+    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+    <script {{ admin_csp_nonce_attribute }}>
         $(function() {
             // Apply flask-admin form styles after the modal is loaded
             window.faForm.applyGlobalStyles(document);

@@ -29,6 +29,7 @@ class AboutView(BaseView):
         return self.render("about.html")
 
 
+admin.add_view(AboutView(name="About"))
+
 if __name__ == "__main__":
-    admin.add_view(AboutView(name="About"))
     app.run(debug=True)

@@ -17,7 +17,7 @@
     {% endblock fa_form %}
 {% endblock body %}
 {% block tail %}
-    <script>
+    <script {{ admin_csp_nonce_attribute }}>
         $(function() {
             // Apply flask-admin form styles after the modal is loaded
             window.faForm.applyGlobalStyles(document);

@@ -14,7 +14,7 @@
     <div class="card">
         <div class="card-header">
             {% block breadcrums %}
-                <nav area-label="breadcrumb">
+                <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
                             <a href="{{ get_dir_url('.index_view', path=None) }}">{{ _gettext("Root") }}</a>
@@ -117,7 +117,7 @@
                                                                         {% elif csrf_token %}
                                                                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                                                         {% endif %}
-                                                                        {% set confirmation = _gettext('Are you sure you want to delete \\\'%(name) s\\\' recursively?', name=name) %}
+                                                                        {% set confirmation = _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) %}
                                                                         <button class="dropdown-item" onclick="return confirm('{{ confirmation }}');">
                                                                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                                                                  <i class="fa fa-times" aria-hidden="true"></i>
@@ -134,7 +134,7 @@
                                                                     {% elif csrf_token %}
                                                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                                                     {% endif %}
-                                                                    {% set confirmation = _gettext('Are you sure you want to delete \\\'%(name) s\\\'?', name=name) %}
+                                                                    {% set confirmation = _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) %}
                                                                     <button class="dropdown-item" onclick="return confirm('{{ confirmation }}');">
                                                                         <span class="nav-link-icon d-md-none d-lg-inline-block">
                                                                                  <i class="fa fa-trash" aria-hidden="true"></i>
@@ -221,6 +221,6 @@
     actions,
     actions_confirmation) }}
     {{ lib.form_js() }}
-    <script src="{{ admin_static.url(filename='admin/js/tabler_modal.js') }}"
+    <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/tabler_modal.js') }}"
             type="text/javascript"></script>
 {% endblock tail %}
