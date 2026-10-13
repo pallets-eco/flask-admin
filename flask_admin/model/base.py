@@ -84,6 +84,14 @@ from .helpers import prettify_name
 filter_char_re = re.compile("[^a-z0-9 ]")
 filter_compact_re = re.compile(" +")
 
+# Query string argument that marks the filters as having been explicitly
+# cleared/applied by the user from the filter UI at least once, so
+# `column_default_filters` is only ever applied on the very first,
+# untouched visit to the list view (see `BaseModelView._get_default_filters`).
+# Deliberately does NOT start with "flt" so `_get_list_filter_args` never
+# mistakes it for a `flt{n}_{key}` filter argument.
+FILTERS_TOUCHED_ARG = "filters_touched"
+
 
 class ViewArgs:
     """
@@ -509,6 +517,38 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 column_default_sort = [('name', True), ('last_name', True)]
+    """
+
+    column_default_filters: None | list[tuple[str, t.Any]] = None
+    """
+        Filters to apply by default when the list view is first loaded,
+        i.e. when the query string has no ``flt*`` arguments at all.
+
+        Unlike overriding :meth:`get_query`/:meth:`get_count_query`, these
+        filters show up as regular active filters in the UI, so the user can
+        still edit or remove them, same as a normal filter they applied
+        themselves. Once the user applies, edits or clears any filter, the
+        page reflects exactly what they chose from then on; these defaults
+        only ever apply to the very first, filter-less visit.
+
+        Accepts a list of ``(filter_key, value)`` tuples. ``filter_key`` is
+        the ``<name>_<operation>`` string that would appear in the URL if
+        ``named_filter_urls`` were enabled (lowercased, derived from the
+        filter's display name and its operation), regardless of whether
+        ``named_filter_urls`` is actually turned on for this view. ``value``
+        may be a plain value, or a zero-argument callable evaluated once per
+        request, which is useful for dynamic defaults such as "today"::
+
+            class MyModelView(BaseModelView):
+                column_filters = ('date_created',)
+                column_default_filters = [
+                    ('date_created_equals', lambda: date.today().isoformat()),
+                ]
+
+        If a filter's column has more than one label in different languages,
+        or you are not sure which ``filter_key`` a filter ends up with,
+        inspect ``view._filters`` and ``view._get_named_filter_key(flt)``
+        for the view instance to confirm it.
     """
 
     column_searchable_list: T_COLUMN_LIST | None = t.cast(
@@ -1350,6 +1390,30 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             return None
 
+    def _get_named_filter_key(self, flt: BaseFilter) -> str:
+        """
+        Compute the human-readable ``<name>_<operation>`` key for a filter,
+        e.g. ``'data_aposta_equals'``. This is the same value
+        :meth:`get_filter_arg` returns when ``named_filter_urls`` is enabled,
+        but it is always available so it can also be used to match
+        :attr:`column_default_filters` entries regardless of that setting.
+
+        :param flt:
+            Filter instance
+        """
+        operation = flt.operation()
+
+        try:
+            # get lazy string original value
+            operation = operation._args[0]  # type: ignore[union-attr]
+        except AttributeError:
+            pass
+
+        name = (f"{flt.name} {as_unicode(operation)}").lower()
+        name = filter_char_re.sub("", name)
+        name = filter_compact_re.sub("_", name)
+        return name
+
     def get_filter_arg(self, index: int, flt: BaseFilter) -> str:
         """
         Given a filter `flt`, return a unique name for that filter in
@@ -1363,18 +1427,7 @@ class BaseModelView(BaseView, ActionsMixin):
             Filter instance
         """
         if self.named_filter_urls:
-            operation = flt.operation()
-
-            try:
-                # get lazy string original value
-                operation = operation._args[0]  # type: ignore[union-attr]
-            except AttributeError:
-                pass
-
-            name = (f"{flt.name} {as_unicode(operation)}").lower()
-            name = filter_char_re.sub("", name)
-            name = filter_compact_re.sub("_", name)
-            return name
+            return self._get_named_filter_key(flt)
         else:
             return str(index)
 
@@ -1965,9 +2018,47 @@ class BaseModelView(BaseView, ActionsMixin):
                         flash(self.get_invalid_value_msg(value, flt), "error")
 
             # Sort filters
-            return [v[1] for v in sorted(filters, key=lambda n: n[0])]
+            result: list[T_FILTER] = [v[1] for v in sorted(filters, key=lambda n: n[0])]
+
+            if (
+                not result
+                and self.column_default_filters
+                and FILTERS_TOUCHED_ARG not in request.args
+            ):
+                return self._get_default_filters()
+
+            return result
 
         return None
+
+    def _get_default_filters(self) -> list[T_FILTER]:
+        """
+        Build the list of active filters from :attr:`column_default_filters`,
+        in the same ``(idx, name, value)`` shape :meth:`_get_list_filter_args`
+        returns for filters parsed from the query string.
+        """
+        if not self.column_default_filters:
+            return []
+
+        defaults = dict(self.column_default_filters)
+        result: list[T_FILTER] = []
+
+        for idx, flt in enumerate(self._filters or []):
+            key = self._get_named_filter_key(flt)
+            if key not in defaults:
+                continue
+
+            value = defaults[key]
+            if callable(value):
+                value = value()
+            value = as_unicode(value)
+
+            if flt.validate(value):
+                result.append((idx, as_unicode(flt.name), value))
+            else:
+                flash(self.get_invalid_value_msg(value, flt), "error")
+
+        return result
 
     def _get_list_extra_args(self) -> ViewArgs:
         """
@@ -2291,6 +2382,12 @@ class BaseModelView(BaseView, ActionsMixin):
         else:
             action_form = None
 
+        clear_search_extra_args = dict(view_args.extra_args)
+        if self.column_default_filters:
+            # Mark filters as explicitly cleared, so `column_default_filters`
+            # isn't silently re-applied once the user removes every filter.
+            clear_search_extra_args[FILTERS_TOUCHED_ARG] = "1"
+
         clear_search_url = self._get_list_url(
             view_args.clone(
                 page=0,
@@ -2298,6 +2395,7 @@ class BaseModelView(BaseView, ActionsMixin):
                 sort_desc=view_args.sort_desc,
                 search=None,
                 filters=None,
+                extra_args=clear_search_extra_args,
             )
         )
 

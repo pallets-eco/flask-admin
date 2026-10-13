@@ -2976,6 +2976,83 @@ def test_modelview_named_filter_localization(
         assert "test1_equals" == flt_name
 
 
+def test_column_default_filters(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(
+            Model1,
+            param,
+            column_filters=["test1"],
+            column_default_filters=[("test1_equals", "test1_val_1")],
+        )
+        admin.add_view(view)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # No query string at all -> the default filter kicks in.
+        rv = client.get("/admin/model1/")
+        assert rv.status_code == 200
+        data = rv.data.decode("utf-8")
+        assert "test1_val_1" in data
+        assert "test1_val_2" not in data
+
+        # An explicit filter from the query string takes priority, the
+        # default is not applied on top of it.
+        rv = client.get("/admin/model1/?flt0_0=test1_val_2")
+        assert rv.status_code == 200
+        data = rv.data.decode("utf-8")
+        assert "test1_val_2" in data
+        assert "test1_val_1" not in data
+
+        # Once the user has explicitly cleared the filters (same marker the
+        # "Reset Filters" link sends), the default must not come back just
+        # because the query string has no `flt*` arguments.
+        rv = client.get("/admin/model1/?filters_touched=1")
+        assert rv.status_code == 200
+        data = rv.data.decode("utf-8")
+        assert "test1_val_1" in data
+        assert "test1_val_2" in data
+        assert "test1_val_3" in data
+
+
+def test_column_default_filters_callable_value(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(
+            Model1,
+            param,
+            column_filters=["test1"],
+            column_default_filters=[("test1_equals", lambda: "test1_val_3")],
+        )
+        admin.add_view(view)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        rv = client.get("/admin/model1/")
+        assert rv.status_code == 200
+        data = rv.data.decode("utf-8")
+        assert "test1_val_3" in data
+        assert "test1_val_1" not in data
+
+
 def test_custom_form_base(
     app: Flask,
     sqla_db_ext: T_ANY_SQLA_PROVIDER,
