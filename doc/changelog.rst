@@ -9,6 +9,7 @@ Bugfixes:
 * SQLAlchemy backend: ``ItemsRequired`` once again validates multi-select relation fields without raising ``AttributeError``. Inline entries marked for deletion remain excluded from the count (closes #2385).
 
 * Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist
+* Peewee backend: support ``form_choices`` in ``ModelView``, rendering a ``Select2Field`` like the SQLAlchemy backend (closes #2235)
 
 Dev:
 
