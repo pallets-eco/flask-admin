@@ -1,0 +1,40 @@
+{% import 'admin/static.html' as admin_static with context%}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+  <div class="modal-header">
+    {% block header_text %}
+      <h5 class="modal-title">{{ _gettext('View Record') + ' #' + request.args.get('id') }}</h5>
+    {% endblock %}
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+
+  <div class="modal-body">
+  {% block details_search %}
+    <div class="d-flex align-items-center my-3 col-lg-6">
+      <label for="fa_filter" class="me-3">{{ _gettext('Filter') }}</label>
+      <input id="fa_filter" type="text" class="form-control">
+    </div>
+  {% endblock %}
+
+  {% block details_table %}
+    <table class="table table-hover table-bordered searchable">
+    {% for c, name in details_columns %}
+      <tr>
+        <td>
+          <b>{{ name }}</b>
+        </td>
+        <td>
+        {{ get_value(model, c) }}
+        </td>
+      </tr>
+    {% endfor %}
+    </table>
+  {% endblock %}
+  </div>
+{% endblock %}
+
+{% block tail %}
+  <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/details_filter.js', v='1.0.0') }}"></script>
+  <script {{ admin_csp_nonce_attribute }}>window.faForm.applyGlobalStyles(document.getElementsByClassName('modal-content'));</script>
+{% endblock %}

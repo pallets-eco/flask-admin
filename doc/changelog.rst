@@ -3,6 +3,8 @@ Changelog
 
 [unreleased]
 ------------------
+New Features:
+* Added experimental TablerTheme
 
 Bugfixes:
 
