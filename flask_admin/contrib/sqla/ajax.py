@@ -89,7 +89,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
 
     def get_one(self, pk: t.Any) -> t.Any:
         session = _get_deprecated_session(self.session)
-        # prevent autoflush from occuring during populate_obj
+        # prevent autoflush from occurring during populate_obj
         with session.no_autoflush:
             return session.get(self.model, pk)
 

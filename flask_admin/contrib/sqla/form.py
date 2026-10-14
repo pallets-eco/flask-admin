@@ -303,16 +303,16 @@ class AdminModelConverter(ModelConverterBase):
 
                     # Current Unique Validator does not work with multicolumns-pks
                     if not has_multiple_pks(model):
-                        kwargs["validators"].append(
-                            Unique(_get_deprecated_session(self.session), model, column)
-                        )
+                        # Pass the db/session object through untouched: Unique
+                        # resolves the actual session when it runs, so it does not
+                        # hold on to the session that was active at scaffold time.
+                        # https://github.com/pallets-eco/flask-admin/issues/2831
+                        kwargs["validators"].append(Unique(self.session, model, column))
                         unique = True
 
             # If field is unique, validate it
             if column.unique and not unique:
-                kwargs["validators"].append(
-                    Unique(_get_deprecated_session(self.session), model, column)
-                )
+                kwargs["validators"].append(Unique(self.session, model, column))
 
             optional_types = getattr(self.view, "form_optional_types", (Boolean,))
 
