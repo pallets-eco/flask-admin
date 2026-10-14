@@ -17,6 +17,14 @@ admin = Admin(app, name="Example: Azure Blob Storage File Admin")
 babel = Babel(app)
 
 
+class MyModalAzureFileAdmin(AzureFileAdmin):
+    editable_extensions = ("txt",)
+    upload_modal = True
+    rename_modal = True
+    edit_modal = True
+    mkdir_modal = True
+
+
 if __name__ == "__main__":
     with AzuriteContainer() as azurite_container:
         print("\n\n=============================")
@@ -31,6 +39,13 @@ if __name__ == "__main__":
             AzureFileAdmin(
                 blob_service_client=client,
                 container_name="fileadmin-tests",
+            )
+        )
+        admin.add_view(
+            MyModalAzureFileAdmin(
+                blob_service_client=client,
+                container_name="fileadmin-tests",
+                name="Modal Azure File Admin",
             )
         )
 

@@ -10,6 +10,8 @@ Bugfixes:
 
 * Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist
 
+* Fileadmin: show correct styling and page after user enters an invalid file name a modal view
+
 Dev:
 
 * SQLAlchemy backend: add regression coverage for ``form_columns`` ordering when ``form_extra_fields`` replaces a model field, while retaining coverage for model-attribute column specifications (#2965).
