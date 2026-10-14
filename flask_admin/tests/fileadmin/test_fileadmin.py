@@ -309,7 +309,7 @@ class Base:
             url: str,
             expected: list[str],
             action_url: str,
-            post_data: dict[str, str],
+            post_data: dict[str, t.Any],
             expected_post_res: list[str],
             request: pytest.FixtureRequest,
         ) -> None:
