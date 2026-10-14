@@ -108,6 +108,7 @@ tests = [
     "moto",
     "botocore>=1.35",
     "psycopg2-binary",
+    "psycopg[binary]",
     "beautifulsoup4",
     "azure-storage-blob",
 ]

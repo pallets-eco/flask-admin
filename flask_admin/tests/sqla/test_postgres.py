@@ -1,3 +1,5 @@
+import typing as t
+
 from citext import CIText
 from flask import Flask
 from sqlalchemy import Boolean
@@ -5,10 +7,12 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import text
+from sqlalchemy import TypeDecorator
 from sqlalchemy.dialects.postgresql import HSTORE
 from sqlalchemy.dialects.postgresql import JSON
 
 from ... import Admin
+from ...contrib.sqla import ModelView
 from ..conftest import skip_or_return_session_or_db
 from ..conftest import T_ANY_SQLA_PROVIDER
 from ..conftest import T_LITERAL_SESSION_OR_DB
@@ -232,3 +236,147 @@ def test_boolean_filters(
         assert "true_val_1" in data
         assert "false_val_1" not in data
         assert "false_val_2" not in data
+
+
+def test_multiple_delete_integer_pk(
+    app: Flask,
+    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
+    postgres_admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
+
+        class IntModel(sqla_postgres_db_ext.Base):  # type: ignore[name-defined, misc]
+            __tablename__ = "test_bulk_delete_int_model"
+            id = Column(Integer, primary_key=True, autoincrement=True)
+            name = Column(String(50))
+
+        sqla_postgres_db_ext.drop_all()
+        sqla_postgres_db_ext.create_all()
+
+        m1 = IntModel(name="a")
+        m2 = IntModel(name="b")
+        m3 = IntModel(name="c")
+        sqla_postgres_db_ext.db.session.add_all([m1, m2, m3])
+        sqla_postgres_db_ext.db.session.commit()
+
+        view = CustomModelView(IntModel, param)
+        postgres_admin.add_view(view)
+
+        client = app.test_client()
+
+        rv = client.post(
+            "/admin/intmodel/action/",
+            data=dict(action="delete", rowid=[str(m1.id), str(m2.id)]),
+        )
+        assert rv.status_code == 302
+        assert sqla_postgres_db_ext.db.session.query(IntModel).count() == 1
+        model = sqla_postgres_db_ext.db.session.query(IntModel).first()
+        assert model is not None
+        assert model.id == m3.id
+
+
+def test_multiple_delete_boolean_pk(
+    app: Flask,
+    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
+    postgres_admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
+
+        class BoolModel(sqla_postgres_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "bool_model_bulk_delete"
+            id = Column(Boolean, primary_key=True)
+            name = Column(String(50))
+
+        sqla_postgres_db_ext.drop_all()
+        sqla_postgres_db_ext.create_all()
+
+        sqla_postgres_db_ext.db.session.add_all(
+            [
+                BoolModel(id=False, name="f_row"),
+                BoolModel(id=True, name="t_row"),
+            ]
+        )
+        sqla_postgres_db_ext.db.session.commit()
+
+        postgres_admin.add_view(ModelView(BoolModel, param))
+        client = app.test_client()
+
+        # "False" string must delete False record without affecting True record
+        rv = client.post(
+            "/admin/boolmodel/action/",
+            data=dict(action="delete", rowid=["False"]),
+        )
+        assert rv.status_code == 302
+        assert sqla_postgres_db_ext.db.session.query(BoolModel).count() == 1
+        model = sqla_postgres_db_ext.db.session.query(BoolModel).first()
+        assert model is not None
+        assert model.id == True  # noqa: E712
+        assert model.name == "t_row"
+
+
+def test_multiple_delete_type_decorator_pk(
+    app: Flask,
+    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
+    postgres_admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+        param = skip_or_return_session_or_db(sqla_postgres_db_ext, session_or_db)
+
+        if t.TYPE_CHECKING:
+            _HexIntBase = TypeDecorator[str]
+        else:
+            _HexIntBase = TypeDecorator
+
+        class HexInt(_HexIntBase):
+            impl = Integer
+            cache_ok = True
+
+            def process_bind_param(self, value: t.Any, dialect: t.Any) -> int | None:
+                if value is None:
+                    return None
+                if isinstance(value, str):
+                    return int(value, 16)
+                return int(value)
+
+            def process_result_value(self, value: t.Any, dialect: t.Any) -> str | None:
+                if value is None:
+                    return None
+                return hex(value)[2:]
+
+        class HexModel(sqla_postgres_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "hex_model_bulk_delete"
+            id = Column(HexInt, primary_key=True)
+            name = Column(String(50))
+
+        sqla_postgres_db_ext.drop_all()
+        sqla_postgres_db_ext.create_all()
+
+        m1 = HexModel(id="10", name="hex16")
+        m2 = HexModel(id="20", name="hex32")
+        sqla_postgres_db_ext.db.session.add_all([m1, m2])
+        sqla_postgres_db_ext.db.session.commit()
+
+        view = CustomModelView(HexModel, param)
+        postgres_admin.add_view(view)
+
+        # Retrieve row ID generated by the view (simulating real page checkbox value)
+        row_id = view.get_pk_value(m1)
+        assert row_id == "10"
+
+        client = app.test_client()
+
+        rv = client.post(
+            "/admin/hexmodel/action/",
+            data=dict(action="delete", rowid=[row_id]),
+        )
+        assert rv.status_code == 302
+        assert sqla_postgres_db_ext.db.session.query(HexModel).count() == 1
+        remaining = sqla_postgres_db_ext.db.session.query(HexModel).first()
+        assert remaining is not None
+        assert remaining.id == "20"
+        assert remaining.name == "hex32"
