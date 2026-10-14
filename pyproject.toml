@@ -111,6 +111,10 @@ tests = [
     "beautifulsoup4",
     "azure-storage-blob",
 ]
+e2e = [
+    "playwright",
+    {include-group = "tests"},
+]
 typing = [
     "flask-admin[all]",
     "mypy",
@@ -120,6 +124,7 @@ typing = [
     "types-WTForms", # for WTForms 3.2.1
     "types-shapely", # for shapely==2.1.*
     {include-group = "tests"},
+    {include-group = "e2e"}, # e2e imports must resolve for type checking
 ]
 
 [project.urls]
@@ -145,7 +150,8 @@ flask-admin = { workspace = true }
 [tool.pytest.ini_options]
 testpaths = ["flask_admin/tests"]
 markers = [
-    "flask_babel: requires Flask-Babel to be installed"
+    "flask_babel: requires Flask-Babel to be installed",
+    "e2e: end-to-end browser tests (require Playwright and Flask-Babel)",
 ]
 filterwarnings = [
     "error",
@@ -272,6 +278,7 @@ env_list = [
     "style",
     "typing",
     "docs",
+    "e2e",
 ]
 
 [tool.tox.env_run_base]
@@ -394,6 +401,15 @@ commands = [
 description = "build docs"
 dependency_groups = ["docs"]
 commands = [["sphinx-build", "-E", "-W", "-b", "dirhtml", "doc", "doc/_build/dirhtml"]]
+
+[tool.tox.env.e2e]
+description = "run Playwright end-to-end tests for the Tabler theme"
+base = ["env_run_base"]
+dependency_groups = ["e2e"]
+commands = [
+    ["playwright", "install", "chromium"],
+    ["pytest", "flask_admin/tests/e2e", "-v", "--tb=short", "--basetemp={env_tmp_dir}"],
+]
 
 # [tool.tox.env.docs-auto]
 # description = "continuously rebuild docs and start a local server"
