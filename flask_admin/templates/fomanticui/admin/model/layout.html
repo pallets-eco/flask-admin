@@ -1,0 +1,102 @@
+{% macro filter_options_items() %}
+    {% for k in filter_groups %}
+        <div class="actionable item filter">
+            <span>{{ k }}</span>
+        </div>
+    {% endfor %}
+{% endmacro %}
+
+{% macro export_options_items() %}
+    {% for export_type in admin_view.export_types %}
+        <a class="actionable item"
+           href="{{ get_url('.export', export_type=export_type, **request.args) }}">
+            {{ _gettext("Export") + ' ' + export_type|upper }}
+        </a>
+    {% endfor %}
+{% endmacro %}
+
+{% macro filter_form() %}
+    <table class="ui small compact attached table" id="filters-table">
+        <thead style="visibility: hidden;">
+            <tr>
+                <th class="three wide"></th>
+                <th class="four wide"></th>
+                <th class="nine wide"></th>
+            </tr>
+        </thead>
+        <tbody class="filters ui form">
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>
+                    <form id="filter_form" method="get" action="{{ return_url }}">
+                        {% for arg_name, arg_value in extra_args.items() %}
+                            <input type="hidden" name="{{ arg_name }}" value="{{ arg_value }}" />
+                        {% endfor %}
+                        {% if sort_column is not none %}<input type="hidden" name="sort" value="{{ sort_column }}" />{% endif %}
+                        {% if sort_desc %}<input type="hidden" name="desc" value="1" />{% endif %}
+                        {% if search %}<input type="hidden" name="search" value="{{ search }}" />{% endif %}
+                        {% if page_size != default_page_size %}<input type="hidden" name="page_size" value="{{ page_size }}" />{% endif %}
+                    </form>
+                </th>
+                <th colspan="2" class="right aligned">
+                    <button id="apply-filters-btn" class="ui primary small button disabled">{{ _gettext("Apply") }}</button>
+                    {% if active_filters %}
+                        <a type="button"
+                           href="{{ clear_search_url }}"
+                           class="ui button small secondary">{{ _gettext("Reset Filters") }}</a>
+                    {% endif %}
+                </th>
+            </tr>
+        </tfoot>
+    </table>
+{% endmacro %}
+
+{% macro search_form(input_class="") %}
+    <form method="get" action="{{ return_url }}" class="ui form" role="search">
+        {% for flt_name, flt_value in filter_args.items() %}
+            <input type="hidden" name="{{ flt_name }}" value="{{ flt_value }}" />
+        {% endfor %}
+        {% if page_size != default_page_size %}<input type="hidden" name="page_size" value="{{ page_size }}" />{% endif %}
+        {% for arg_name, arg_value in extra_args.items() %}
+            <input type="hidden" name="{{ arg_name }}" value="{{ arg_value }}" />
+        {% endfor %}
+        {% if sort_column is not none %}<input type="hidden" name="sort" value="{{ sort_column }}" />{% endif %}
+        {% if sort_desc %}<input type="hidden" name="desc" value="1" />{% endif %}
+        {% if search %}
+            <div class="ui field fluid action left icon input">
+                <input class="{{ input_class }}"
+                       size="30"
+                       type="text"
+                       name="search"
+                       value="{{ search }}"
+                       placeholder="{{ _gettext("Search") }} {{ _gettext('%(placeholder)s', placeholder=search_placeholder) }}" />
+                <i class="close link icon"
+                   onclick="window.location.href='{{ clear_search_url }}'"></i>
+                <button class="ui icon button" type="submit">
+                    <i class="search icon"></i>
+                </button>
+            </div>
+        {% else %}
+            <div class="ui field fluid action input">
+                <input class="{{ input_class }}"
+                       size="30"
+                       type="text"
+                       name="search"
+                       placeholder="{{ _gettext("Search") }} {{ _gettext('%(placeholder)s', placeholder=search_placeholder) }}" />
+                <button class="ui icon button" type="submit">
+                    <i class="search icon"></i>
+                </button>
+            </div>
+        {% endif %}
+    </form>
+{% endmacro %}
+
+{% macro page_size_form_items(generator, page_size_options, btn_class='nav-link dropdown-toggle') %}
+    {% for option in page_size_options %}
+        <a class="item{% if page_size == option %} active{% endif %}"
+           href="{{ generator(option) }}">
+            {{ _ngettext('{} item'.format(option) , '{} items'.format(option), option) }}
+        </a>
+    {% endfor %}
+{% endmacro %}
