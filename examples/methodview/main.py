@@ -38,7 +38,8 @@ class ViewWithMethodViews(BaseView):
             return cls.render("test.html", request=request, name="API_v2")
 
 
-if __name__ == "__main__":
-    admin.add_view(ViewWithMethodViews())
+admin.add_view(ViewWithMethodViews())
 
+
+if __name__ == "__main__":
     app.run(debug=True)
