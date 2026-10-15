@@ -10,6 +10,8 @@ Bugfixes:
 
 * Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist
 
+* SQLAlchemy backend: columns using a custom ``TypeDecorator`` now get the form field of the type they wrap (``impl``) instead of being left out of the form, unless a converter is registered for the decorator itself (closes #1857).
+
 Dev:
 
 * SQLAlchemy backend: add regression coverage for ``form_columns`` ordering when ``form_extra_fields`` replaces a model field, while retaining coverage for model-attribute column specifications (#2965).

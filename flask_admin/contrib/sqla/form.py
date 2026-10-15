@@ -9,6 +9,7 @@ from enum import EnumMeta
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy.orm import ColumnProperty
+from sqlalchemy.types import TypeDecorator
 from wtforms import fields
 from wtforms import Form
 from wtforms import HiddenField
@@ -112,6 +113,20 @@ class AdminModelConverter(ModelConverterBase):
         if column_descriptions:
             return column_descriptions.get(name)
         return None
+
+    def get_converter(
+        self, column: T_SQLALCHEMY_COLUMN
+    ) -> t.Callable[..., t.Any] | None:
+        converter = super().get_converter(column)
+
+        # A TypeDecorator wraps another type in `impl`. Use the converter for the
+        # wrapped type when there isn't one registered for the decorator itself.
+        column_type: t.Any = column.type
+        while converter is None and isinstance(column_type, TypeDecorator):
+            column_type = column_type.impl
+            converter = self._get_type_converter(column_type)
+
+        return converter
 
     def _get_field_override(self, name: str) -> Callable[..., t.Any] | None:
         form_overrides = getattr(self.view, "form_overrides", None)

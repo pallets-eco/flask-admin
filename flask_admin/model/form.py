@@ -207,11 +207,14 @@ class ModelConverterBase:
     def get_converter(
         self, column: T_SQLALCHEMY_COLUMN
     ) -> t.Callable[..., t.Any] | None:
+        return self._get_type_converter(column.type)
+
+    def _get_type_converter(self, column_type: t.Any) -> t.Callable[..., t.Any] | None:
         types: list[type] | tuple[type, ...]
         if self.use_mro:
-            types = inspect.getmro(type(column.type))
+            types = inspect.getmro(type(column_type))
         else:
-            types = [type(column.type)]
+            types = [type(column_type)]
 
         # Search by module + name
         for col_type in types:
