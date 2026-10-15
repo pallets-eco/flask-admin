@@ -718,6 +718,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         base_path = self.get_base_path()
         if path is None:
             directory = base_path
+            directory = self.normpath(directory)
             path = ""
         else:
             path = self.normpath(path)
