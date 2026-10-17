@@ -15,10 +15,10 @@ except ImportError:
     T_SQLALCHEMY: t.Any | None = None  # type: ignore[no-redef]
     T_SESSION: t.Any | None = None # type: ignore[no-redef]
 
+
 if t.TYPE_CHECKING:  # sqlalchemy 2.x types are subscriptable
     T_SQLALCHEMY_QUERY = Query[t.Any]
     T_SCOPED_SESSION = scoped_session[T_SESSION]
-
 else:  # sqlalchemy 1.x types are not subscriptable
     T_SQLALCHEMY_QUERY = Query
     T_SCOPED_SESSION = scoped_session
