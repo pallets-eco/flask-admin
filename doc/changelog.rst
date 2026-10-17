@@ -4,6 +4,16 @@ Changelog
 [unreleased]
 ------------------
 
+Bugfixes:
+
+* SQLAlchemy backend: ``ItemsRequired`` once again validates multi-select relation fields without raising ``AttributeError``. Inline entries marked for deletion remain excluded from the count (closes #2385).
+
+* Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist
+
+Dev:
+
+* SQLAlchemy backend: add regression coverage for ``form_columns`` ordering when ``form_extra_fields`` replaces a model field, while retaining coverage for model-attribute column specifications (#2965).
+
 * Support building with ``flit_core`` v4: use the PEP 621 ``authors`` key instead of the invalid singular ``author`` in ``pyproject.toml``, and widen the build-system pin from ``flit_core<4`` to ``flit_core<5`` (closes #2956).
 
 2.2.1
