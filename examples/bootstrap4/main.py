@@ -12,6 +12,8 @@ from flask_admin.contrib.fileadmin import FileAdmin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuDivider
 from flask_admin.menu import MenuLink
+from flask_admin.model.template import EndpointLinkRowAction
+from flask_admin.model.template import LinkRowAction
 from flask_admin.theme import Bootstrap4Theme
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Boolean
@@ -100,6 +102,11 @@ class UserAdmin(ModelView):
     can_set_page_size = True
     page_size_options = (3, 5, 7, 10, 20, 50, 100)
     page_size = 7
+
+    column_extra_row_actions = [
+        LinkRowAction("bi bi-chat-quote", "/admin/page?id={row_id}"),
+        EndpointLinkRowAction("bi bi-cake-fill", ".index_view"),
+    ]
 
 
 class SimplePageView(ModelView):
@@ -213,6 +220,57 @@ if __name__ == "__main__":
                 category="Themes",
             )
         )
+
+    admin.add_link(
+        MenuLink(
+            name="Fontawesome",
+            url="http://www.example.com/",
+            category="Icons",
+            icon_type="fa",
+            icon_value="fa-home shadow",
+        )
+    )
+
+    admin.add_link(
+        MenuLink(
+            name="Bootstrap Icons",
+            url="http://www.example.com/",
+            category="Icons",
+            icon_type="bi",
+            icon_value="bi-bootstrap",
+        )
+    )
+
+    admin.add_link(
+        MenuLink(
+            name="glyphicon",
+            url="http://www.example.com/",
+            category="Icons",
+            icon_type="glyph",
+            icon_value="glyphicon-home",
+        )
+    )
+
+    admin.add_link(
+        MenuLink(
+            name="image from /static",
+            url="http://www.example.com/",
+            category="Icons",
+            icon_type="image",
+            icon_value="h1.png",
+            class_name="shadow",
+        )
+    )
+
+    admin.add_link(
+        MenuLink(
+            name="image URL",
+            url="http://www.example.com/",
+            category="Icons",
+            icon_type="image-url",
+            icon_value="https://placehold.co/32?text=S",
+        )
+    )
 
     app_dir = op.realpath(op.dirname(__file__))
     database_path = op.join(app_dir, app.config["DATABASE_FILE"])
