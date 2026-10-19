@@ -549,7 +549,7 @@ class Admin:
         name: str | None = None,
         url: str | None = None,
         subdomain: str | None = None,
-        index_view: AdminIndexView | None = None,
+        index_view: BaseView | None = None,
         translations_path: str | None = None,
         endpoint: str | None = None,
         static_url_path: str | None = None,
@@ -668,7 +668,7 @@ class Admin:
 
     def _set_admin_index_view(
         self,
-        index_view: AdminIndexView | None = None,
+        index_view: BaseView | None = None,
         endpoint: str | None = None,
         url: str | None = None,
     ) -> None:
@@ -684,7 +684,7 @@ class Admin:
              `Admin` class with a single Flask application, you have to set a unique
              endpoint name for each instance.
         """
-        self.index_view: AdminIndexView = (  # type: ignore[no-redef]
+        self.index_view: BaseView = (  # type: ignore[no-redef]
             index_view or AdminIndexView(endpoint=endpoint, url=url)
         )
         self.endpoint = endpoint or self.index_view.endpoint
@@ -857,7 +857,7 @@ class Admin:
     def init_app(
         self,
         app: Flask,
-        index_view: AdminIndexView | None = None,
+        index_view: BaseView | None = None,
         endpoint: str | None = None,
         url: str | None = None,
     ) -> None:

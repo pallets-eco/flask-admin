@@ -35,6 +35,7 @@ from ..._types import T_FIELD_ARGS_LABEL
 from ..._types import T_FIELD_ARGS_PLACES
 from ..._types import T_FIELD_ARGS_VALIDATORS
 from ..._types import T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK
+from ..._types import T_FIELD_ARGS_VALIDATORS_COERCE
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
 from ..._types import T_INSTRUMENTED_ATTRIBUTE
 from ..._types import T_MODEL_VIEW
@@ -302,16 +303,16 @@ class AdminModelConverter(ModelConverterBase):
 
                     # Current Unique Validator does not work with multicolumns-pks
                     if not has_multiple_pks(model):
-                        kwargs["validators"].append(
-                            Unique(_get_deprecated_session(self.session), model, column)
-                        )
+                        # Pass the db/session object through untouched: Unique
+                        # resolves the actual session when it runs, so it does not
+                        # hold on to the session that was active at scaffold time.
+                        # https://github.com/pallets-eco/flask-admin/issues/2831
+                        kwargs["validators"].append(Unique(self.session, model, column))
                         unique = True
 
             # If field is unique, validate it
             if column.unique and not unique:
-                kwargs["validators"].append(
-                    Unique(_get_deprecated_session(self.session), model, column)
-                )
+                kwargs["validators"].append(Unique(self.session, model, column))
 
             optional_types = getattr(self.view, "form_optional_types", (Boolean,))
 
@@ -621,8 +622,19 @@ class AdminModelConverter(ModelConverterBase):
         "sqlalchemy.dialects.postgresql.base.ARRAY", "sqlalchemy.sql.sqltypes.ARRAY"
     )
     def conv_ARRAY(
-        self, field_args: T_FIELD_ARGS_VALIDATORS, **extra: t.Any
+        self, field_args: T_FIELD_ARGS_VALIDATORS_COERCE, **extra: t.Any
     ) -> form.Select2TagsField:
+        # Ensure Select2TagsField uses the correct Python type for ARRAY element values.
+        # Otherwise, WTForms defaults to text_type, causing Postgres ARRAY type errors.
+        column = extra.get("column")
+        item_type = getattr(getattr(column, "type", None), "item_type", None)
+        if item_type is not None:
+            try:
+                python_type = item_type.python_type
+            except (AttributeError, NotImplementedError):
+                python_type = None
+            if python_type is not None and python_type is not str:
+                field_args.setdefault("coerce", python_type)
         return form.Select2TagsField(save_as_list=True, **field_args)
 
     @converts("HSTORE")

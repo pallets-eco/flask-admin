@@ -34,7 +34,7 @@ def grid_formatter(view: ModelView, value: GridOut) -> Markup | str:
             "url": view.get_url(".api_file_view", **args),
             "name": escape(value.name),
             "size": value.length // 1024,
-            "content_type": escape(value.content_type),
+            "content_type": escape(helpers.gridfs_content_type(value) or ""),
         }
     )
 

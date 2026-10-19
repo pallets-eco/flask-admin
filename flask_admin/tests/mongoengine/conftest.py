@@ -7,7 +7,6 @@ from mongoengine import connect
 from mongoengine import disconnect
 
 from flask_admin import Admin
-from flask_admin.contrib.sqla._types import T_SESSION_OR_DB
 
 
 @pytest.fixture
@@ -23,7 +22,7 @@ def db() -> t.Generator[None, t.Any, None]:
 
 @pytest.fixture
 def admin(
-    app: Flask, babel: object | None, db: T_SESSION_OR_DB
+    app: Flask, babel: object | None, db: t.Any
 ) -> t.Generator[Admin, t.Any, None]:
     admin = Admin(app)
     yield admin

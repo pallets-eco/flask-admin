@@ -116,7 +116,10 @@ def test_base_defaults() -> None:
     assert admin.endpoint == "admin"
     assert admin.app is None
     assert admin.index_view is not None
-    assert admin.index_view._template == "admin/index.html"
+    assert (
+        isinstance(admin.index_view, base.AdminIndexView)
+        and admin.index_view._template == "admin/index.html"
+    )
 
     # Check if default view was added
     assert len(admin._views) == 1

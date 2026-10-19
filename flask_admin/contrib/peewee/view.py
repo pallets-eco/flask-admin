@@ -4,6 +4,7 @@ from typing import TypeGuard
 
 from flask import flash
 from peewee import CharField
+from peewee import DoesNotExist
 from peewee import Expression
 from peewee import Field
 from peewee import ForeignKeyField
@@ -14,6 +15,7 @@ from peewee import PrimaryKeyField
 from peewee import SqliteDatabase
 from peewee import TextField
 from wtforms import Form
+from wtforms.form import BaseForm
 
 from flask_admin._compat import string_types
 from flask_admin.actions import action
@@ -235,7 +237,7 @@ class ModelView(BaseModelView):
             return tuple(
                 [
                     getattr(model, field_name)
-                    for field_name in self.model._meta.primary_key.field_names
+                    for field_name in self.model._meta.primary_key.field_names  # type: ignore[union-attr]
                 ]
             )
         return getattr(model, self._primary_key)
@@ -332,7 +334,7 @@ class ModelView(BaseModelView):
         )
 
         if self.inline_models:
-            form_class = self.scaffold_inline_form_models(form_class)
+            form_class = self.scaffold_inline_form_models(form_class)  # type: ignore[assignment]
 
         return form_class
 
@@ -361,10 +363,9 @@ class ModelView(BaseModelView):
 
         return create_editable_list_form(self.form_base_class, form_class, widget)
 
-    def scaffold_inline_form_models(self, form_class: type[Form]) -> type[Form]:
+    def scaffold_inline_form_models(self, form_class: type[BaseForm]) -> type[BaseForm]:
         converter = self.model_form_converter(self)
         inline_converter = self.inline_model_form_converter(self)
-
         for m in self.inline_models:  # type: ignore[union-attr]
             form_class = inline_converter.contribute(
                 converter,
@@ -520,16 +521,21 @@ class ModelView(BaseModelView):
             query = query.offset(page * page_size)
 
         if execute:
-            query = list(query.execute())  # type: ignore[assignment,no-untyped-call]
+            query = list(query.execute())  # type: ignore[assignment]
 
         return count, query
 
     def get_one(self, id: t.Any) -> t.Any:
         if self.model._meta.composite_key:
-            return self.model.get(  # type: ignore[no-untyped-call]
-                **dict(zip(self.model._meta.primary_key.field_names, id, strict=False))
+            kwargs = dict(
+                zip(self.model._meta.primary_key.field_names, id, strict=False)  # type: ignore[union-attr]
             )
-        return self.model.get(**{self._primary_key: id})  # type: ignore[no-untyped-call]
+        else:
+            kwargs = {self._primary_key: id}
+        try:
+            return self.model.get(**kwargs)
+        except DoesNotExist:
+            return None
 
     def create_model(self, form: Form) -> t.Union[bool, T_PEEWEE_MODEL]:
         try:
@@ -612,11 +618,11 @@ class ModelView(BaseModelView):
             model_pk = getattr(self.model, self._primary_key)
 
             if self.fast_mass_delete:
-                count = self.model.delete().where(model_pk << ids).execute()  # type: ignore[no-untyped-call]
+                count = self.model.delete().where(model_pk << ids).execute()
             else:
                 count = 0
 
-                query = self.model.select().filter(model_pk << ids)  # type: ignore[no-untyped-call]
+                query = self.model.select().filter(model_pk << ids)
 
                 for m in query:
                     self.on_model_delete(m)

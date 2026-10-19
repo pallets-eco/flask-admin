@@ -13,15 +13,20 @@ from flask_admin._types import T_COLUMN
 from flask_admin._types import T_SQLALCHEMY_MODEL
 from flask_admin._types import T_TRANSLATABLE
 from flask_admin.babel import lazy_gettext
-from flask_admin.contrib.sqla._types import T_SCOPED_SESSION
-from flask_admin.contrib.sqla._types import T_SESSION
+from flask_admin.contrib.sqla._compat import _get_deprecated_session
+from flask_admin.contrib.sqla._types import T_SESSION_OR_DB
 
 
 class Unique:
     """Checks field value unicity against specified table field.
 
     :param db_session:
-        A db or a scoped session.
+        A db object (``flask_sqlalchemy.SQLAlchemy`` or
+        ``flask_sqlalchemy_lite.SQLAlchemy``) or a scoped session. It is kept
+        as-is and the concrete session is only resolved when the validator
+        runs, so each validation queries the session of the current
+        request/app context rather than the one that happened to be active
+        when the form was scaffolded.
     :param model:
         The model to check unicity against.
     :param column:
@@ -34,7 +39,7 @@ class Unique:
 
     def __init__(
         self,
-        db_session: T_SCOPED_SESSION | T_SESSION,
+        db_session: T_SESSION_OR_DB,
         model: type[T_SQLALCHEMY_MODEL],
         column: T_COLUMN,
         message: T_TRANSLATABLE | None = None,
@@ -66,12 +71,14 @@ class Unique:
         if field.data is None:
             return
 
+        # Resolve the session here, not in __init__: forms are scaffolded once at
+        # startup, and a Session captured then would be shared across requests and
+        # never committed, rolled back or closed, leaving its connection "idle in
+        # transaction". https://github.com/pallets-eco/flask-admin/issues/2831
+        session = _get_deprecated_session(self.db_session)
+
         try:
-            obj = (
-                self.db_session.query(self.model)
-                .filter(self.column == field.data)
-                .one()
-            )
+            obj = session.query(self.model).filter(self.column == field.data).one()
 
             if not hasattr(form, "_obj") or not self._same_record(form._obj, obj):
                 raise ValidationError(str(self.message))
@@ -81,8 +88,13 @@ class Unique:
 
 class ItemsRequired(InputRequired):
     """
-    A version of the ``InputRequired`` validator that works with relations,
-    to require a minimum number of related items.
+    A version of the ``InputRequired`` validator for collection-valued
+    relation fields and inline forms, requiring a minimum number of related
+    items. Fields exposing ``entries`` and a callable ``should_delete``
+    exclude entries marked for deletion from the count.
+
+    .. versionchanged:: 2.2.2
+        Support multi-select relation fields as well as inline forms.
     """
 
     def __init__(self, min: int = 1, message: T_TRANSLATABLE | None = None) -> None:
@@ -90,10 +102,12 @@ class ItemsRequired(InputRequired):
         self.min = min
 
     def __call__(self, form: BaseForm, field: Field) -> None:
-        items = filter_list(
-            lambda e: not field.should_delete(e),  # type:ignore[attr-defined]
-            field.entries,  # type:ignore[attr-defined]
-        )
+        entries = getattr(field, "entries", None)
+        should_delete = getattr(field, "should_delete", None)
+        if entries is not None and callable(should_delete):
+            items = filter_list(lambda e: not should_delete(e), entries)
+        else:
+            items = field.data or []
         if len(items) < self.min:
             if self.message is None:
                 message = field.ngettext(

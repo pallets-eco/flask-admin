@@ -89,9 +89,9 @@
                                 <a href="{{ sort_url(column, True) }}" title="{{ _gettext('Sort by %(name)s', name=name) }}">
                                     {{ name }}
                                     {% if sort_desc %}
-                                        <span class="fa fa-chevron-up bi bi-chevron-up"></span>
-                                    {% else %}
                                         <span class="fa fa-chevron-down bi bi-chevron-down"></span>
+                                    {% else %}
+                                        <span class="fa fa-chevron-up bi bi-chevron-up"></span>
                                     {% endif %}
                                 </a>
                             {% else %}

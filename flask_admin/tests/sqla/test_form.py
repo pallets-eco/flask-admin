@@ -4,9 +4,18 @@ from unittest.mock import MagicMock
 
 import pytest
 import wtforms
+from sqlalchemy import ARRAY
+from sqlalchemy import Column
+from sqlalchemy import Float
+from sqlalchemy import Integer
+from sqlalchemy import String
+from werkzeug.datastructures import MultiDict
+from wtforms.fields import FieldList
 from wtforms.fields.simple import StringField
 
+from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
 from flask_admin.contrib.sqla.form import AdminModelConverter
+from flask_admin.contrib.sqla.validators import ItemsRequired
 
 sqla_admin_model_converters = [
     method_name
@@ -53,3 +62,154 @@ class TestAdminModelConverter:
             pass
 
         assert field() == "<p>widget overridden</p>"
+
+
+class TestArrayConverter:
+    """Regression tests for `AdminModelConverter.conv_ARRAY` -- see issue #1724.
+
+    Without an inner-type-aware coerce callable, every submitted value for a
+    Postgres `ARRAY(Integer)` column is sent back to the DB as a Python
+    `str`, so the resulting `text[]` value is rejected with
+        column "x" is of type integer[] but expression is of type text[]
+    The converter now passes a `coerce` derived from the array element's
+    `python_type` so the round-trip lines up with the column type.
+    """
+
+    def _bind(self, unbound_field: t.Any) -> t.Any:
+        """The converter returns a wtforms UnboundField. Bind it onto a real
+        form so we can drive `process_formdata` and inspect `.data`.
+        """
+
+        class _F(wtforms.Form):
+            x = unbound_field
+
+        return _F().x
+
+    def test_conv_ARRAY_integer_coerces_each_item_to_int(self) -> None:
+        converter = AdminModelConverter(None, None)  # type: ignore[arg-type]
+        column: Column[t.Any] = Column("x", ARRAY(Integer))
+        bound = self._bind(
+            converter.conv_ARRAY(field_args={"validators": []}, column=column)
+        )
+
+        bound.process_formdata(["1,2,3"])
+
+        assert bound.data == [1, 2, 3]
+        # Hard-pin element types so a future change of the inner coerce can't
+        # silently regress to strings.
+        assert all(isinstance(v, int) for v in bound.data), bound.data
+
+    def test_conv_ARRAY_float_coerces_each_item_to_float(self) -> None:
+        converter = AdminModelConverter(None, None)  # type: ignore[arg-type]
+        column: Column[t.Any] = Column("x", ARRAY(Float))
+        bound = self._bind(
+            converter.conv_ARRAY(field_args={"validators": []}, column=column)
+        )
+
+        bound.process_formdata(["1.5, 2.0"])
+
+        assert bound.data == [1.5, 2.0]
+        assert all(isinstance(v, float) for v in bound.data), bound.data
+
+    def test_conv_ARRAY_string_keeps_string_default(self) -> None:
+        """String arrays must continue to work exactly as before -- no
+        spurious coercion that would round-trip values through `int()`.
+        """
+        converter = AdminModelConverter(None, None)  # type: ignore[arg-type]
+        column: Column[t.Any] = Column("x", ARRAY(String))
+        bound = self._bind(
+            converter.conv_ARRAY(field_args={"validators": []}, column=column)
+        )
+
+        bound.process_formdata(["alpha,beta,gamma"])
+
+        assert bound.data == ["alpha", "beta", "gamma"]
+
+    def test_conv_ARRAY_missing_item_type_falls_back_to_text(self) -> None:
+        """If the column object can't be introspected (e.g. legacy callers
+        passing a MagicMock), the converter must not raise. The previous
+        default (string coerce) is preserved.
+        """
+        converter = AdminModelConverter(None, None)  # type: ignore[arg-type]
+        # MagicMock().type.item_type silently returns another MagicMock, whose
+        # python_type access would itself succeed and return a MagicMock --
+        # which is precisely the kind of pathological case we need to handle
+        # without exploding.
+        column = MagicMock()
+        # Force item_type to be absent so the fallback branch is exercised.
+        column.type.spec_set = ["item_type"]
+        del column.type.item_type
+
+        bound = self._bind(
+            converter.conv_ARRAY(field_args={"validators": []}, column=column)
+        )
+
+        bound.process_formdata(["x,y"])
+        assert bound.data == ["x", "y"]
+
+
+@pytest.mark.parametrize(
+    ("selected", "minimum", "valid"),
+    [
+        ([], 1, False),
+        (["one"], 1, True),
+        (["one"], 2, False),
+        (["one", "two"], 2, True),
+    ],
+)
+def test_items_required_query_select_multiple(
+    selected: list[str], minimum: int, valid: bool
+) -> None:
+    class SelectionForm(wtforms.Form):
+        choices = QuerySelectMultipleField(
+            query_factory=lambda: ["one", "two"],
+            get_pk=str,
+            get_label=str,
+            validators=[ItemsRequired(min=minimum, message="Select more items.")],
+        )
+
+    form = SelectionForm(MultiDict(("choices", value) for value in selected))
+
+    assert form.validate() is valid
+    assert form.choices.data == selected
+    assert form.choices.errors == ([] if valid else ["Select more items."])
+
+
+@pytest.mark.parametrize(
+    ("selected", "minimum", "valid"),
+    [
+        ([], 1, False),
+        (["deleted"], 1, False),
+        (["one", "deleted"], 1, True),
+        (["one", "deleted"], 2, False),
+        (["one", "two", "deleted"], 2, True),
+    ],
+)
+def test_items_required_custom_deletion_protocol(
+    selected: list[str], minimum: int, valid: bool
+) -> None:
+    class DeletionAwareFieldList(FieldList):  # type: ignore[type-arg]
+        def should_delete(self, field: wtforms.Field) -> bool:
+            return field.data == "deleted"
+
+    class SelectionForm(wtforms.Form):
+        choices = DeletionAwareFieldList(
+            StringField(),
+            validators=[ItemsRequired(min=minimum, message="Select more items.")],
+        )
+
+    form = SelectionForm(
+        MultiDict((f"choices-{index}", value) for index, value in enumerate(selected))
+    )
+
+    assert form.validate() is valid
+    assert form.choices.errors == ([] if valid else ["Select more items."])
+
+
+def test_items_required_field_list_without_deletion_protocol() -> None:
+    class SelectionForm(wtforms.Form):
+        choices = FieldList(StringField(), validators=[ItemsRequired()])
+
+    form = SelectionForm(MultiDict({"choices-0": "one"}))
+
+    assert form.validate()
