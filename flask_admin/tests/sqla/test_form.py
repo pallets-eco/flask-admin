@@ -19,10 +19,10 @@ from wtforms.fields.simple import StringField
 from wtforms.validators import Length
 from wtforms.validators import NumberRange
 
-from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
-from flask_admin.contrib.sqla.validators import ItemsRequired
 from flask_admin.base import Admin
+from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
 from flask_admin.contrib.sqla.form import AdminModelConverter
+from flask_admin.contrib.sqla.validators import ItemsRequired
 from flask_admin.tests.conftest import skip_or_return_session_or_db
 from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
 from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
