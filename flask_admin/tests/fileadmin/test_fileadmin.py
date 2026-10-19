@@ -257,7 +257,8 @@ class Base:
                     {"name": "dummy_dir"},
                     [
                         "Successfully created directory: dummy_dir",
-                        'name="path" type="hidden" value="dummy_dir"',
+                        'href="/admin/mymodalfileadmin/b/dummy_dir"',
+                        'type="hidden" value="dummy_dir"',
                     ],
                 ),
                 (
@@ -271,7 +272,7 @@ class Base:
                     dict(upload=(BytesIO(b""), "dummy3.txt")),
                     [
                         "Successfully saved file: dummy3.txt",
-                        'name="path" type="hidden" value="dummy3.txt"',
+                        'type="hidden" value="dummy3.txt"',
                     ],
                 ),
                 (
@@ -297,7 +298,7 @@ class Base:
                     [
                         "Successfully renamed",
                         "dummy_renamed.txt",
-                        'name="path" type="hidden" value="dummy_renamed.txt"',
+                        'type="hidden" value="dummy_renamed.txt"',
                     ],
                 ),
             ],
