@@ -280,3 +280,35 @@ class TestLocalFileAdmin(Base.FileAdminTests):
             os.remove(op.join(self._test_files_root, "dummy2.txt"))
         except OSError:
             pass
+
+    def test_index_with_broken_symlink(self, app: Flask, admin: Admin) -> None:
+        file_name = "broken-link.txt"
+        file_path = op.join(self._test_files_root, file_name)
+        os.symlink("missing.txt", file_path)
+        try:
+            view = FileAdmin(self._test_files_root, "/files", name="Files")
+            admin.add_view(view)
+            storage = view.storage
+            assert isinstance(storage, fileadmin.LocalFileStorage)
+
+            client = app.test_client()
+            rv = client.get("/admin/fileadmin/")
+
+            assert rv.status_code == 200
+            assert f"path={file_name}" in rv.data.decode("utf-8")
+            assert storage.path_exists(file_path)
+            broken_link = next(
+                item
+                for item in storage.get_files("", self._test_files_root)
+                if item[0] == file_name
+            )
+            assert broken_link[3:] == (0, 0.0)
+            assert view.timestamp_format(broken_link[4]) == ""
+
+            rv = client.post("/admin/fileadmin/delete/", data=dict(path=file_name))
+
+            assert rv.status_code == 302
+            assert not op.lexists(file_path)
+        finally:
+            if op.lexists(file_path):
+                os.remove(file_path)
