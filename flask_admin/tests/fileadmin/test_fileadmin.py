@@ -297,6 +297,13 @@ class TestLocalFileAdmin(Base.FileAdminTests):
             assert rv.status_code == 200
             assert f"path={file_name}" in rv.data.decode("utf-8")
             assert storage.path_exists(file_path)
+            broken_link = next(
+                item
+                for item in storage.get_files("", self._test_files_root)
+                if item[0] == file_name
+            )
+            assert broken_link[3:] == (0, 0.0)
+            assert view.timestamp_format(broken_link[4]) == ""
 
             rv = client.post("/admin/fileadmin/delete/", data=dict(path=file_name))
 
