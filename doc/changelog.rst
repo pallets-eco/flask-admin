@@ -4,6 +4,10 @@ Changelog
 [unreleased]
 ------------------
 
+Dependencies:
+
+* Dropped support for Python 3.10 and added official support for Python 3.15.
+
 Bugfixes:
 
 * SQLAlchemy backend: ``ItemsRequired`` once again validates multi-select relation fields without raising ``AttributeError``. Inline entries marked for deletion remain excluded from the count (closes #2385).
