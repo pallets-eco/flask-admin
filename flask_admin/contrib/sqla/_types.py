@@ -13,6 +13,7 @@ try:
     from flask_sqlalchemy.session import Session as T_SESSION
 except ImportError:
     T_SQLALCHEMY: t.Any | None = None  # type: ignore[no-redef]
+    from sqlalchemy.orm import Session as T_SESSION  # type: ignore[assignment]
 
 
 if t.TYPE_CHECKING:  # sqlalchemy 2.x types are subscriptable
