@@ -340,7 +340,7 @@ class ModelView(BaseModelView):
 
     def scaffold_list_form(
         self,
-        widget: type[T_WIDGET] | None = None,
+        widget: T_WIDGET | None = None,
         validators: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
     ) -> type[Form]:
         """
@@ -348,7 +348,7 @@ class ModelView(BaseModelView):
         `self.column_editable_list`.
 
         :param widget:
-            WTForms widget class. Defaults to `XEditableWidget`.
+            WTForms widget instance. Defaults to `HTMXEditableWidget()`.
         :param validators:
             `form_args` dict with only validators
             {'name': {'validators': [required()]}}
