@@ -8,7 +8,7 @@ Peewee model backend implementation.
     .. autoclass:: ModelView
         :members:
         :inherited-members:
-        :exclude-members: column_filters, filter_converter, model_form_converter,
+        :exclude-members: column_filters, filter_converter, model_form_converter, form_choices,
                           inline_model_form_converter, fast_mass_delete, inline_models
 
         Class inherits configuration options from :class:`~flask_admin.model.BaseModelView` and they're not displayed here.
@@ -16,6 +16,7 @@ Peewee model backend implementation.
         .. autoattribute:: column_filters
         .. autoattribute:: filter_converter
         .. autoattribute:: model_form_converter
+        .. autoattribute:: form_choices
         .. autoattribute:: inline_model_form_converter
         .. autoattribute:: fast_mass_delete
         .. autoattribute:: inline_models
