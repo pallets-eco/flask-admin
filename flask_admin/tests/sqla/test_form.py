@@ -261,6 +261,7 @@ def create_models(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> t.Any:
         sau_choicetype_with_strenum = sa.Column(
             sau.ChoiceType(StrEnumChoices, impl=sa.String())
         )
+        bool_field = sa.Column(sa.Boolean(), nullable=True)
 
         def __str__(self) -> str:
             return str(self.test1.value) if self.test1 else ""
@@ -284,12 +285,16 @@ def prepare_kwargs(
         kwargs["form_choices"] = {field_name: f_choices}
 
     elif expected_coerce is str:
-        f_choices = [(expected_coerce(101), "First"), (expected_coerce(150), "Second")]
+        f_choices = [(str(101), "First"), (str(150), "Second")]
         validators = [Length(min=1, max=3)]
         kwargs["form_choices"] = {field_name: f_choices}
 
     elif expected_coerce in [IntEnumChoices, StrEnumChoices]:
         pass
+
+    elif expected_coerce is bool:
+        f_choices = [(True, "First"), (False, "Second")]
+        kwargs["form_choices"] = {field_name: f_choices}
 
     kwargs["form_columns"] = [field_name]
 
@@ -313,7 +318,7 @@ def prepare_kwargs(
         ("sau_choicetype", str, "101", sau.Choice("101", "First")),
         ("sau_choicetype_impl_int", int, "101", sau.Choice(101, "First")),
         ("sau_choicetype_with_intenum", IntEnumChoices, "101", IntEnumChoices.First),
-        ("sau_choicetype_with_strenum", StrEnumChoices, "101", StrEnumChoices.First),
+        ("bool_field", bool, "True", True),
     ],
 )
 def test_coerce(

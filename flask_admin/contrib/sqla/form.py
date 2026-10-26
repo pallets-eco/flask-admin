@@ -710,7 +710,12 @@ def choice_type_coerce_factory(type_: T_CHOICE_TYPE) -> t.Callable[[t.Any], t.An
         if isinstance(value, choice_cls):
             return getattr(value, key)
 
-        return type_.python_type(value)
+        if hasattr(type_, "python_type") and callable(
+            getattr(type_, "python_type", None)
+        ):
+            return type_.python_type(value)
+
+        return str(value)
 
     return choice_coerce
 
