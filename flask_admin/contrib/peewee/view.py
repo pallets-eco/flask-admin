@@ -137,7 +137,7 @@ class ModelView(BaseModelView):
 
         Example::
 
-            class MyModelView(BaseModelView):
+            class MyModelView(ModelView):
                 form_choices = {'my_form_field': [
                     ('db_value', 'display_value'),
                 ]}
