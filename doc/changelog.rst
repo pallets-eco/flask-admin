@@ -15,6 +15,10 @@ Bugfixes:
 * Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist
 * Peewee backend: support ``form_choices`` in ``ModelView``, rendering a ``Select2Field`` like the SQLAlchemy backend (closes #2235)
 
+Docs:
+
+* SQLAlchemy backend: the ``column_select_related_list`` docstring now says ``joinedload``, which is what the list view has used since 2013, instead of ``subqueryload`` (closes #2981).
+
 Dev:
 
 * SQLAlchemy backend: add regression coverage for ``form_columns`` ordering when ``form_extra_fields`` replaces a model field, while retaining coverage for model-attribute column specifications (#2965).
