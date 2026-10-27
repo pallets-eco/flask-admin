@@ -171,14 +171,14 @@ def first_time_setup():
         db.session.commit()
 
 
+try:
+    os.mkdir(base_path)
+except OSError:
+    pass
+
+first_time_setup()
+
+admin.add_view(LocationAdmin())
+
 if __name__ == "__main__":
-    try:
-        os.mkdir(base_path)
-    except OSError:
-        pass
-
-    first_time_setup()
-
-    admin.add_view(LocationAdmin())
-
     app.run(debug=True)
