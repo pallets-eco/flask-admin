@@ -926,6 +926,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             flash(gettext("Permission denied."), "error")
             return redirect(self._get_dir_url(".index_view"))
 
+        if not self.storage.is_dir(directory):  # type: ignore[union-attr]
+            abort(404)
+
         # Get directory listing
         items: list[tuple[str, str | None, bool, int, int]] = []
 

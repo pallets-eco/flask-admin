@@ -284,7 +284,14 @@ class TestLocalFileAdmin(Base.FileAdminTests):
     def test_index_with_broken_symlink(self, app: Flask, admin: Admin) -> None:
         file_name = "broken-link.txt"
         file_path = op.join(self._test_files_root, file_name)
+        empty_file_name = "empty-file.txt"
+        empty_file_path = op.join(self._test_files_root, empty_file_name)
+        broken_dir_name = "broken-directory"
+        broken_dir_path = op.join(self._test_files_root, broken_dir_name)
+        with open(empty_file_path, "wb"):
+            pass
         os.symlink("missing.txt", file_path)
+        os.symlink("missing-directory", broken_dir_path)
         try:
             view = FileAdmin(self._test_files_root, "/files", name="Files")
             admin.add_view(view)
@@ -297,13 +304,19 @@ class TestLocalFileAdmin(Base.FileAdminTests):
             assert rv.status_code == 200
             assert f"path={file_name}" in rv.data.decode("utf-8")
             assert storage.path_exists(file_path)
-            broken_link = next(
-                item
-                for item in storage.get_files("", self._test_files_root)
-                if item[0] == file_name
-            )
+            assert storage.path_exists(broken_dir_path)
+            items = {
+                item[0]: item for item in storage.get_files("", self._test_files_root)
+            }
+            broken_link = items[file_name]
             assert broken_link[3:] == (0, 0.0)
             assert view.timestamp_format(broken_link[4]) == ""
+            assert items[broken_dir_name][2:] == (False, 0, 0.0)
+            assert items[empty_file_name][3] == 0
+            assert items[empty_file_name][4] > 0
+            assert view.timestamp_format(items[empty_file_name][4]) != ""
+            rv = client.get(f"/admin/fileadmin/b/{broken_dir_name}")
+            assert rv.status_code == 404
 
             rv = client.post("/admin/fileadmin/delete/", data=dict(path=file_name))
 
@@ -312,3 +325,7 @@ class TestLocalFileAdmin(Base.FileAdminTests):
         finally:
             if op.lexists(file_path):
                 os.remove(file_path)
+            if op.lexists(broken_dir_path):
+                os.remove(broken_dir_path)
+            if op.lexists(empty_file_path):
+                os.remove(empty_file_path)
