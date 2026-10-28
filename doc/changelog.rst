@@ -14,6 +14,9 @@ New functionality:
 
 Bugfixes:
 
+* FileAdmin: broken symlinks no longer cause an HTTP 500 when listing a directory,
+  and remain available for deletion (closes #2388).
+
 * SQLAlchemy backend: ``ItemsRequired`` once again validates multi-select relation fields without raising ``AttributeError``. Inline entries marked for deletion remain excluded from the count (closes #2385).
 
 * Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist
