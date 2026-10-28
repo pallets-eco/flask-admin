@@ -20,6 +20,7 @@ from flask_admin._compat import itervalues
 from flask_admin.model.fields import AjaxSelectField
 from flask_admin.model.fields import InlineFieldList
 from flask_admin.model.fields import InlineModelFormField
+from flask_admin.model.form import get_form_choices_field
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin.model.form import InlineModelConverterBase
 
@@ -155,28 +156,20 @@ class CustomModelConverter(ModelConverter):  # type: ignore[misc]
         if field.name in self.overrides or unbound_field is None:
             return info
 
-        # Check if a list of 'form_choices' are specified. Inline models share
-        # this converter, so only apply them to the view's own model.
-        form_choices = getattr(self.view, "form_choices", None)
-        if form_choices and model is self.view.model:
-            choices = form_choices.get(field.name)
-            if choices:
-                # Keep only generic Field arguments; converter-specific ones
-                # (e.g. 'places' for DecimalField, 'model' for ForeignKeyField)
-                # are not accepted by Select2Field
-                kwargs = {
-                    k: v
-                    for k, v in unbound_field.kwargs.items()
-                    if k in self._choice_field_kwargs
-                }
-                return FieldInfo(
-                    name,
-                    form.Select2Field(
-                        choices=choices,
-                        allow_blank=field.null,
-                        **kwargs,
-                    ),
-                )
+        # Check if a list of 'form_choices' are specified. Keep only generic
+        # Field arguments; converter-specific ones (e.g. 'places' for
+        # DecimalField, 'model' for ForeignKeyField) are not accepted by
+        # Select2Field
+        kwargs = {
+            k: v
+            for k, v in unbound_field.kwargs.items()
+            if k in self._choice_field_kwargs
+        }
+        choices_field = get_form_choices_field(
+            self.view, model, field.name, field.null, **kwargs
+        )
+        if choices_field is not None:
+            return FieldInfo(name, choices_field)
 
         return info
 

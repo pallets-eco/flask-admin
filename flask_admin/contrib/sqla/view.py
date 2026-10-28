@@ -306,18 +306,6 @@ class ModelView(BaseModelView):
 
     column_type_formatters: T_COLUMN_TYPE_FORMATTERS = DEFAULT_FORMATTERS
 
-    form_choices: dict[str, list[tuple[str, str]]] | None = None
-    """
-        Map choices to form fields
-
-        Example::
-
-            class MyModelView(BaseModelView):
-                form_choices = {'my_form_field': [
-                    ('db_value', 'display_value'),
-                ]}
-    """
-
     form_optional_types: t.Sequence[type] = (Boolean,)
     """
         List of field types that should be optional if column is not nullable.
