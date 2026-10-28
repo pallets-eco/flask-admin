@@ -10,11 +10,6 @@ from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy.orm import ColumnProperty
 from sqlalchemy.sql.type_api import TypeEngine
-
-try:
-    from sqlalchemy_utils import ChoiceType  # optional dependency
-except ImportError:
-    ChoiceType = None
 from wtforms import fields
 from wtforms import Form
 from wtforms import HiddenField
@@ -30,6 +25,7 @@ from flask_admin.model.fields import AjaxSelectMultipleField
 from flask_admin.model.fields import InlineFormField
 from flask_admin.model.form import converts
 from flask_admin.model.form import FieldPlaceholder
+from flask_admin.model.form import get_form_choices_field
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin.model.form import InlineModelConverterBase
 from flask_admin.model.form import ModelConverterBase
@@ -69,6 +65,11 @@ from .validators import TimeZoneValidator
 from .validators import Unique
 from .validators import valid_color
 from .validators import valid_currency
+
+try:
+    from sqlalchemy_utils import ChoiceType  # optional dependency
+except ImportError:
+    ChoiceType = None
 
 
 class AdminModelConverter(ModelConverterBase):
@@ -364,20 +365,17 @@ class AdminModelConverter(ModelConverterBase):
             if override:
                 return override(**kwargs)
 
-            # Check if a list of 'form_choices' are specified
-            form_choices = getattr(self.view, "form_choices", None)
-            if mapper.class_ == self.view.model and form_choices:
-                choices = form_choices.get(prop.key)
+            # add default coercer for Select2Field if not already specified
+            if "coerce" not in kwargs:
+                coercer = coerce_factory(column.type)
+                if coercer is not None:
+                    kwargs["coerce"] = coercer
 
-                if choices:
-                    if "coerce" not in kwargs:
-                        kwargs["coerce"] = coerce_factory(column.type)
-
-                    return form.Select2Field(  # type: ignore[misc]
-                        choices=choices,
-                        allow_blank=column.nullable,  # type: ignore[arg-type]
-                        **kwargs,
-                    )
+            choices_field = get_form_choices_field(
+                self.view, mapper.class_, prop.key, bool(column.nullable), **kwargs
+            )
+            if choices_field is not None:
+                return choices_field
 
             # Run converter
             converter = self.get_converter(column)
@@ -691,7 +689,7 @@ def coerce_factory(type_: TypeEngine[t.Any]) -> t.Callable[[t.Any], t.Any]:
     ):
         return type_.python_type
     else:
-        return str
+        return None
 
 
 def choice_type_coerce_factory(type_: T_CHOICE_TYPE) -> t.Callable[[t.Any], t.Any]:
@@ -714,10 +712,9 @@ def choice_type_coerce_factory(type_: T_CHOICE_TYPE) -> t.Callable[[t.Any], t.An
         if isinstance(value, choice_cls):
             return getattr(value, key)
 
-        if hasattr(type_, "python_type") and callable(
-            getattr(type_, "python_type", None)
-        ):
-            return type_.python_type(value)
+        if hasattr(type_, "python_type"):
+            if callable(getattr(type_, "python_type", None)):
+                return type_.python_type(value)
 
         return str(value)
 

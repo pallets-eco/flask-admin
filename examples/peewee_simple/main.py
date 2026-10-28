@@ -42,6 +42,7 @@ class Post(BaseModel):
     title = CharField(max_length=120)
     text = peewee.TextField(null=False)
     date = peewee.DateTimeField()
+    status = CharField(max_length=20, default="draft")
 
     user = peewee.ForeignKeyField(User)
 
@@ -69,6 +70,15 @@ class PostAdmin(ModelView):
     column_filters = ("title", "date", User.username)
 
     form_ajax_refs = {"user": {"fields": (User.username, "email")}}
+
+    form_choices = {
+        "status": [
+            ("draft", "Draft"),
+            ("review", "In Review"),
+            ("published", "Published"),
+            ("archived", "Archived"),
+        ]
+    }
 
 
 class Book(BaseModel):
