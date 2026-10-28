@@ -686,8 +686,12 @@ def coerce_factory(type_: TypeEngine[t.Any]) -> t.Callable[[t.Any], t.Any]:
 
     if ChoiceType is not None and isinstance(type_, ChoiceType):
         return choice_type_coerce_factory(type_)
-    else:
+    elif hasattr(type_, "python_type") and callable(
+        getattr(type_, "python_type", None)
+    ):
         return type_.python_type
+    else:
+        return str
 
 
 def choice_type_coerce_factory(type_: T_CHOICE_TYPE) -> t.Callable[[t.Any], t.Any]:
