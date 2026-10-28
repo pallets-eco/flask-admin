@@ -9,6 +9,7 @@ from enum import EnumMeta
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy.orm import ColumnProperty
+from sqlalchemy.sql.type_api import TypeEngine
 from wtforms import fields
 from wtforms import Form
 from wtforms import HiddenField
@@ -38,6 +39,7 @@ from ..._types import T_FIELD_ARGS_VALIDATORS
 from ..._types import T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK
 from ..._types import T_FIELD_ARGS_VALIDATORS_COERCE
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
+from ..._types import T_FIELD_ARGS_VALIDATORS_SELECTABLE
 from ..._types import T_INSTRUMENTED_ATTRIBUTE
 from ..._types import T_MODEL_VIEW
 from ..._types import T_ORM_MODEL
@@ -63,6 +65,11 @@ from .validators import TimeZoneValidator
 from .validators import Unique
 from .validators import valid_color
 from .validators import valid_currency
+
+try:
+    from sqlalchemy_utils import ChoiceType  # optional dependency
+except ImportError:
+    ChoiceType = None
 
 
 class AdminModelConverter(ModelConverterBase):
@@ -232,7 +239,7 @@ class AdminModelConverter(ModelConverterBase):
         if isinstance(prop, FieldPlaceholder):
             return form.recreate_field(prop.field)
 
-        kwargs: T_FIELD_ARGS_VALIDATORS_ALLOW_BLANK = {"validators": [], "filters": []}
+        kwargs: T_FIELD_ARGS_VALIDATORS_SELECTABLE = {"validators": [], "filters": []}
 
         if field_args:
             kwargs.update(field_args)  # type: ignore[typeddict-item]
@@ -358,7 +365,12 @@ class AdminModelConverter(ModelConverterBase):
             if override:
                 return override(**kwargs)
 
-            # Check if a list of 'form_choices' are specified
+            # add default coercer for Select2Field if not already specified
+            if "coerce" not in kwargs:
+                coercer = coerce_factory(column.type)
+                if coercer is not None:
+                    kwargs["coerce"] = coercer
+
             choices_field = get_form_choices_field(
                 self.view, mapper.class_, prop.key, bool(column.nullable), **kwargs
             )
@@ -664,6 +676,22 @@ def avoid_empty_strings(value: T) -> T | None:
     return value if value else None
 
 
+def coerce_factory(type_: TypeEngine[t.Any]) -> t.Callable[[t.Any], t.Any]:
+    """
+    Return a function to coerce a column, for use by Select2Field.
+    :param type_: Column type
+    """
+
+    if ChoiceType is not None and isinstance(type_, ChoiceType):
+        return choice_type_coerce_factory(type_)
+    elif hasattr(type_, "python_type") and callable(
+        getattr(type_, "python_type", None)
+    ):
+        return type_.python_type
+    else:
+        return None
+
+
 def choice_type_coerce_factory(type_: T_CHOICE_TYPE) -> t.Callable[[t.Any], t.Any]:
     """
     Return a function to coerce a ChoiceType column, for use by Select2Field.
@@ -680,9 +708,15 @@ def choice_type_coerce_factory(type_: T_CHOICE_TYPE) -> t.Callable[[t.Any], t.An
     def choice_coerce(value: t.Any) -> t.Any:
         if value is None:
             return None
+
         if isinstance(value, choice_cls):
             return getattr(value, key)
-        return type_.python_type(value)
+
+        if hasattr(type_, "python_type"):
+            if callable(getattr(type_, "python_type", None)):
+                return type_.python_type(value)
+
+        return str(value)
 
     return choice_coerce
 
@@ -708,7 +742,10 @@ def get_form(
     base_class: type[form.BaseForm] = form.BaseForm,
     only: t.Collection[str | T_INSTRUMENTED_ATTRIBUTE] | None = None,
     exclude: t.Collection[str | T_INSTRUMENTED_ATTRIBUTE] | None = None,
-    field_args: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
+    field_args: dict[
+        str, T_FIELD_ARGS_VALIDATORS_FILES | T_FIELD_ARGS_VALIDATORS_SELECTABLE
+    ]
+    | None = None,
     hidden_pk: bool = False,
     ignore_hidden: bool = True,
     extra_fields: dict[str | T_INSTRUMENTED_ATTRIBUTE, UnboundField[t.Any]]

@@ -37,6 +37,7 @@ from flask_admin.model.form import FieldPlaceholder
 from flask_admin.model.form import get_form_choices_field
 
 from ..._types import T_FIELD_ARGS_VALIDATORS_FILES
+from ..._types import T_FIELD_ARGS_VALIDATORS_SELECTABLE
 from ..._types import T_ITER_CHOICES
 from ..._types import T_MONGO_ENGINE_DOCUMENT
 from ..._types import T_VALIDATOR
@@ -290,7 +291,9 @@ class CustomModelConverter:
         self,
         model: type[T_MONGO_ENGINE_DOCUMENT],
         field: BaseField,
-        field_args: T_FIELD_ARGS_VALIDATORS_FILES | None,
+        field_args: T_FIELD_ARGS_VALIDATORS_FILES
+        | T_FIELD_ARGS_VALIDATORS_SELECTABLE
+        | None = None,
     ) -> t.Any:
         # Check if it is overridden field
         if isinstance(field, FieldPlaceholder):
@@ -634,7 +637,10 @@ def get_form(
     base_class: type[form.BaseForm] = form.BaseForm,
     only: t.Iterable[str] | None = None,
     exclude: t.Iterable[str] | None = None,
-    field_args: dict[str, T_FIELD_ARGS_VALIDATORS_FILES] | None = None,
+    field_args: dict[
+        str, T_FIELD_ARGS_VALIDATORS_FILES | T_FIELD_ARGS_VALIDATORS_SELECTABLE
+    ]
+    | None = None,
     extra_fields: dict[str, "UnboundField[F]"] | None = None,
 ) -> type[form.BaseForm]:
     """
