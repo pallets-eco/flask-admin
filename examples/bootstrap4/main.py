@@ -111,6 +111,7 @@ class MyFileAdmin(FileAdmin):
 
 
 class FileAdminModal(FileAdmin):
+    editable_extensions = ["txt", "html", "js", "css"]
     rename_modal = True
     edit_modal = True
     mkdir_modal = True
