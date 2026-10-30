@@ -269,7 +269,7 @@ use the :ref:`File-Admin<file-admin>` plug-in.
 Flask-Admin comes with a built-in :meth:`~flask_admin.form.upload.FileUploadField`
 and :meth:`~flask_admin.form.upload.ImageUploadField`. To make use
 of them, you'll need to specify an upload directory and add them to the forms in question.
-To customize the look and feel of thier widgets, you can override the default templates
+To customize the look and feel of their widgets, you can override the default templates
 by setting the `empty_template` and `data_template` attributes for :meth:`~flask_admin.form.upload.FileUploadInput`
 and :meth:`~flask_admin.form.upload.ImageUploadInput` classes.
 
