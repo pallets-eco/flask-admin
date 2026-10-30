@@ -48,10 +48,19 @@ class FileUploadInput:
     look and feel.
     """
 
-    empty_template = "admin/components/file_input_empty.html"
     input_type = "file"
 
+    empty_template = "admin/components/file_input_empty.html"
+    """
+        Default template to render when field has no data.
+        You can override this member to customize look and feel.
+    """
+
     data_template = "admin/components/file_input.html"
+    """
+        Default template to render when field has data.
+        You can override this member to customize look and feel.
+    """
 
     def __call__(self, field: Field, **kwargs: str) -> Markup:
         kwargs.setdefault("id", field.id)
@@ -86,10 +95,19 @@ class ImageUploadInput:
     look and feel.
     """
 
-    empty_template = "admin/components/image_input_empty.html"
     input_type = "file"
 
+    empty_template = "admin/components/image_input_empty.html"
+    """
+        Default template to render when field has no image.
+        You can override this member to customize look and feel.
+    """
+
     data_template = "admin/components/image_input.html"
+    """
+        Default template to render when field has image.
+        You can override this member to customize look and feel.
+    """
 
     def __call__(self, field: "ImageUploadField", **kwargs: str) -> Markup:
         kwargs.setdefault("id", field.id)
