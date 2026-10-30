@@ -3,6 +3,7 @@ import os.path as op
 import typing as t
 from urllib.parse import urljoin
 
+from flask import render_template
 from markupsafe import Markup
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
@@ -47,16 +48,19 @@ class FileUploadInput:
     look and feel.
     """
 
-    empty_template = "<input %(file)s>"
     input_type = "file"
 
-    data_template = (
-        "<div>"
-        " <input %(text)s>"
-        ' <input type="checkbox" name="%(marker)s">Delete</input>'
-        "</div>"
-        "<input %(file)s>"
-    )
+    empty_template = "admin/components/file_input_empty.html"
+    """
+        Default template to render when field has no data.
+        You can override this member to customize look and feel.
+    """
+
+    data_template = "admin/components/file_input.html"
+    """
+        Default template to render when field has data.
+        You can override this member to customize look and feel.
+    """
 
     def __call__(self, field: Field, **kwargs: str) -> Markup:
         kwargs.setdefault("id", field.id)
@@ -72,16 +76,15 @@ class FileUploadInput:
         else:
             value = field.data or ""
 
-        return Markup(
-            template
-            % {
-                "text": html_params(
-                    type="text", readonly="readonly", value=value, name=field.name
-                ),
-                "file": html_params(type="file", value=value, **kwargs),
-                "marker": f"_{field.name}-delete",
-            }
-        )
+        context = {
+            "html_params": html_params,
+            "text": dict(
+                type="text", readonly="readonly", value=value, name=field.name
+            ),
+            "file": dict(type="file", value=value, **kwargs),
+            "marker": f"_{field.name}-delete",
+        }
+        return Markup(render_template(template, **context))
 
 
 class ImageUploadInput:
@@ -92,37 +95,40 @@ class ImageUploadInput:
     look and feel.
     """
 
-    empty_template = "<input %(file)s>"
     input_type = "file"
 
-    data_template = (
-        '<div class="image-thumbnail">'
-        " <img %(image)s>"
-        ' <input type="checkbox" name="%(marker)s">Delete</input>'
-        " <input %(text)s>"
-        "</div>"
-        "<input %(file)s>"
-    )
+    empty_template = "admin/components/image_input_empty.html"
+    """
+        Default template to render when field has no image.
+        You can override this member to customize look and feel.
+    """
+
+    data_template = "admin/components/image_input.html"
+    """
+        Default template to render when field has image.
+        You can override this member to customize look and feel.
+    """
 
     def __call__(self, field: "ImageUploadField", **kwargs: str) -> Markup:
         kwargs.setdefault("id", field.id)
         kwargs.setdefault("name", field.name)
 
-        args = {
-            "text": html_params(type="hidden", value=field.data, name=field.name),
-            "file": html_params(type="file", **kwargs),
+        context = {
+            "html_params": html_params,
+            "text": dict(type="hidden", value=field.data, name=field.name),
+            "file": dict(type="file", **kwargs),
             "marker": f"_{field.name}-delete",
         }
 
         if field.data and isinstance(field.data, string_types):
             url = self.get_url(field)
-            args["image"] = html_params(src=url)
+            context["image"] = dict(src=url)
 
             template = self.data_template
         else:
             template = self.empty_template
 
-        return Markup(template % args)
+        return Markup(render_template(template, **context))
 
     def get_url(self, field: "ImageUploadField") -> str:
         if field.thumbnail_size:
