@@ -332,8 +332,8 @@ a given type in the details view::
 
     column_type_formatters_detail = MY_DEFAULT_FORMATTERS
 
-Controlling Rows:
-*****************
+**Controlling Rows:**
+*********************
 
 
 **Pagination** is enabled by default, but you can disable it by setting::
@@ -343,10 +343,14 @@ Controlling Rows:
     page_size_options = (10, 20, 50, 100)
 
 
-By default, the list view includes a set of action buttons for each row, which allow you to
-edit, delete, or view details for that record. To **disable these buttons**, set::
+**Actions** is enabled by default. List view includes a set of action buttons for each row, which allow you to
+edit, delete, or view details for that record. To **disable all buttons**, set::
 
     column_display_actions = False
+
+Or disable only some of the buttons::
+
+    action_disallowed_list = ['delete']
 
 And to **add custom action buttons** to the list view, specify a list of dictionaries for
 the *column_extra_row_actions* parameter::
@@ -364,7 +368,7 @@ the *column_extra_row_actions* parameter::
         ]
 
 
-**Creating/Editing Rows:**
+**Inline Editing Rows:**
 **************************
 
 For a faster editing experience, enable **inline editing** in the list view::
@@ -382,6 +386,39 @@ pages::
     edit_modal = True
     details_modal = True
 
+
+**Creating/Editing Forms:**
+***************************
+
+The other way of creating/editin a single row is to customize the create/edit forms. To
+**specify fields** to be used in the form, a list of column names (as string or Column)
+can be listed in the *form_columns* parameter::
+
+    form_columns = ['name', 'last_name', User.email, 'country']
+
+To **remove fields** from the create and edit forms::
+
+    form_excluded_columns = ['last_name', 'email']
+
+Each field in the form can be customized by specifying a dictionary of **form overrides**::
+
+    from wtforms import TextAreaField
+
+    form_overrides = {
+        'description': TextAreaField
+    }
+
+Or using **form extra fields** to add additional fields to the form::
+
+    from wtforms import StringField, validators
+
+    form_extra_fields = {
+        'name': StringField('Name', [validators.required()]),
+        'description': TextAreaField('Description', [validators.optional()])
+    }
+
+**None:** the ``form_extra_fields`` also can be used to override existing fields.
+
 You can restrict the possible values for a text-field by specifying a list of **select choices**::
 
     form_choices = {
@@ -394,9 +431,6 @@ You can restrict the possible values for a text-field by specifying a list of **
         ]
     }
 
-To **remove fields** from the create and edit forms::
-
-    form_excluded_columns = ['last_name', 'email']
 
 To specify **WTForms field arguments**::
 
@@ -407,7 +441,8 @@ To specify **WTForms field arguments**::
         }
     }
 
-Or, to specify arguments to the **WTForms widgets** used to render those fields::
+Or, to specify arguments to the **WTForms widgets** (the HTML attributes) used to
+render those fields::
 
     form_widget_args = {
         'description': {
@@ -415,6 +450,7 @@ Or, to specify arguments to the **WTForms widgets** used to render those fields:
             'style': 'color: black'
         }
     }
+
 
 When your forms contain foreign keys, have those **related models loaded via ajax**, using::
 
@@ -435,6 +471,15 @@ To filter the results that are loaded via ajax, you can use::
         'active_user': QueryAjaxModelLoader('user', db.session, User,
                                      filters=["is_active=True", "id>1000"])
     }
+
+To reorder the fields in the form, specify a list of column names for the `form_edit_rules` and
+`form_create_rules` parameters::
+
+    form_edit_rules = ('name', 'email', 'country')
+    form_create_rules = ('name', 'email', 'country')
+
+Look for more details and examples of form rules in the page of :ref:`rendering-rules`.
+
 
 To **manage related models inline**::
 
