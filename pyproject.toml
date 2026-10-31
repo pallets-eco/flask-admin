@@ -319,7 +319,7 @@ commands = [
         "pillow==10.0.0",
         "flask-babel==3.0.1",
         "tablib==3.0.0",
-        "redis==4.0.0",
+        "redis==4.5.0",
     ],
     [
         "pytest", "-v", "--tb=short", "--basetemp={env_tmp_dir}",
