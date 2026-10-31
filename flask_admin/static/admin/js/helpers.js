@@ -9,4 +9,10 @@
             }
         }
     };
+
+    $('.a-unlink').on('click', function(e) {
+      console.log('click a-unlink');
+      e.preventDefault();
+    });
+
 })();
