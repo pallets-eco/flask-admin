@@ -70,6 +70,14 @@ class TestCSPOnAllPages:
 
             return v
 
+    def create_redis_view(self, app: Flask, admin: Admin) -> None:
+        from flask_admin.contrib.rediscli import RedisCli
+        from redis import Redis
+
+        with app.app_context():
+            v = RedisCli(Redis(host="localhost", port=6379), endpoint="rediscli")
+            admin.add_view(v)
+
     def create_modelview_with_modal(
         self, app: Flask, admin: Admin, db_session: t.Any, Model1: t.Any
     ) -> MyModelView:
@@ -116,17 +124,9 @@ class TestCSPOnAllPages:
             ("modal", "new/"),
             ("modal", "edit/?id=1"),
             ("modal", "details/?id=1"),
-            ("fa", ""),
-            ("fa", "rename/?path=test.txt"),
-            ("fa", "rename/?path=dir1"),
-            ("fa", "edit/?path=test.txt"),
-            ("modalfa", ""),
-            ("modalfa", "rename/?path=test.txt"),
-            ("modalfa", "rename/?path=dir1"),
-            ("modalfa", "edit/?path=test.txt"),
         ],
     )
-    def test_csp(
+    def test_modelview_pages(
         self,
         app: Flask,
         admin: Admin,
@@ -141,8 +141,6 @@ class TestCSPOnAllPages:
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         self.create_modelview(app, admin, param, Model1)
         self.create_modelview_with_modal(app, admin, param, Model1)
-        self.create_fileview(admin)
-        self.create_fileview_with_modal(admin)
 
         with app.app_context():
             fill_db(sqla_db_ext, Model1)
@@ -162,9 +160,68 @@ class TestCSPOnAllPages:
         for tag in styles:
             assert tag.attrs["nonce"] == nonce
 
+    @pytest.mark.parametrize(
+        "endpoint, url",
+        [
+            ("fa", ""),
+            ("fa", "rename/?path=test.txt"),
+            ("fa", "rename/?path=dir1"),
+            ("fa", "edit/?path=test.txt"),
+            ("modalfa", ""),
+            ("modalfa", "rename/?path=test.txt"),
+            ("modalfa", "rename/?path=dir1"),
+            ("modalfa", "edit/?path=test.txt"),
+        ],
+    )
+    def test_fileadmin_pages(
+        self,
+        app: Flask,
+        admin: Admin,
+        nonce: str,
+        endpoint: str,
+        url: str,
+    ) -> None:
+        self.create_fileview(admin)
+        self.create_fileview_with_modal(admin)
+
+        with app.app_context():
+            client = app.test_client()
+
+        # check that we can retrieve a list view
+        rv = client.get(f"/admin/{endpoint}/{url}", follow_redirects=True)
+        assert rv.status_code == 200
+
+        soup = BeautifulSoup(rv.data, "html.parser")
+
+        scripts = soup.select("script")
+        for tag in scripts:
+            assert tag.attrs["nonce"] == nonce
+
+        styles = soup.select("style")
+        for tag in styles:
+            assert tag.attrs["nonce"] == nonce
+
     # FIXME: This test is currently a no-op since the RedisView is not being added
     # to the admin instance. We should add it and then test that the nonce is
     # injected into the view's templates.
-    @pytest.mark.skip(reason="RedisView is not added to the admin instance.")
-    def test_csp_on_rediscli(self, app: Flask, admin: Admin, nonce: str) -> None:
-        pass
+    # @pytest.mark.skip(reason="RedisView is not added to the admin instance.")
+    def test_rediscli_pages(self, app: Flask, admin: Admin, nonce: str) -> None:
+        self.create_redis_view(app, admin)
+        # check that we can retrieve a list view
+
+        with app.app_context():
+            client = app.test_client()
+
+        rv = client.get("/admin/rediscli/", follow_redirects=True)
+
+        assert rv.status_code == 200
+
+        soup = BeautifulSoup(rv.data, "html.parser")
+
+        scripts = soup.select("script")
+        for tag in scripts:
+            assert tag.attrs["nonce"] == nonce
+
+        styles = soup.select("style")
+        for tag in styles:
+            assert tag.attrs["nonce"] == nonce
