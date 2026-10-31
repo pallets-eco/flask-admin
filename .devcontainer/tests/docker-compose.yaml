@@ -20,6 +20,13 @@ services:
       - postgres
       - azurite
       - mongo
+      - redis
+
+  redis:
+    image: redis:8.10.3-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
 
   postgres:
     image: postgis/postgis:16-3.4
@@ -46,3 +53,4 @@ volumes:
   postgres-data:
   azurite-data:
   uv-cache:
+  redis-data:
