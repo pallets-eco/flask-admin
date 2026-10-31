@@ -509,13 +509,13 @@ msgstr "Hernoem Lêer"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:92
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "Is jy seker jy wil \\'%(name)s\\' rekursief verwyder?"
+msgid "Are you sure you want to delete '%(name)s' recursively?"
+msgstr "Is jy seker jy wil '%(name)s' rekursief verwyder?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:103
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "Is jy seker jy wil verwyder \\'%(name)s \\'?"
+msgid "Are you sure you want to delete '%(name)s'?"
+msgstr "Is jy seker jy wil verwyder '%(name)s '?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
 msgid "Please select at least one file."

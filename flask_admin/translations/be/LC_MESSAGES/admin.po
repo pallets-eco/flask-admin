@@ -512,13 +512,13 @@ msgstr "Перайменаваць файл"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:92
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "Вы дакладна жадаеце выдаліць \\'%(name)s\\' рэкурсіўна?"
+msgid "Are you sure you want to delete '%(name)s' recursively?"
+msgstr "Вы дакладна жадаеце выдаліць '%(name)s' рэкурсіўна?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:103
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "Вы дакладна жадаеце выдаліць \\'%(name)s\\'?"
+msgid "Are you sure you want to delete '%(name)s'?"
+msgstr "Вы дакладна жадаеце выдаліць '%(name)s'?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
 msgid "Please select at least one file."
