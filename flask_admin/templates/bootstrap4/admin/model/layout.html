@@ -1,23 +1,12 @@
 {% macro filter_options(btn_class='dropdown-toggle') %}
-    <a class="nav-link {{ btn_class }}" data-toggle="dropdown" href="#">{{ _gettext('Add Filter') }}</a>
+    <a class="nav-link a-unlink {{ btn_class }}" data-toggle="dropdown" href="#">{{ _gettext('Add Filter') }}</a>
     <div class="dropdown-menu field-filters">
         {% for k in filter_groups %}
-            <a class="dropdown-item filter" >{{ k }}</a>
+            <a class="dropdown-item filter a-unlink" href="#">{{ k }}</a>
         {% endfor %}
     </div>
 
-    <script {{ admin_csp_nonce_attribute }}>
 
-      document.addEventListener('DOMContentLoaded', function ()
-      {
-          document.querySelectorAll('.filter').forEach(function (el) {
-            el.addEventListener('click', function (e) {
-            e.preventDefault();
-            return false;
-          });
-        });
-      });
-    </script>
 {% endmacro %}
 
 {% macro export_options(btn_class='dropdown-toggle') %}

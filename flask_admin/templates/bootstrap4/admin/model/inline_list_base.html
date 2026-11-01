@@ -44,21 +44,21 @@
         </div>
         {% endfilter %}
     </div>
-    <a id="{{ field.id }}-button" href="#" class="btn btn-primary a-unlink" role="button"
+    <a id="{{ field.id }}-button" href="#" class="btn btn-primary a-unlink"
+        role="button"
         data-fieldid="{{ field.id }}"
-        >{{ _gettext('Add') }} {{ field.label.text }}</a>
+    >{{ _gettext('Add') }} {{ field.label.text }}</a>
 
-    <script {{ admin_csp_nonce_attribute }} >
 
-      document.addEventListener('DOMContentLoaded', function ()
+<script {{ admin_csp_nonce_attribute }} >
+
+      document.getElementById('{{ field.id }}-button').addEventListener('click', function (e)
       {
-        $(`#{{ field.id }}-button`).on('click', function (e)
-        {
-          console.log('add inline field');
-          e.preventDefault();
-          faForm.addInlineField(this, $(this).data('fieldid') );
-        });
+        //console.log('add inline field in Modal');
+        e.preventDefault();
+        faForm.addInlineField(this, $(this).data('fieldid') );
       });
+
     </script>
 </div>
 {% endmacro %}

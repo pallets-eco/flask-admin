@@ -5,7 +5,7 @@
        aria-expanded="false">{{ _gettext('With selected') }}</a>
     <div class="dropdown-menu">
         {% for p in actions %}
-            <a class="dropdown-item p-action" data-action="{{ p[0] }}">{{ _gettext(p[1]) }} </a>
+          <a class="dropdown-item p-action a-unlink" data-action="{{ p[0] }}" href="#">{{ _gettext(p[1]) }}</a>
         {% endfor %}
     </div>
 

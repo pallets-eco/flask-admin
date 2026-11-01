@@ -107,10 +107,11 @@ class RenderTemplateWidget:
         self.template = template
 
     def __call__(self, field: Field, **kwargs: t.Any) -> str:
-        admin = h.g._admin_view.admin
+        v = h.get_current_view()
+        admin = v.admin if v else None
         admin_csp_nonce_attribute = (
-            Markup(f'nonce="{admin.csp_nonce_generator()}"')
-            if admin.csp_nonce_generator
+            (Markup(f'nonce="{admin.csp_nonce_generator()}"'))
+            if admin and admin.csp_nonce_generator
             else ""
         )
 
