@@ -1,6 +1,7 @@
 import typing as t
 
 from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import Session
 from sqlalchemy.orm.query import Query
 
 try:
@@ -13,7 +14,6 @@ try:
     from flask_sqlalchemy.session import Session as T_SESSION
 except ImportError:
     T_SQLALCHEMY: t.Any | None = None  # type: ignore[no-redef]
-    from sqlalchemy.orm import Session as T_SESSION  # type: ignore[assignment]
 
 
 if t.TYPE_CHECKING:  # sqlalchemy 2.x types are subscriptable
@@ -25,4 +25,6 @@ else:  # sqlalchemy 1.x types are not subscriptable
     T_SCOPED_SESSION = scoped_session
 
 
-T_SESSION_OR_DB = T_SCOPED_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE
+T_SESSION_OR_DB = (
+    T_SCOPED_SESSION | T_SQLALCHEMY | T_SQLALCHEMY_LITE | T_SESSION | Session
+)

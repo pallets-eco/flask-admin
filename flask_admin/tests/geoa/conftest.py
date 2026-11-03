@@ -7,13 +7,13 @@ from pytest import FixtureRequest
 
 from flask_admin.tests.conftest import configure_sqla
 from flask_admin.tests.conftest import sqla_db_exts
-from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
+from flask_admin.tests.conftest import SQLAProviderProtocol
 
 
 @pytest.fixture(params=sqla_db_exts)
 def sqla_db_ext(
     request: FixtureRequest, app: Flask
-) -> Generator[T_ANY_SQLA_PROVIDER, None, None]:
+) -> Generator[SQLAProviderProtocol, None, None]:
     # need postgres for spatial types
     uri = os.getenv(
         "SQLALCHEMY_DATABASE_URI",
