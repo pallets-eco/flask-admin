@@ -1,0 +1,8 @@
+
+<div class="image-thumbnail">
+  <img {{html_params(**image) | safe}}>
+  <input type="checkbox" name="{{marker}}" id="{{marker}}">
+  <label for="{{marker}}">Delete</label>
+  <input {{html_params(**text) | safe}}>
+</div>
+<input {{html_params(**file) | safe}}>
