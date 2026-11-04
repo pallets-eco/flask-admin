@@ -30,6 +30,7 @@ from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import Session
+from sqlalchemy.types import TypeDecorator
 from sqlalchemy_utils import ArrowType
 from sqlalchemy_utils import ChoiceType
 from sqlalchemy_utils import ColorType
@@ -2434,6 +2435,49 @@ def test_form_args(
         # ensure shared field_args don't create duplicate validators
         edit_form = view.edit_form()
         assert len(edit_form.test.validators) == 2  # type: ignore[attr-defined]
+
+
+def test_form_type_decorator(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    class ShortString(TypeDecorator):  # type: ignore[type-arg]
+        impl = String(20)
+        cache_ok = True
+
+    class Timestamp(TypeDecorator):  # type: ignore[type-arg]
+        impl = DateTime
+        cache_ok = True
+
+    class NestedShortString(TypeDecorator):  # type: ignore[type-arg]
+        impl = ShortString
+        cache_ok = True
+
+    with app.app_context():
+
+        class Model(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "model"
+            id = Column(Integer, primary_key=True)
+            name = Column(ShortString, nullable=False)
+            created = Column(Timestamp)
+            nested = Column(NestedShortString)
+
+        sqla_db_ext.create_all()
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(Model, param)
+        admin.add_view(view)
+
+        form = view.create_form()
+        assert isinstance(form.name, fields.StringField)  # type: ignore[attr-defined]
+        assert any(
+            isinstance(v, validators.Length) and v.max == 20
+            for v in form.name.validators  # type: ignore[attr-defined]
+        )
+        assert isinstance(form.created, DateTimeField)  # type: ignore[attr-defined]
+        assert isinstance(form.nested, fields.StringField)  # type: ignore[attr-defined]
 
 
 def test_form_override(

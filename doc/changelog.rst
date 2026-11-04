@@ -23,6 +23,8 @@ Docs:
 
 * SQLAlchemy backend: the ``column_select_related_list`` docstring now says ``joinedload``, which is what the list view has used since 2013, instead of ``subqueryload`` (closes #2981).
 
+* SQLAlchemy backend: columns using a custom ``TypeDecorator`` now get the form field of the type they wrap (``impl``) instead of being left out of the form, unless a converter is registered for the decorator itself (closes #1857).
+
 Dev:
 
 * SQLAlchemy backend: add regression coverage for ``form_columns`` ordering when ``form_extra_fields`` replaces a model field, while retaining coverage for model-attribute column specifications (#2965).
