@@ -344,7 +344,7 @@ a given type in the details view::
 
 
 **Actions** are enabled by default. The list view includes a set of action buttons for each row, which allow you to
-edit, delete, or view details for that record. To **disable all buttons**, set::
+edit, delete, or view details for that record. To **disable row action buttons**, set::
 
     column_display_actions = False
 
