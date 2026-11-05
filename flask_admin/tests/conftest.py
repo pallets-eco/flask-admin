@@ -142,7 +142,7 @@ def configure_sqla(app: Flask, uri: str, request: pytest.FixtureRequest) -> None
     """
     app.config["SQLALCHEMY_ECHO"] = False
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    is_flask_sqlalchemy = request.param is SQLAProvider
+    is_flask_sqlalchemy = request.param.__name__ == "SQLAProvider"
     if is_flask_sqlalchemy:
         app.config["SQLALCHEMY_DATABASE_URI"] = uri
     else:
