@@ -138,9 +138,10 @@ def _coerce_pk_value(col: t.Any, val: t.Any) -> t.Any:
         if isinstance(val, python_type):
             return val
         if python_type is bool:
-            if val == "True":
+            val_lower = val.lower()
+            if val_lower == "true":
                 return True
-            if val == "False":
+            if val_lower == "false":
                 return False
             return val
         return python_type(val)
