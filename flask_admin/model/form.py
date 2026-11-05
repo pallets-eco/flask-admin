@@ -11,6 +11,7 @@ from wtforms.validators import InputRequired
 from flask_admin._compat import iteritems
 from flask_admin.form import BaseForm
 from flask_admin.form import rules
+from flask_admin.form import Select2Field
 
 from .._types import T_MODEL_VIEW
 from .._types import T_ORM_MODEL
@@ -24,6 +25,43 @@ def converts(*args: t.Any) -> Callable[[t.Any], t.Any]:
         return func
 
     return _inner
+
+
+def get_form_choices_field(
+    view: t.Any,
+    model: t.Any,
+    field_name: str,
+    allow_blank: bool,
+    /,
+    **kwargs: t.Any,
+) -> Select2Field | None:
+    """
+    Build a `Select2Field` from the view's `form_choices`, if any apply.
+
+    Only fields of the view's own model are affected, since inline and
+    embedded models share the parent's converter.
+
+    :param view:
+        Model view whose `form_choices` to use
+    :param model:
+        Model the field being converted belongs to
+    :param field_name:
+        Name of the model field being converted
+    :param allow_blank:
+        Whether the select allows an empty value
+    :param kwargs:
+        Extra arguments passed to `Select2Field`. The parameters above are
+        positional-only, so these may include a `name` key.
+    """
+    form_choices = getattr(view, "form_choices", None)
+    if not form_choices or model is not getattr(view, "model", None):
+        return None
+
+    choices = form_choices.get(field_name)
+    if not choices:
+        return None
+
+    return Select2Field(choices=choices, allow_blank=allow_blank, **kwargs)
 
 
 class BaseListForm(BaseForm):

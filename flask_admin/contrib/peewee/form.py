@@ -10,6 +10,7 @@ from peewee import TimeField
 from wtforms import Field
 from wtforms import fields
 from wtforms.form import BaseForm
+from wtfpeewee.orm import FieldInfo
 from wtfpeewee.orm import model_form
 from wtfpeewee.orm import ModelConverter
 
@@ -19,6 +20,7 @@ from flask_admin._compat import itervalues
 from flask_admin.model.fields import AjaxSelectField
 from flask_admin.model.fields import InlineFieldList
 from flask_admin.model.fields import InlineModelFormField
+from flask_admin.model.form import get_form_choices_field
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin.model.form import InlineModelConverterBase
 
@@ -124,6 +126,10 @@ class InlineModelFormList(InlineFieldList):
 
 
 class CustomModelConverter(ModelConverter):  # type: ignore[misc]
+    _choice_field_kwargs = frozenset(
+        ("label", "validators", "filters", "description", "id", "default", "render_kw")
+    )
+
     def __init__(self, view: t.Any, additional: t.Any = None) -> None:
         super().__init__(additional)
         self.view = view
@@ -141,6 +147,31 @@ class CustomModelConverter(ModelConverter):  # type: ignore[misc]
             self.converters[BinaryJSONField] = self.handle_json
 
         self.overrides = getattr(self.view, "form_overrides", None) or {}
+
+    def convert(self, model: t.Any, field: t.Any, field_args: t.Any) -> t.Any:
+        # Custom handlers return plain tuples, wtfpeewee returns FieldInfo
+        name, unbound_field = info = super().convert(model, field, field_args)
+
+        # Override field type if necessary - form_overrides take priority
+        if field.name in self.overrides or unbound_field is None:
+            return info
+
+        # Check if a list of 'form_choices' are specified. Keep only generic
+        # Field arguments; converter-specific ones (e.g. 'places' for
+        # DecimalField, 'model' for ForeignKeyField) are not accepted by
+        # Select2Field
+        kwargs = {
+            k: v
+            for k, v in unbound_field.kwargs.items()
+            if k in self._choice_field_kwargs
+        }
+        choices_field = get_form_choices_field(
+            self.view, model, field.name, field.null, **kwargs
+        )
+        if choices_field is not None:
+            return FieldInfo(name, choices_field)
+
+        return info
 
     def handle_foreign_key(
         self, model: t.Any, field: t.Any, **kwargs: t.Any

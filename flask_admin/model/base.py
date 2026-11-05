@@ -725,6 +725,20 @@ class BaseModelView(BaseView, ActionsMixin):
                 form_overrides = dict(name=wtf.FileField)
     """
 
+    form_choices: dict[str, list[tuple[str, str]]] | None = None
+    """
+        Map choices to form fields. Fields listed here are rendered as a
+        `Select2Field`. `form_overrides` take priority, and only fields of
+        the view's own model are affected (not inline or embedded models).
+
+        Example::
+
+            class MyModelView(BaseModelView):
+                form_choices = {'my_form_field': [
+                    ('db_value', 'display_value'),
+                ]}
+    """
+
     form_widget_args: dict[str, dict[str, int | str | bool]] | None = None
     """
         Dictionary of form widget rendering arguments.

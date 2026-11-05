@@ -13,7 +13,7 @@
                           column_choices,
                           form, form_columns, form_excluded_columns, form_args,
                           form_base_class,
-                          form_overrides, action_disallowed_list,
+                          form_overrides, form_choices, action_disallowed_list,
                           form_widget_args, form_extra_fields,
                           form_ajax_refs, form_create_rules,
                           form_edit_rules,
@@ -48,6 +48,7 @@
         .. autoattribute:: form_excluded_columns
         .. autoattribute:: form_args
         .. autoattribute:: form_overrides
+        .. autoattribute:: form_choices
         .. autoattribute:: form_widget_args
         .. autoattribute:: form_extra_fields
         .. autoattribute:: form_ajax_refs

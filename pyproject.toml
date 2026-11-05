@@ -14,20 +14,19 @@ classifiers = [
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Topic :: Software Development :: Libraries :: Python Modules',
-    'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
     'Programming Language :: Python :: 3.14',
+    'Programming Language :: Python :: 3.15',
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "flask>=2.0",
     "jinja2>=3.0",
     "markupsafe>=2.0",
     "werkzeug>=2.0",
     "wtforms>=2.3",
-    "typing_extensions; python_version < '3.11'"
 ]
 
 [project.optional-dependencies]
@@ -190,7 +189,7 @@ source = ["flask_admin", "tests"]
 source = ["flask_admin", "*/site-packages"]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 files = ["flask_admin"]
 show_error_codes = true
 pretty = true
@@ -236,7 +235,7 @@ ignore_missing_imports = true
 
 # TODO: reenable after pyright test pass
 #[tool.pyright]
-#pythonVersion = "3.10"
+#pythonVersion = "3.11"
 #include = ["flask_admin", "tests"]
 #typeCheckingMode = "basic"
 
@@ -265,10 +264,10 @@ order-by-type = false
 
 [tool.tox]
 env_list = [
-    "py310", "py311", "py312", "py313", "py314",
-    "py310-sqlalchemy1", "py314-sqlalchemy1",
-    "py314-noflaskbabel",
-    "py310-min",
+    "py311", "py312", "py313", "py314", "py315",
+    "py311-sqlalchemy1", "py315-sqlalchemy1",
+    "py315-noflaskbabel",
+    "py311-min",
     "style",
     "typing",
     "docs",
@@ -292,9 +291,9 @@ commands = [[
 ]]
 
 
-[tool.tox.env.py310-min]
+[tool.tox.env.py311-min]
 description = "pytest on minimum dependency versions"
-base_python = ["3.10"]
+base_python = ["3.11"]
 commands = [
     [
         "uv", "pip", "install",
@@ -328,10 +327,10 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py310-sqlalchemy1]
-description = "pytest with SQLAlchemy 1.x on Python 3.10"
+[tool.tox.env.py311-sqlalchemy1]
+description = "pytest with SQLAlchemy 1.x on Python 3.11"
 base = ["env_run_base"]
-base_python = ["3.10"]
+base_python = ["3.11"]
 commands = [
     ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
     ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
@@ -341,10 +340,10 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py314-sqlalchemy1]
-description = "pytest with SQLAlchemy 1.x on Python 3.14"
+[tool.tox.env.py315-sqlalchemy1]
+description = "pytest with SQLAlchemy 1.x on Python 3.15"
 base = ["env_run_base"]
-base_python = ["3.14"]
+base_python = ["3.15"]
 commands = [
     ["uv", "pip", "install", "sqlalchemy>=1.4,<2"],
     ["uv", "pip", "install", "flask-sqlalchemy<=3.0.5"],
@@ -354,7 +353,7 @@ commands = [
     ],
 ]
 
-[tool.tox.env.py314-noflaskbabel]
+[tool.tox.env.py315-noflaskbabel]
 description = "pytest without flask-babel"
 base = ["env_run_base"]
 commands = [
@@ -376,9 +375,9 @@ commands = [["pre-commit", "run", "--all-files"]]
 description = "run static type checkers"
 dependency_groups = ["typing"]
 commands = [
-    ["mypy", "--python-version", "3.10"],
-    ["mypy", "--python-version", "3.14"],
-    ["mypy", "--python-version", "3.14",
+    ["mypy", "--python-version", "3.11"],
+    ["mypy", "--python-version", "3.15"],
+    ["mypy", "--python-version", "3.15",
         "--ignore-missing-imports",
         "--disable-error-code", "name-defined", # allow flask_sqlalchemy's db.Model in examples
         "--no-warn-unused-ignores",  # prevent conflict with mypy 1st run on src folder

@@ -4,11 +4,24 @@ Changelog
 [unreleased]
 ------------------
 
+Dependencies:
+
+* Dropped support for Python 3.10 and added official support for Python 3.15.
+
+New functionality:
+
+* MongoEngine backend: support ``form_choices`` in ``ModelView``, rendering a ``Select2Field`` like the SQLAlchemy and Peewee backends. ``form_choices`` is now defined on ``BaseModelView``, and all backends build the field through a shared ``flask_admin.model.form.get_form_choices_field()`` helper (closes #2967).
+
 Bugfixes:
 
 * SQLAlchemy backend: ``ItemsRequired`` once again validates multi-select relation fields without raising ``AttributeError``. Inline entries marked for deletion remain excluded from the count (closes #2385).
 
 * Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist
+* Peewee backend: support ``form_choices`` in ``ModelView``, rendering a ``Select2Field`` like the SQLAlchemy backend (closes #2235)
+
+Docs:
+
+* SQLAlchemy backend: the ``column_select_related_list`` docstring now says ``joinedload``, which is what the list view has used since 2013, instead of ``subqueryload`` (closes #2981).
 
 Dev:
 
