@@ -3849,6 +3849,95 @@ def test_page_title(
         )
 
 
+@pytest.mark.xfail(
+    reason="SQLALiteProvider does not support passing db.session directly",
+    raises=TypeError,
+    strict=True,
+)
+def test_sqlalite_session_raises(app: Flask, sqla_db_ext: T_ANY_SQLA_PROVIDER) -> None:
+    if sqla_db_ext.__class__.__name__ != "SQLALiteProvider":
+        pytest.skip("Only relevant for SQLALiteProvider")
+
+    Model, _ = create_models(sqla_db_ext)
+    with app.app_context():
+        sqla_db_ext.create_all()
+
+    ModelView(Model, sqla_db_ext.db.session)  # type: ignore[arg-type]
+
+
+def _current_session(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> Session:
+    """Return the concrete ``Session`` bound to the current app context."""
+    session = sqla_db_ext.db.session
+    if isinstance(session, scoped_session):
+        return session()
+    return session
+
+
+def test_unique_validator_uses_request_scoped_session(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """``Unique`` must resolve its session when it runs, not when the form is
+    scaffolded.
+    """
+
+    class UniqueTable(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+        __tablename__ = "uniquetable"
+        id = Column(Integer, primary_key=True)
+        value = Column(String, unique=True)
+
+    sqla_db_ext.create_all()
+
+    # The ``sqla_db_ext`` fixture has already pushed an app context; this is the
+    # "startup" session that the validator must not hold on to.
+    scaffold_session = _current_session(sqla_db_ext)
+
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+    view = ModelView(UniqueTable, param)
+    admin.add_view(view)
+
+    unique_validators = [
+        v
+        for v in view._create_form_class()["value"].validators
+        if isinstance(v, Unique)
+    ]
+    assert unique_validators
+    for validator in unique_validators:
+        assert not isinstance(
+            validator.db_session, Session
+        ), "Unique captured a concrete Session at form scaffold time"
+
+    seen_sessions: list[Session] = []
+
+    def _capture(orm_execute_state: t.Any) -> None:
+        seen_sessions.append(orm_execute_state.session)
+
+    event.listen(Session, "do_orm_execute", _capture)
+    try:
+        # A fresh app context stands in for a later request: it gets its own
+        # session, which is closed again when the context is torn down.
+        with app.app_context(), app.test_request_context("/"):
+            request_session = _current_session(sqla_db_ext)
+            assert request_session is not scaffold_session
+
+            form = view.create_form()
+            field = form["value"]
+            field.data = "hello"
+            for validator in unique_validators:
+                validator(form, field)
+    finally:
+        event.remove(Session, "do_orm_execute", _capture)
+
+    assert seen_sessions
+    assert all(session is request_session for session in seen_sessions)
+
+    # Nothing is left holding a connection open after the request ends.
+    assert not request_session.in_transaction()
+    assert not scaffold_session.in_transaction()
+
+
 @pytest.mark.parametrize(
     "with_delete, modal", [(True, True), (True, False), (False, True), (False, False)]
 )
@@ -3902,19 +3991,3 @@ def test_del_btn_in_edit_and_details(
             assert "btn-delete" in data
         else:
             assert "btn-delete" not in data
-
-
-@pytest.mark.xfail(
-    reason="SQLALiteProvider does not support passing db.session directly",
-    raises=TypeError,
-    strict=True,
-)
-def test_sqlalite_session_raises(app: Flask, sqla_db_ext: T_ANY_SQLA_PROVIDER) -> None:
-    if sqla_db_ext.__class__.__name__ != "SQLALiteProvider":
-        pytest.skip("Only relevant for SQLALiteProvider")
-
-    Model, _ = create_models(sqla_db_ext)
-    with app.app_context():
-        sqla_db_ext.create_all()
-
-    ModelView(Model, sqla_db_ext.db.session)  # type: ignore[arg-type]
