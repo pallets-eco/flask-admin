@@ -35,7 +35,7 @@ class BasePeeweeFilter(filters.BaseFilter):
         """
         super().__init__(name, options, data_type)
 
-        self.column = column
+        self.column: t.Any = column
 
 
 # Common filters
@@ -89,7 +89,7 @@ class FilterSmaller(BasePeeweeFilter):
         return lazy_gettext("smaller than")
 
 
-class FilterEmpty(BasePeeweeFilter, filters.BaseBooleanFilter):
+class FilterEmpty(BasePeeweeFilter, filters.BaseEmptyFilter):
     def apply(self, query: t.Any, value: t.Any) -> t.Any:
         if value == "1":
             return query.filter(self.column >> None)
@@ -118,6 +118,9 @@ class FilterInList(BasePeeweeFilter):
 
     def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("in list")
+
+    def stringify(self, value: t.Any) -> str:
+        return ",".join(str(v) for v in value)
 
 
 class FilterNotInList(FilterInList):

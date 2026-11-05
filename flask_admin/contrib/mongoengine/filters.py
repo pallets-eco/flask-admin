@@ -100,7 +100,7 @@ class FilterSmaller(BaseMongoEngineFilter):
         return lazy_gettext("smaller than")
 
 
-class FilterEmpty(BaseMongoEngineFilter, filters.BaseBooleanFilter):
+class FilterEmpty(BaseMongoEngineFilter, filters.BaseEmptyFilter):
     def apply(self, query: QuerySet, value: t.Any) -> QuerySet:
         if value == "1":
             flt = {str(self.column): None}
@@ -131,6 +131,9 @@ class FilterInList(BaseMongoEngineFilter):
 
     def operation(self) -> T_TRANSLATABLE:
         return lazy_gettext("in list")
+
+    def stringify(self, value: t.Any) -> str:
+        return ",".join(str(v) for v in value)
 
 
 class FilterNotInList(FilterInList):
