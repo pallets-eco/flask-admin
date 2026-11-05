@@ -417,7 +417,7 @@ Or using **form extra fields** to add additional fields to the form::
         'description': TextAreaField('Description', [validators.optional()])
     }
 
-**None:** the ``form_extra_fields`` also can be used to override existing fields.
+**Note:** the ``form_extra_fields`` also can be used to override existing fields.
 
 You can restrict the possible values for a text-field by specifying a list of **select choices**::
 
