@@ -50,11 +50,10 @@
     >{{ _gettext('Add') }} {{ field.label.text }}</a>
 
 
-<script {{ admin_csp_nonce_attribute }} >
+    <script {{ admin_csp_nonce_attribute }} >
 
       document.getElementById('{{ field.id }}-button').addEventListener('click', function (e)
       {
-        //console.log('add inline field in Modal');
         e.preventDefault();
         faForm.addInlineField(this, $(this).data('fieldid') );
       });

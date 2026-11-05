@@ -507,13 +507,13 @@ msgstr "Đổi tên tập tin"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:92
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "Bạn có chắc bạn muốn xóa \\'%(name)s\\' đệ quy?"
+msgid "Are you sure you want to delete '%(name)s' recursively?"
+msgstr "Bạn có chắc bạn muốn xóa '%(name)s' đệ quy?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:103
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "Bạn có chắc bạn muốn xóa \\'%(name)s\\'?"
+msgid "Are you sure you want to delete '%(name)s'?"
+msgstr "Bạn có chắc bạn muốn xóa '%(name)s'?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
 msgid "Please select at least one file."

@@ -2,7 +2,7 @@ from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib.rediscli import RedisCli
 from redis import Redis
-from testcontainers.community.redis import RedisContainer
+from testcontainers.redis import RedisContainer
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "secret"

@@ -160,6 +160,14 @@ class TestCSPOnAllPages:
         for tag in styles:
             assert tag.attrs["nonce"] == nonce
 
+        handlers = []
+        for tag in soup.find_all(True):
+            attrs = [attr for attr in tag.attrs if attr.startswith("on")]
+            handlers.extend([f"{tag.name}[{attr}]" for attr in attrs])
+
+        assert handlers == []
+        assert not soup.select('[href^="javascript:" i], [action^="javascript:" i]')
+
     @pytest.mark.parametrize(
         "endpoint, url",
         [
@@ -205,27 +213,10 @@ class TestCSPOnAllPages:
         for tag in styles:
             assert tag.attrs["nonce"] == nonce
 
-    # FIXME: This test is currently a no-op since the RedisView is not being added
-    # to the admin instance. We should add it and then test that the nonce is
-    # injected into the view's templates.
-    # @pytest.mark.skip(reason="RedisView is not added to the admin instance.")
-    def test_rediscli_pages(self, app: Flask, admin: Admin, nonce: str) -> None:
-        self.create_redis_view(app, admin)
-        # check that we can retrieve a list view
+        handlers = []
+        for tag in soup.find_all(True):
+            attrs = [attr for attr in tag.attrs if attr.startswith("on")]
+            handlers.extend([f"{tag.name}[{attr}]" for attr in attrs])
 
-        with app.app_context():
-            client = app.test_client()
-
-        rv = client.get("/admin/rediscli/", follow_redirects=True)
-
-        assert rv.status_code == 200
-
-        soup = BeautifulSoup(rv.data, "html.parser")
-
-        scripts = soup.select("script")
-        for tag in scripts:
-            assert tag.attrs["nonce"] == nonce
-
-        styles = soup.select("style")
-        for tag in styles:
-            assert tag.attrs["nonce"] == nonce
+        assert handlers == []
+        assert not soup.select('[href^="javascript:" i], [action^="javascript:" i]')
