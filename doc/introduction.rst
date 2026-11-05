@@ -472,7 +472,7 @@ To filter the results that are loaded via ajax, you can use::
                                      filters=["is_active=True", "id>1000"])
     }
 
-To reorder the fields in the form, specify a list of column names for the `form_edit_rules` and
+To control the order and layout of fields in the form, use `form_edit_rules` and
 `form_create_rules` parameters::
 
     form_edit_rules = ('name', 'email', 'country')
