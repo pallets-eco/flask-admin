@@ -1,0 +1,30 @@
+{# Macros for rendering Fomantic UI modal dialogs #}
+
+{# ---------------------- Modal Window ------------------- #}
+{% macro render_form_modal(modal_window_id='fa-modal') %}
+  <div class="ui long scrolling modal"
+       id="fa-modal"
+       tabindex="-1"
+       role="dialog">
+    <i class="close icon"></i>
+    <div class="content" id="fa-modal-content">
+      <br>
+      <br>
+      <div class="ui active inverted dimmer">
+        <div class="ui loader"></div>
+      </div>
+      <br>
+      <br>
+    </div>
+    <div class="actions">
+      <button class="ui cancel button">
+        <i class="cancel icon"></i>
+        {{ _gettext("Cancel") }}
+      </button>
+      <button class="ui green ok button">
+        <i class="checkmark icon"></i>
+        {{ _gettext("Save") }}
+      </button>
+    </div>
+  </div>
+{% endmacro %}
