@@ -343,7 +343,7 @@ a given type in the details view::
     page_size_options = (10, 20, 50, 100)
 
 
-**Actions** is enabled by default. List view includes a set of action buttons for each row, which allow you to
+**Actions** are enabled by default. The list view includes a set of action buttons for each row, which allow you to
 edit, delete, or view details for that record. To **disable all buttons**, set::
 
     column_display_actions = False
