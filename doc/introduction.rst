@@ -391,7 +391,7 @@ pages::
 ***************************
 
 Another way of creating/editing a single row is to customize the create/edit forms. To
-**specify the fields** to be used in the form by using a list of column names or Column objects
+To **specify the fields** used in the form, provide a list of column names or Column objects
 in the *form_columns* parameter::
 
     form_columns = ['name', 'last_name', User.email, 'country']
