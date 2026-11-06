@@ -10,14 +10,14 @@ from sqlalchemy.dialects.postgresql import JSON
 
 from ... import Admin
 from ..conftest import skip_or_return_session_or_db
-from ..conftest import T_ANY_SQLA_PROVIDER
+from ..conftest import SQLAProviderProtocol
 from ..conftest import T_LITERAL_SESSION_OR_DB
 from .test_basic import CustomModelView
 
 
 def test_hstore(
     app: Flask,
-    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_postgres_db_ext: SQLAProviderProtocol,
     postgres_admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -60,7 +60,7 @@ def test_hstore(
 
 def test_json(
     app: Flask,
-    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_postgres_db_ext: SQLAProviderProtocol,
     postgres_admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -108,7 +108,7 @@ def test_json(
 
 def test_citext(
     app: Flask,
-    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_postgres_db_ext: SQLAProviderProtocol,
     postgres_admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -155,7 +155,7 @@ def test_citext(
 
 def test_boolean_filters(
     app: Flask,
-    sqla_postgres_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_postgres_db_ext: SQLAProviderProtocol,
     postgres_admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
