@@ -196,13 +196,5 @@
   <script {{ admin_csp_nonce_attribute }} src="{{ admin_static.url(filename='admin/js/bs4_modal.js', v='1.0.0') }}"></script>
 
 
-  <script {{ admin_csp_nonce_attribute }}>
 
-    $('.confirm-first').on('click', function (e)
-    {
-        var message = $(this).data('msg');
-        return confirm(message);
-    });
-
-  </script>
 {% endblock %}

@@ -197,15 +197,4 @@
                         actions_confirmation) }}
 
 
-    <script {{ admin_csp_nonce_attribute }} >
-
-      document.addEventListener('DOMContentLoaded', function ()
-      {
-          $('.btn-delete-row').on('click', function (e)
-          {
-              const msg = $(this).data('msg');
-              return faHelpers.safeConfirm(msg);
-          });
-      });
-    </script>
 {% endblock %}

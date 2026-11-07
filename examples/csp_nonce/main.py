@@ -1,3 +1,4 @@
+import enum
 from collections.abc import Callable
 from typing import Any
 
@@ -28,7 +29,7 @@ talisman = Talisman(
 csp_nonce_generator: Callable[[], Any] = app.jinja_env.globals["csp_nonce"]  # type: ignore[assignment]
 
 
-app.config.update(SECRET_KEY="dev", SQLALCHEMY_DATABASE_URI="sqlite:///repro.db")
+app.config.update(SECRET_KEY="dev", SQLALCHEMY_DATABASE_URI="sqlite:///sample.db")
 db = SQLAlchemy(app)
 
 
@@ -42,10 +43,20 @@ class Parent(db.Model):
     name = db.Column(db.String(50))
 
 
+class Fruit(enum.Enum):
+    Apple = 1
+    Banana = 2
+    Orange = 3
+
+
 class Child(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     parent_id = db.Column(db.ForeignKey(Parent.id))
+
+    # to test Select2 with modal
+    fruit = db.Column(db.Enum(Fruit), nullable=True)
+
     parent = db.relationship(Parent, backref="children")
 
 
@@ -71,25 +82,13 @@ class ParentView(ModelView):
 
 
 class ParentWithModal(ModelView):
-    inline_models = [Child]
     can_view_details = True
 
     create_modal = True
     edit_modal = True
     details_modal = True
 
-    # to test Select2 with modal
-    form_choices = {
-        "fruit": [
-            ("Apple", "Apple"),
-            ("Banana", "Banana"),
-            ("Cherry", "Cherry"),
-        ]
-    }
-
-
-class ChildAdmin(ModelView):
-    form_columns = ["name", "parent"]
+    inline_models = [Child]
 
 
 class MyFileAdmin(FileAdmin):

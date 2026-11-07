@@ -70,14 +70,6 @@ class TestCSPOnAllPages:
 
             return v
 
-    def create_redis_view(self, app: Flask, admin: Admin) -> None:
-        from flask_admin.contrib.rediscli import RedisCli
-        from redis import Redis
-
-        with app.app_context():
-            v = RedisCli(Redis(host="localhost", port=6379), endpoint="rediscli")
-            admin.add_view(v)
-
     def create_modelview_with_modal(
         self, app: Flask, admin: Admin, db_session: t.Any, Model1: t.Any
     ) -> MyModelView:
