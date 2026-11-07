@@ -509,13 +509,13 @@ msgstr "Dosyayı Yeniden Adlandırma"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:92
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "\\'%(name)s\\' silmek istedi─ƒinizden emin misiniz özyinelemeli olarak?"
+msgid "Are you sure you want to delete '%(name)s' recursively?"
+msgstr "'%(name)s' silmek istedi─ƒinizden emin misiniz özyinelemeli olarak?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:103
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "\\'%(name)s\\' silmek istedi─ƒinizden emin misiniz?"
+msgid "Are you sure you want to delete '%(name)s'?"
+msgstr "'%(name)s' silmek istedi─ƒinizden emin misiniz?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
 msgid "Please select at least one file."

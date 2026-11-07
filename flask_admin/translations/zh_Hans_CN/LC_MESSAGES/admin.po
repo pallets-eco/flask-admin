@@ -507,12 +507,12 @@ msgstr "重命名文件"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:92
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
+msgid "Are you sure you want to delete '%(name)s' recursively?"
 msgstr "你确定要递归地删除 %(name)s 吗？"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:103
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\'?"
+msgid "Are you sure you want to delete '%(name)s'?"
 msgstr "你确定要删除 %(name)s 吗？"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
