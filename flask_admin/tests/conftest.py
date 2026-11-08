@@ -1,13 +1,11 @@
 import sys
 import typing as t
 
-import flask_sqlalchemy
 import pytest
 from flask import Flask
 from jinja2 import StrictUndefined
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import Session
 
 from flask_admin import Admin
@@ -16,14 +14,22 @@ from flask_admin.contrib.sqla._types import T_SESSION_OR_DB
 from flask_admin.contrib.sqla._types import T_SQLALCHEMY
 from flask_admin.contrib.sqla._types import T_SQLALCHEMY_LITE
 
+try:
+    import flask_sqlalchemy  # noqa: F401
+
+    HAS_FLASK_SQLALCHEMY = True
+except ImportError:
+    HAS_FLASK_SQLALCHEMY = False
+
 # flask-sqlalchemy-lite is compatible only with SQLAlchemy 2.x
 # remove conditional imports when dropping support for SQLAlchemy 1.x
 try:
+    from flask_sqlalchemy_lite import SQLAlchemy as SQLAlchemyLite
     from sqlalchemy.orm import DeclarativeBase
 
-    HAS_SQLALCHEMY_2 = True
+    HAS_SQLALCHEMY_LITE = True
 except ImportError:
-    HAS_SQLALCHEMY_2 = False
+    HAS_SQLALCHEMY_LITE = False
 
 if sys.version_info < (3, 12):
     # Fix sqlite3 driver's handling of transactions.
@@ -38,46 +44,56 @@ if sys.version_info < (3, 12):
     def _sqlite_isolation() -> t.Generator[None, None, None]:
         event.listen(Engine, "connect", _sqlite_connect)
         event.listen(Engine, "begin", _sqlite_begin)
-        yield
-        event.remove(Engine, "begin", _sqlite_begin)
-        event.remove(Engine, "connect", _sqlite_connect)
+        try:
+            yield
+        finally:
+            event.remove(Engine, "begin", _sqlite_begin)
+            event.remove(Engine, "connect", _sqlite_connect)
 
 
-class SQLAProvider:
-    def __init__(
-        self,
-    ) -> None:  # must be in __init__ to avoid leaking db instances btw tests
-        from flask_sqlalchemy import SQLAlchemy
+class SQLAProviderProtocol(t.Protocol):
+    db: t.Any
+    Base: t.Any
 
-        self.db = SQLAlchemy()
-        self.Base = self.db.Model
+    def create_all(self) -> None: ...
 
-    def create_all(self) -> None:
-        return self.db.create_all()
-
-    def drop_all(self) -> None:
-        return self.db.drop_all()
+    def drop_all(self) -> None: ...
 
 
-if t.TYPE_CHECKING:
-    # Only used for type checking; at runtime SQLALiteProvider may not exist
-    T_ANY_SQLA_PROVIDER = t.Union[SQLAProvider, "SQLALiteProvider"]
-    T_SCOPED_SESSION_FLASK_SQLA = scoped_session[flask_sqlalchemy.Session.session]
-else:
-    T_ANY_SQLA_PROVIDER = object
-    T_SCOPED_SESSION_FLASK_SQLA = scoped_session
+sqla_db_exts: list[type[SQLAProviderProtocol]] = []
 
-sqla_db_exts: list[type[T_ANY_SQLA_PROVIDER]] = [SQLAProvider]
+if HAS_FLASK_SQLALCHEMY:
 
-if HAS_SQLALCHEMY_2:
+    class SQLAProvider:
+        def __init__(
+            self,
+        ) -> None:  # must be in __init__ to avoid leaking db instances btw tests
+            from flask_sqlalchemy import SQLAlchemy
+
+            self.db = SQLAlchemy()
+            self.Base = self.db.Model
+
+        def create_all(self) -> None:
+            self.db.create_all()
+
+        def drop_all(self) -> None:
+            self.db.drop_all()
+
+    sqla_db_exts.append(SQLAProvider)
+
+if HAS_SQLALCHEMY_LITE:
 
     class SQLALiteProvider:
-        def __init__(self, engine_options: dict[str, t.Any] | None = None) -> None:
-            # must be in __init__ to avoid leaking db instances btw tests
-            from flask_sqlalchemy_lite import SQLAlchemy as SQLAlchemyLite
+        def __init__(
+            self,
+            engine_options: dict[str, t.Any] | None = None,
+        ) -> None:
+            # Instantiate per provider to avoid sharing engines
+            # between tests.
 
-            # This ensures the engine created by lite-sqla is stable
-            self.db = SQLAlchemyLite(engine_options=engine_options or {})
+            self.db = SQLAlchemyLite(
+                engine_options=engine_options or {},
+            )
 
             class SqlAlchemyBase(DeclarativeBase):
                 pass
@@ -85,10 +101,10 @@ if HAS_SQLALCHEMY_2:
             self.Base = SqlAlchemyBase
 
         def create_all(self) -> None:
-            return self.Base.metadata.create_all(self.db.engine)
+            self.Base.metadata.create_all(self.db.engine)
 
         def drop_all(self) -> None:
-            return self.Base.metadata.drop_all(self.db.engine)
+            self.Base.metadata.drop_all(self.db.engine)
 
     sqla_db_exts.append(SQLALiteProvider)
 
@@ -126,8 +142,7 @@ def configure_sqla(app: Flask, uri: str, request: pytest.FixtureRequest) -> None
     """
     app.config["SQLALCHEMY_ECHO"] = False
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    param: type[t.Any] = request.param
-    is_flask_sqlalchemy = param is SQLAProvider
+    is_flask_sqlalchemy = request.param.__name__ == "SQLAProvider"
     if is_flask_sqlalchemy:
         app.config["SQLALCHEMY_DATABASE_URI"] = uri
     else:
@@ -137,15 +152,14 @@ def configure_sqla(app: Flask, uri: str, request: pytest.FixtureRequest) -> None
 @pytest.fixture(params=sqla_db_exts)
 def sqla_db_ext(
     request: pytest.FixtureRequest, app: Flask
-) -> t.Generator[T_ANY_SQLA_PROVIDER, None, None]:
+) -> t.Generator[SQLAProviderProtocol, None, None]:
     uri = "sqlite:///:memory:"
     configure_sqla(app, uri, request)
-    provider_cls: type[t.Any] = request.param
-    p: T_ANY_SQLA_PROVIDER = provider_cls()
-    p.db.init_app(app)
+    provider = request.param()
+    provider.db.init_app(app)
 
     with app.app_context():
-        yield p
+        yield provider
 
 
 @pytest.fixture(
@@ -161,43 +175,9 @@ def session_or_db(request: pytest.FixtureRequest) -> T_SESSION_OR_DB:
 T_LITERAL_SESSION_OR_DB = t.Literal["session", "db"]
 
 
-@t.overload
 def skip_or_return_session_or_db(
-    extension: "SQLAProvider",
-    string: t.Literal["session"],
-) -> T_SCOPED_SESSION: ...
-
-
-@t.overload
-def skip_or_return_session_or_db(
-    extension: "SQLAProvider",
-    string: t.Literal["db"],
-) -> T_SQLALCHEMY: ...
-
-
-@t.overload
-def skip_or_return_session_or_db(
-    extension: "SQLALiteProvider",
-    string: t.Literal["session"],
-) -> t.NoReturn: ...  # never actually returns (pytest.skip)
-
-
-@t.overload
-def skip_or_return_session_or_db(
-    extension: "SQLALiteProvider",
-    string: t.Literal["db"],
-) -> T_SQLALCHEMY_LITE: ...
-
-
-def skip_or_return_session_or_db(
-    extension: T_ANY_SQLA_PROVIDER, string: T_LITERAL_SESSION_OR_DB
-) -> (
-    T_SCOPED_SESSION
-    | Session
-    | T_SQLALCHEMY
-    | T_SQLALCHEMY_LITE
-    | T_SCOPED_SESSION_FLASK_SQLA
-):
+    extension: SQLAProviderProtocol, string: T_LITERAL_SESSION_OR_DB
+) -> T_SCOPED_SESSION | Session | T_SQLALCHEMY | T_SQLALCHEMY_LITE:
     """
     Helper function to skip tests (when using SQLALiteProvider and deprecated session)
     or to return the appropriate parameter (extension.db.session or extension.db) for

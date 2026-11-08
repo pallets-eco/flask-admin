@@ -9,7 +9,6 @@ from sqlalchemy.pool import StaticPool
 from flask_admin import Admin
 from flask_admin.tests.conftest import configure_sqla
 from flask_admin.tests.conftest import sqla_db_exts
-from flask_admin.tests.conftest import SQLAProvider
 
 # `uri=true` is required for the pysqlite driver to honor the `mode`/`cache`
 # query string arguments below; without it they're silently dropped (newer
@@ -41,7 +40,7 @@ def sqla_db_ext_with_binds(
 
     # Instantiate the provider (SQLAProvider or SQLALiteProvider)
     provider_cls: type[t.Any] = request.param
-    if provider_cls is SQLAProvider:
+    if provider_cls.__name__ == "SQLAProvider":
         # picks up SQLALCHEMY_ENGINE_OPTIONS from app.config instead
         p = provider_cls()
     else:
@@ -88,7 +87,7 @@ def sqla_postgres_db_ext(
     configure_sqla(app, uri, request)
     # SQLALiteProvider needs special handling for Python 3.12+ with SQLite
     provider_class = request.param
-    if provider_class != SQLAProvider:
+    if provider_class.__name__ != "SQLAProvider":
         engine_options: dict[str, t.Any] = {}
         if sys.version_info >= (3, 12) and uri.startswith("sqlite"):
             engine_options["connect_args"] = {"autocommit": False}

@@ -3,7 +3,7 @@ import typing as t
 from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib.sqla.view import ModelView
-from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
+from flask_admin.tests.conftest import SQLAProviderProtocol
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
@@ -13,7 +13,7 @@ from sqlalchemy.orm import relationship
 
 
 def create_models(
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
 ) -> tuple[type[t.Any], type[t.Any]]:
     class User(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
         __tablename__ = "user"
@@ -38,7 +38,7 @@ def create_models(
 
 
 def fill_data(
-    sqla_db_ext: T_ANY_SQLA_PROVIDER, User: type[t.Any], Post: type[t.Any]
+    sqla_db_ext: SQLAProviderProtocol, User: type[t.Any], Post: type[t.Any]
 ) -> None:
     u1 = User(first_name="user1", last_name="userdesc1")
     u2 = User(first_name="user2", last_name="userdesc2")
@@ -55,7 +55,7 @@ def fill_data(
 
 
 def test_css_class_with_combined(
-    app: Flask, sqla_db_ext: T_ANY_SQLA_PROVIDER, admin: Admin
+    app: Flask, sqla_db_ext: SQLAProviderProtocol, admin: Admin
 ) -> None:
     with app.app_context():
         User, Post = create_models(sqla_db_ext)
