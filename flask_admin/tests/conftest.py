@@ -175,55 +175,6 @@ def session_or_db(request: pytest.FixtureRequest) -> T_SESSION_OR_DB:
 T_LITERAL_SESSION_OR_DB = t.Literal["session", "db"]
 
 
-@t.overload
-def skip_or_return_session_or_db(
-    extension: "SQLAProvider",
-    string: t.Literal["session"],
-) -> T_SCOPED_SESSION: ...
-
-
-@t.overload
-def skip_or_return_session_or_db(
-    extension: "SQLAProvider",
-    string: t.Literal["db"],
-) -> T_SQLALCHEMY: ...
-
-
-@t.overload
-def skip_or_return_session_or_db(
-    extension: "SQLALiteProvider",
-    string: t.Literal["session"],
-) -> t.NoReturn: ...  # never actually returns (pytest.skip)
-
-
-@t.overload
-def skip_or_return_session_or_db(
-    extension: "SQLALiteProvider",
-    string: t.Literal["db"],
-) -> T_SQLALCHEMY_LITE: ...
-
-
-@t.overload
-def skip_or_return_session_or_db(
-    extension: SQLAProviderProtocol,
-    string: t.Literal["session"],
-) -> T_SCOPED_SESSION | Session: ...
-
-
-@t.overload
-def skip_or_return_session_or_db(
-    extension: SQLAProviderProtocol,
-    string: t.Literal["db"],
-) -> T_SQLALCHEMY | T_SQLALCHEMY_LITE: ...
-
-
-@t.overload
-def skip_or_return_session_or_db(
-    extension: SQLAProviderProtocol,
-    string: T_LITERAL_SESSION_OR_DB,
-) -> T_SCOPED_SESSION | Session | T_SQLALCHEMY | T_SQLALCHEMY_LITE: ...
-
-
 def skip_or_return_session_or_db(
     extension: SQLAProviderProtocol, string: T_LITERAL_SESSION_OR_DB
 ) -> T_SCOPED_SESSION | Session | T_SQLALCHEMY | T_SQLALCHEMY_LITE:
