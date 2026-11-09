@@ -54,8 +54,8 @@ def test_model(
     geo_model = create_models(sqla_db_ext)
     with app.app_context():
         sqla_db_ext.create_all()
-    sqla_db_ext.db.session.query(geo_model).delete()
-    sqla_db_ext.db.session.commit()
+        sqla_db_ext.db.session.query(geo_model).delete()
+        sqla_db_ext.db.session.commit()
 
     param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = ModelView(geo_model, param)
@@ -103,7 +103,9 @@ def test_model(
     )
     assert rv.status_code == 302
 
-    model = sqla_db_ext.db.session.query(geo_model).first()
+    with app.app_context():
+        model = sqla_db_ext.db.session.query(geo_model).first()
+
     assert model
     assert model.name == "test1"
     assert to_shape(model.point).geom_type == "Point"
@@ -156,7 +158,9 @@ def test_model(
     url = f"/admin/geomodel/delete/?id={model.id}"
     rv = client.post(url)
     assert rv.status_code == 302
-    assert sqla_db_ext.db.session.query(geo_model).count() == 0
+
+    with app.app_context():
+        assert sqla_db_ext.db.session.query(geo_model).count() == 0
 
 
 def test_none(
@@ -168,8 +172,8 @@ def test_none(
     geo_model = create_models(sqla_db_ext)
     with app.app_context():
         sqla_db_ext.create_all()
-    sqla_db_ext.db.session.query(geo_model).delete()
-    sqla_db_ext.db.session.commit()
+        sqla_db_ext.db.session.query(geo_model).delete()
+        sqla_db_ext.db.session.commit()
 
     param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = ModelView(geo_model, param)
@@ -186,7 +190,8 @@ def test_none(
     )
     assert rv.status_code == 302
 
-    model = sqla_db_ext.db.session.query(geo_model).first()
+    with app.app_context():
+        model = sqla_db_ext.db.session.query(geo_model).first()
 
     assert model
     url = f"/admin/geomodel/edit/?id={model.id}"

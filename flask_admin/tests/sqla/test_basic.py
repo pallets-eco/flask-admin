@@ -30,7 +30,6 @@ from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import Session
-from sqlalchemy.pool import StaticPool
 from sqlalchemy_utils import ArrowType
 from sqlalchemy_utils import ChoiceType
 from sqlalchemy_utils import ColorType
@@ -57,7 +56,6 @@ from flask_admin.form.fields import DateTimeField
 from flask_admin.form.fields import Select2Field
 from flask_admin.tests import flask_babel_test_decorator
 from flask_admin.tests.conftest import skip_or_return_session_or_db
-from flask_admin.tests.conftest import sqla_db_exts
 
 try:
     from flask_admin.tests.conftest import SQLAProvider
@@ -3552,7 +3550,8 @@ def test_different_bind_joins(
         first_id = Column(Integer, ForeignKey(Model1.id))
         first = relationship(Model1)
 
-    sqla_db_ext_with_binds.create_all()
+    with app_with_binds.app_context():
+        sqla_db_ext_with_binds.create_all()
 
     param = skip_or_return_session_or_db(sqla_db_ext_with_binds, session_or_db)
 
@@ -3865,41 +3864,10 @@ def test_sqlalite_session_raises(app: Flask, sqla_db_ext: SQLAProviderProtocol) 
     if sqla_db_ext.__class__.__name__ != "SQLALiteProvider":
         pytest.skip("Only relevant for SQLALiteProvider")
 
-    Model, _ = create_models(sqla_db_ext)
-    with app.app_context():
-        sqla_db_ext.create_all()
-
-    ModelView(Model, sqla_db_ext.db.session)
-
-
-@pytest.mark.parametrize("provider_cls", sqla_db_exts, ids=lambda cls: cls.__name__)
-def test_create_view_outside_app_context(
-    app: Flask, admin: Admin, provider_cls: type[t.Any]
-) -> None:
-    # Views are usually added at import time, before any app context exists.
-    # Flask-SQLAlchemy-Lite's ``db.session`` needs an app context, so it must
-    # not be accessed while the view is being created.
-
-    # FIXME: remove this test after removing app context push from sqla_db_exts
-    uri = "sqlite://"
-    if provider_cls is SQLAProvider:
-        app.config["SQLALCHEMY_DATABASE_URI"] = uri
-        sqla_db_ext = provider_cls()
-    else:
-        app.config["SQLALCHEMY_ENGINES"] = {"default": uri}
-        sqla_db_ext = provider_cls(engine_options={"poolclass": StaticPool})
-    sqla_db_ext.db.init_app(app)
     with app.app_context():
         Model, _ = create_models(sqla_db_ext)
 
-    admin.add_view(ModelView(Model, sqla_db_ext.db))
-
-    client = app.test_client()
-    rv = client.post("/admin/model1/new/", data=dict(test1="test1large"))
-    assert rv.status_code == 302
-    rv = client.get("/admin/model1/")
-    assert rv.status_code == 200
-    assert "test1large" in rv.text
+        ModelView(Model, sqla_db_ext.db.session)
 
 
 def _current_session(sqla_db_ext: SQLAProviderProtocol) -> Session:
@@ -3925,11 +3893,12 @@ def test_unique_validator_uses_request_scoped_session(
         id = Column(Integer, primary_key=True)
         value = Column(String, unique=True)
 
-    sqla_db_ext.create_all()
+    with app.app_context():
+        sqla_db_ext.create_all()
 
-    # The ``sqla_db_ext`` fixture has already pushed an app context; this is the
-    # "startup" session that the validator must not hold on to.
-    scaffold_session = _current_session(sqla_db_ext)
+        # The ``sqla_db_ext`` fixture has already pushed an app context; this is the
+        # "startup" session that the validator must not hold on to.
+        scaffold_session = _current_session(sqla_db_ext)
 
     param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = ModelView(UniqueTable, param)
