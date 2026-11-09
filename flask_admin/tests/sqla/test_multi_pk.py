@@ -121,7 +121,8 @@ def test_single_table_inheritance(
         __mapper_args__: dict[str, t.Any] = {"polymorphic_identity": "child"}
         name = Column(String(100))
 
-    sqla_db_ext.create_all()
+    with app.app_context():
+        sqla_db_ext.create_all()
 
     param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = CustomModelView(Child, param, form_columns=["id", "test", "name"])

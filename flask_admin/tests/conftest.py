@@ -157,9 +157,7 @@ def sqla_db_ext(
     configure_sqla(app, uri, request)
     provider = request.param()
     provider.db.init_app(app)
-
-    with app.app_context():
-        yield provider
+    yield provider
 
 
 @pytest.fixture(

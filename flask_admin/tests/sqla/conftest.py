@@ -47,8 +47,7 @@ def sqla_db_ext_with_binds(
         p = provider_cls(engine_options={"poolclass": StaticPool})
     p.db.init_app(app_with_binds)
 
-    with app_with_binds.app_context():
-        yield p
+    yield p
 
 
 @pytest.fixture
@@ -98,5 +97,4 @@ def sqla_postgres_db_ext(
 
     provider.db.init_app(app)
 
-    with app.app_context():
-        yield provider
+    yield provider

@@ -25,5 +25,4 @@ def sqla_db_ext(
     p = request.param()
     p.db.init_app(app)
 
-    with app.app_context():
-        yield p
+    yield p
