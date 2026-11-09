@@ -3879,6 +3879,8 @@ def test_create_view_outside_app_context(
     # Views are usually added at import time, before any app context exists.
     # Flask-SQLAlchemy-Lite's ``db.session`` needs an app context, so it must
     # not be accessed while the view is being created.
+
+    # FIXME: remove this test after removing app context push from sqla_db_exts
     uri = "sqlite://"
     if provider_cls is SQLAProvider:
         app.config["SQLALCHEMY_DATABASE_URI"] = uri
