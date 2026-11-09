@@ -30,6 +30,7 @@ from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import Session
+from sqlalchemy.pool import StaticPool
 from sqlalchemy_utils import ArrowType
 from sqlalchemy_utils import ChoiceType
 from sqlalchemy_utils import ColorType
@@ -56,6 +57,12 @@ from flask_admin.form.fields import DateTimeField
 from flask_admin.form.fields import Select2Field
 from flask_admin.tests import flask_babel_test_decorator
 from flask_admin.tests.conftest import skip_or_return_session_or_db
+from flask_admin.tests.conftest import sqla_db_exts
+
+try:
+    from flask_admin.tests.conftest import SQLAProvider
+except ImportError:
+    SQLAProvider = None  # type: ignore[misc, assignment]
 from flask_admin.tests.conftest import SQLAProviderProtocol
 from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
 
@@ -3863,6 +3870,36 @@ def test_sqlalite_session_raises(app: Flask, sqla_db_ext: SQLAProviderProtocol) 
         sqla_db_ext.create_all()
 
     ModelView(Model, sqla_db_ext.db.session)
+
+
+@pytest.mark.parametrize("provider_cls", sqla_db_exts, ids=lambda cls: cls.__name__)
+def test_create_view_outside_app_context(
+    app: Flask, admin: Admin, provider_cls: type[t.Any]
+) -> None:
+    # Views are usually added at import time, before any app context exists.
+    # Flask-SQLAlchemy-Lite's ``db.session`` needs an app context, so it must
+    # not be accessed while the view is being created.
+
+    # FIXME: remove this test after removing app context push from sqla_db_exts
+    uri = "sqlite://"
+    if provider_cls is SQLAProvider:
+        app.config["SQLALCHEMY_DATABASE_URI"] = uri
+        sqla_db_ext = provider_cls()
+    else:
+        app.config["SQLALCHEMY_ENGINES"] = {"default": uri}
+        sqla_db_ext = provider_cls(engine_options={"poolclass": StaticPool})
+    sqla_db_ext.db.init_app(app)
+    with app.app_context():
+        Model, _ = create_models(sqla_db_ext)
+
+    admin.add_view(ModelView(Model, sqla_db_ext.db))
+
+    client = app.test_client()
+    rv = client.post("/admin/model1/new/", data=dict(test1="test1large"))
+    assert rv.status_code == 302
+    rv = client.get("/admin/model1/")
+    assert rv.status_code == 200
+    assert "test1large" in rv.text
 
 
 def _current_session(sqla_db_ext: SQLAProviderProtocol) -> Session:
