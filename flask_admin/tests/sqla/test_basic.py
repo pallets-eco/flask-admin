@@ -24,6 +24,7 @@ from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import Table
 from sqlalchemy import Text
+from sqlalchemy import text
 from sqlalchemy import Time
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref
@@ -3070,6 +3071,67 @@ def test_ajax_fk(
         assert mdl.model1 is not None
         assert mdl.model1.id == model.id
         assert mdl.model1.test1 == "first"
+
+
+@pytest.mark.parametrize(
+    ("order_by", "expected"),
+    [
+        pytest.param(lambda model: "test1", ["alpha", "bravo", "charlie"], id="string"),
+        pytest.param(
+            lambda model: model.test1, ["alpha", "bravo", "charlie"], id="column"
+        ),
+        pytest.param(
+            lambda model: model.test1.asc(),
+            ["alpha", "bravo", "charlie"],
+            id="ascending",
+        ),
+        pytest.param(
+            lambda model: model.test1.desc(),
+            ["charlie", "bravo", "alpha"],
+            id="descending",
+        ),
+        pytest.param(
+            lambda model: text("test1 DESC"),
+            ["charlie", "bravo", "alpha"],
+            id="text",
+        ),
+    ],
+)
+def test_ajax_fk_order_by(
+    app: Flask,
+    sqla_db_ext: SQLAProviderProtocol,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+    order_by: t.Callable[[t.Any], t.Any],
+    expected: list[str],
+) -> None:
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = CustomModelView(
+            Model2,
+            param,
+            url="view",
+            form_ajax_refs={
+                "model1": {"fields": ["test1"], "order_by": order_by(Model1)}
+            },
+        )
+        admin.add_view(view)
+        sqla_db_ext.db.session.add_all(
+            Model1(test1=name) for name in ["bravo", "charlie", "alpha", "zzz"]
+        )
+        sqla_db_ext.db.session.commit()
+
+        client = app.test_client()
+        response = client.get("/admin/view/ajax/lookup/?name=model1&query=a")
+        assert response.status_code == 200
+        assert [item[1] for item in response.get_json()] == expected
+
+        response = client.get(
+            "/admin/view/ajax/lookup/?name=model1&query=a&offset=1&limit=2"
+        )
+        assert response.status_code == 200
+        assert [item[1] for item in response.get_json()] == expected[1:]
 
 
 def test_ajax_fk_multi(
