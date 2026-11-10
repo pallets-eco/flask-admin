@@ -1,3 +1,4 @@
+import sys
 import typing as t
 import warnings
 
@@ -10,6 +11,20 @@ from flask_admin.contrib.sqla._types import T_SQLALCHEMY
 from flask_admin.contrib.sqla._types import T_SQLALCHEMY_LITE
 
 
+def _get_sqlalchemy_lite() -> t.Any | None:
+    """
+    Return Flask-SQLAlchemy-Lite's extension class, or None if it is unavailable.
+
+    The import in ``_types`` can fail although the application imports the
+    package successfully afterwards: with SQLAlchemy 2.1 and no greenlet, only
+    the first import in a process raises. Fall back to the module the
+    application loaded so that its db object is still recognised.
+    """
+    if T_SQLALCHEMY_LITE is not None:
+        return T_SQLALCHEMY_LITE
+    return getattr(sys.modules.get("flask_sqlalchemy_lite"), "SQLAlchemy", None)
+
+
 def _is_db_extension(
     session: t.Any,
 ) -> t.TypeGuard["T_SQLALCHEMY | T_SQLALCHEMY_LITE"]:
@@ -17,8 +32,9 @@ def _is_db_extension(
     Return True if ``session`` is a Flask-SQLAlchemy or Flask-SQLAlchemy-Lite
     extension object rather than a session.
     """
+    sqlalchemy_lite = _get_sqlalchemy_lite()
     return (T_SQLALCHEMY is not None and isinstance(session, T_SQLALCHEMY)) or (
-        T_SQLALCHEMY_LITE is not None and isinstance(session, T_SQLALCHEMY_LITE)
+        sqlalchemy_lite is not None and isinstance(session, sqlalchemy_lite)
     )
 
 

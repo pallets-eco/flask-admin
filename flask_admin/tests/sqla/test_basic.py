@@ -48,6 +48,7 @@ from flask_admin import form
 from flask_admin._compat import as_unicode
 from flask_admin._compat import iteritems
 from flask_admin.contrib.fileadmin import FileAdmin
+from flask_admin.contrib.sqla import _compat as sqla_compat
 from flask_admin.contrib.sqla import filters
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla import tools
@@ -3868,6 +3869,28 @@ def test_sqlalite_session_raises(app: Flask, sqla_db_ext: SQLAProviderProtocol) 
         Model, _ = create_models(sqla_db_ext)
 
         ModelView(Model, sqla_db_ext.db.session)
+
+
+def test_sqlalite_imported_after_flask_admin(
+    app: Flask,
+    sqla_db_ext: SQLAProviderProtocol,
+    admin: Admin,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    if sqla_db_ext.__class__.__name__ != "SQLALiteProvider":
+        pytest.skip("Only relevant for SQLALiteProvider")
+
+    # With SQLAlchemy 2.1 and no greenlet, Flask-Admin's own import of
+    # Flask-SQLAlchemy-Lite fails while the application's later import
+    # succeeds. The application's db object must still be recognised.
+    monkeypatch.setattr(sqla_compat, "T_SQLALCHEMY_LITE", None)
+
+    with app.app_context():
+        Model, _ = create_models(sqla_db_ext)
+    admin.add_view(ModelView(Model, sqla_db_ext.db))
+
+    rv = app.test_client().get("/admin/model1/")
+    assert rv.status_code == 200
 
 
 def _current_session(sqla_db_ext: SQLAProviderProtocol) -> Session:
