@@ -14,6 +14,7 @@ New functionality:
 
 Bugfixes:
 
+* SQLAlchemy backend: AJAX relation lookups now accept ``order_by`` expressions such as ``Model.name.desc()`` without raising ``TypeError: Boolean value of this clause is not defined``.
 * SQLAlchemy backend: ``ItemsRequired`` once again validates multi-select relation fields without raising ``AttributeError``. Inline entries marked for deletion remain excluded from the count (closes #2385).
 * SQLAlchemy backend: ``Flask-SQLAlchemy-Lite`` models can now be used without installing ``flask-sqlalchemy`` package but only ``flask-sqlalchemy-lite`` (closes #2958).
 * SQLAlchemy backend: solved a bug raising ``RuntimeError: Working outside of application context`` when using ``ModelView(Model, db)`` with Flask-SQLAlchemy-Lite e.g. when views are added at import time (closes #2995).
