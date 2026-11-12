@@ -10,11 +10,11 @@ from flask_admin.base import Admin
 from flask_admin.contrib import fileadmin
 from flask_admin.contrib.sqla.view import ModelView
 from flask_admin.tests.conftest import skip_or_return_session_or_db
-from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
+from flask_admin.tests.conftest import SQLAProviderProtocol
 from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
 
 
-def create_model_class(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> T_SQLALCHEMY_MODEL:
+def create_model_class(sqla_db_ext: SQLAProviderProtocol) -> T_SQLALCHEMY_MODEL:
     class Model1(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
         __tablename__ = "model1"
 
@@ -28,7 +28,7 @@ def create_model_class(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> T_SQLALCHEMY_MODEL:
     return Model1
 
 
-def fill_db(sqla_db_ext: T_ANY_SQLA_PROVIDER, Model1: t.Any) -> None:
+def fill_db(sqla_db_ext: SQLAProviderProtocol, Model1: t.Any) -> None:
     objs: list[dict[str, t.Any]] = [
         {"test1": "test1_val_1", "test2": "test2_val_1", "bool_field": True},
         {"test1": "test1_val_2", "test2": "test2_val_2", "bool_field": False},
@@ -122,7 +122,7 @@ class TestCSPOnAllPages:
         self,
         app: Flask,
         admin: Admin,
-        sqla_db_ext: T_ANY_SQLA_PROVIDER,
+        sqla_db_ext: SQLAProviderProtocol,
         session_or_db: T_LITERAL_SESSION_OR_DB,
         endpoint: str,
         url: str,
