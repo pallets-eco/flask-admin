@@ -14,7 +14,9 @@ from flask_admin.tests.conftest import SQLAProviderProtocol
 from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
 
 
-def create_model_class(sqla_db_ext: SQLAProviderProtocol) -> T_SQLALCHEMY_MODEL:
+def create_model_class(
+    app: Flask, sqla_db_ext: SQLAProviderProtocol
+) -> T_SQLALCHEMY_MODEL:
     class Model1(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
         __tablename__ = "model1"
 
@@ -23,12 +25,13 @@ def create_model_class(sqla_db_ext: SQLAProviderProtocol) -> T_SQLALCHEMY_MODEL:
         test2 = sa.Column(sa.Unicode(20))
         bool_field = sa.Column(sa.Boolean)
 
-    sqla_db_ext.create_all()
+    with app.app_context():
+        sqla_db_ext.create_all()
 
     return Model1
 
 
-def fill_db(sqla_db_ext: SQLAProviderProtocol, Model1: t.Any) -> None:
+def fill_db(app: Flask, sqla_db_ext: SQLAProviderProtocol, Model1: t.Any) -> None:
     objs: list[dict[str, t.Any]] = [
         {"test1": "test1_val_1", "test2": "test2_val_1", "bool_field": True},
         {"test1": "test1_val_2", "test2": "test2_val_2", "bool_field": False},
@@ -36,8 +39,9 @@ def fill_db(sqla_db_ext: SQLAProviderProtocol, Model1: t.Any) -> None:
         {"test1": "test1_val_4", "test2": "test2_val_4"},
     ]
 
-    sqla_db_ext.db.session.add_all([Model1(**obj) for obj in objs])
-    sqla_db_ext.db.session.commit()
+    with app.app_context():
+        sqla_db_ext.db.session.add_all([Model1(**obj) for obj in objs])
+        sqla_db_ext.db.session.commit()
 
 
 class MyModelView(ModelView):
@@ -64,11 +68,10 @@ class TestCSPOnAllPages:
     def create_modelview(
         self, app: Flask, admin: Admin, db_session: t.Any, Model1: t.Any
     ) -> MyModelView:
-        with app.app_context():
-            v = MyModelView(Model1, db_session)
-            admin.add_view(v)
+        v = MyModelView(Model1, db_session)
+        admin.add_view(v)
 
-            return v
+        return v
 
     def create_modelview_with_modal(
         self, app: Flask, admin: Admin, db_session: t.Any, Model1: t.Any
@@ -78,11 +81,10 @@ class TestCSPOnAllPages:
             edit_modal = True
             details_modal = True
 
-        with app.app_context():
-            vi = ModalModelView(Model1, db_session, endpoint="modal")
-            admin.add_view(vi)
+        vi = ModalModelView(Model1, db_session, endpoint="modal")
+        admin.add_view(vi)
 
-            return vi
+        return vi
 
     _test_files_root = op.join(op.dirname(__file__), "files")
 
@@ -127,15 +129,15 @@ class TestCSPOnAllPages:
         endpoint: str,
         url: str,
     ) -> None:
-        Model1 = create_model_class(sqla_db_ext)
+        Model1 = create_model_class(app, sqla_db_ext)
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
         self.create_modelview(app, admin, param, Model1)
         self.create_modelview_with_modal(app, admin, param, Model1)
 
-        with app.app_context():
-            fill_db(sqla_db_ext, Model1)
-            client = app.test_client()
+        fill_db(app, sqla_db_ext, Model1)
+
+        client = app.test_client()
 
         # check that we can retrieve a list view
         rv = client.get(f"/admin/{endpoint}/{url}", follow_redirects=True)
@@ -187,8 +189,7 @@ class TestCSPOnAllPages:
         self.create_fileview(admin)
         self.create_fileview_with_modal(admin)
 
-        with app.app_context():
-            client = app.test_client()
+        client = app.test_client()
 
         # check that we can retrieve a list view
         rv = client.get(f"/admin/{endpoint}/{url}", follow_redirects=True)
