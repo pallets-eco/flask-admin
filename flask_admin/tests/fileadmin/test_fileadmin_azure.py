@@ -27,7 +27,7 @@ class TestAzureFileAdmin(Base.FileAdminTests):
             azure_connection_string
         )
         self._client.create_container(self._container_name)
-        for file_name in [["dummy.txt"], ["d1", "dum.txt"]]:
+        for file_name in [["dummy.txt"], ["d1", "dum.txt"], ["editable.txt"]]:
             file_path = os.path.join(self._test_files_root, *file_name)
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, "w") as f:

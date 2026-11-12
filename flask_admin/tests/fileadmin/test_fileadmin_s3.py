@@ -22,6 +22,7 @@ def mock_s3_client() -> t.Generator[t.Any, None, None]:
         client.create_bucket(Bucket=_bucket_name)
         client.upload_fileobj(BytesIO(b""), _bucket_name, "dummy.txt")
         client.upload_fileobj(BytesIO(b""), _bucket_name, "d1/dum.txt")
+        client.upload_fileobj(BytesIO(b""), _bucket_name, "editable.txt")
         yield client
 
 
@@ -55,6 +56,11 @@ class TestS3FileAdmin(Base.FileAdminTests):
     @pytest.mark.skip
     def test_file_admin_edit(self) -> None:  # type: ignore[override]
         """Override the inherited test as S3FileAdmin has no edit file functionality."""
+        pass
+
+    @pytest.mark.skip
+    def test_csrf_edit(self, app: Flask, admin: Admin) -> None:  # type: ignore[override]
+        """S3FileAdmin has no edit file functionality."""
         pass
 
     def test_fileadmin_sort_bogus_url_param(self, app: Flask, admin: Admin) -> None:
