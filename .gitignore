@@ -22,6 +22,7 @@ examples/file/files
 examples/forms/files
 examples/**/uv.lock
 examples/csp_nonce/instance
+examples/csp_nonce/files
 .DS_Store
 .idea/
 *.sqlite

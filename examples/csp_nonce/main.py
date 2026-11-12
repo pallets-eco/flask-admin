@@ -1,4 +1,5 @@
 import enum
+import os
 from collections.abc import Callable
 from typing import Any
 
@@ -31,6 +32,13 @@ csp_nonce_generator: Callable[[], Any] = app.jinja_env.globals["csp_nonce"]  # t
 
 app.config.update(SECRET_KEY="dev", SQLALCHEMY_DATABASE_URI="sqlite:///sample.db")
 db = SQLAlchemy(app)
+
+# Create directory for file fields to use
+file_path = os.path.join(os.path.dirname(__file__), "files")
+os.makedirs(file_path, exist_ok=True)
+os.makedirs(os.path.join(file_path, "subdir"), exist_ok=True)
+with open(os.path.join(file_path, "dummy.txt"), "w") as f:
+    f.write("This is a dummy file.")
 
 
 class User(db.Model):
