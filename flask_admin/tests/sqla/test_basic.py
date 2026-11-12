@@ -870,7 +870,7 @@ def test_details_view(
 
 def test_single_pk_multiple_ids_in_query(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
