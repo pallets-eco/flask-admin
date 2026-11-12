@@ -12,5 +12,7 @@
 		:members: __init__
 
 	.. autoclass:: FileUploadInput
+		:members: empty_template, data_template
 
 	.. autoclass:: ImageUploadInput
+		:members: empty_template, data_template
