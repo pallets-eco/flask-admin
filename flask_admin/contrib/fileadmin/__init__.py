@@ -500,9 +500,6 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                 validators=[
                     validators.InputRequired(),
                     reg_validator,
-                    # validators.AnyOf(
-                    #     secure_filename(x), message=gettext("Invalid name")
-                    # ),
                 ],
                 filters=[lambda x: x if x and x == secure_filename(x) else None],
             )
