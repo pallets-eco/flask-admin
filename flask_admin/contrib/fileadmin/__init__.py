@@ -1016,9 +1016,11 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         # Get path and verify if it is valid
         base_path, directory, path = self._normalize_path(path)
 
+        dir_url = self._get_dir_url(".index_view", path)
+
         if not self.can_upload:
             flash(gettext("File uploading is disabled."), "error")
-            return redirect(self._get_dir_url(".index_view", path))
+            return redirect(dir_url)
 
         if not self.is_accessible_path(path):
             flash(gettext("Permission denied."), "error")
@@ -1035,7 +1037,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     ),
                     "success",
                 )
-                return redirect(self._get_dir_url(".index_view", path))
+                return redirect(dir_url)
             except Exception as ex:
                 flash(
                     gettext(
@@ -1055,6 +1057,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         return self.render(
             template,
             form=form,
+            path=path,
+            dir_url=dir_url,
             header_text=gettext("Upload File"),
             modal=request.args.get("modal"),
         )
@@ -1141,6 +1145,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         return self.render(
             template,
             form=form,
+            path=path,
             dir_url=dir_url,
             header_text=gettext("Create Directory"),
         )
