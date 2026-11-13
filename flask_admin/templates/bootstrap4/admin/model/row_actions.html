@@ -7,19 +7,19 @@
 {% endmacro %}
 
 {% macro view_row(action, row_id, row) %}
-  {{ link(action, get_url('.details_view', id=row_id, url=return_url), 'fa fa-eye glyphicon glyphicon-eye-open') }}
+  {{ link(action, get_url('.details_view', id=row_id, url=return_url), 'fa fa-eye bi bi-eye-fill') }}
 {% endmacro %}
 
 {% macro view_row_popup(action, row_id, row) %}
-  {{ lib.add_modal_button(url=get_url('.details_view', id=row_id, url=return_url, modal=True), title=action.title, content='<span class="fa fa-eye glyphicon glyphicon-eye-open"></span>') }}
+  {{ lib.add_modal_button(url=get_url('.details_view', id=row_id, url=return_url, modal=True), title=action.title, content='<span class="fa fa-eye bi bi-eye-fill"></span>') }}
 {% endmacro %}
 
 {% macro edit_row(action, row_id, row) %}
-  {{ link(action, get_url('.edit_view', id=row_id, url=return_url), 'fa fa-pencil glyphicon glyphicon-pencil') }}
+  {{ link(action, get_url('.edit_view', id=row_id, url=return_url), 'fa fa-pencil bi bi-pencil-fill') }}
 {% endmacro %}
 
 {% macro edit_row_popup(action, row_id, row) %}
-  {{ lib.add_modal_button(url=get_url('.edit_view', id=row_id, url=return_url, modal=True), title=action.title, content='<span class="fa fa-pencil glyphicon glyphicon-pencil"></span>') }}
+  {{ lib.add_modal_button(url=get_url('.edit_view', id=row_id, url=return_url, modal=True), title=action.title, content='<span class="fa fa-pencil bi bi-pencil-fill"></span>') }}
 {% endmacro %}
 
 {% macro delete_row(action, row_id, row) %}
@@ -32,7 +32,7 @@
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   {% endif %}
   <button onclick="return faHelpers.safeConfirm('{{ _gettext('Are you sure you want to delete this record?') }}');" title="{{ _gettext('Delete Record') }}">
-    <span class="fa fa-trash glyphicon glyphicon-trash"></span>
+    <span class="fa fa-trash bi bi-trash-fill"></span>
   </button>
 </form>
 {% endmacro %}
