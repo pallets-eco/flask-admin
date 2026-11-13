@@ -3942,3 +3942,58 @@ def test_unique_validator_uses_request_scoped_session(
     # Nothing is left holding a connection open after the request ends.
     assert not request_session.in_transaction()
     assert not scaffold_session.in_transaction()
+
+
+@pytest.mark.parametrize(
+    "with_delete, modal", [(True, True), (True, False), (False, True), (False, False)]
+)
+def test_del_btn_in_edit_and_details(
+    app: Flask,
+    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+    with_delete: bool,
+    modal: bool,
+) -> None:
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        sqla_db_ext.db.session.add_all(
+            [
+                Model1(test1="record-1"),
+                Model1(test1="record-2"),
+            ]
+        )
+        sqla_db_ext.db.session.commit()
+
+        class MyModelView(CustomModelView):
+            can_edit = True
+            can_view_details = True
+
+            can_delete = with_delete
+            edit_modal = modal
+            details_modal = modal
+
+        # test column_list with a list of strings
+        view = MyModelView(
+            Model1,
+            param,
+            name="Without Modal",
+        )
+        admin.add_view(view)
+
+        client = app.test_client()
+
+        rv = client.get("/admin/model1/details/?id=2")
+        data = rv.data.decode("utf-8")
+        if with_delete:
+            assert "btn-delete" in data
+        else:
+            assert "btn-delete" not in data
+
+        rv = client.get("/admin/model1/edit/?id=2")
+        data = rv.data.decode("utf-8")
+        if with_delete:
+            assert "btn-delete" in data
+        else:
+            assert "btn-delete" not in data
