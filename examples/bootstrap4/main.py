@@ -127,7 +127,6 @@ class PageWithModalView(ModelView):
 with app.app_context():
     build_sample_db(db, User, Page)
 
-if __name__ == "__main__":
     # Icons reference (FontAwesome v4):
     # https://fontawesome.com/v4/icons/
 
@@ -220,4 +219,6 @@ if __name__ == "__main__":
         with app.app_context():
             build_sample_db(db, User, Page)
 
+
+if __name__ == "__main__":
     app.run(debug=True)

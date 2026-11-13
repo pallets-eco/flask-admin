@@ -17,13 +17,23 @@ admin = Admin(app, name="Example: Azure Blob Storage File Admin")
 babel = Babel(app)
 
 
+@app.route("/")
+def index():
+    tmp = """<p><a href="/admin/">Click me to get to Admin! </a></p>"""
+    return tmp
+
+
 if __name__ == "__main__":
     with AzuriteContainer() as azurite_container:
         print("\n\n=============================")
         print("Run docker, waith for Azurite to start and then go to:")
         print("http://127.0.0.1:5000/admin/")
-        print("\n\n=============================")
+
         connection_string = azurite_container.get_connection_string()
+
+        print(f"Using Azure Blob Storage connection string: {connection_string}")
+        print("\n\n=============================")
+
         client = BlobServiceClient.from_connection_string(
             connection_string, api_version="2019-12-12"
         )

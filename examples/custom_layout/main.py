@@ -115,15 +115,16 @@ def build_sample_db(names, surnames, pages):
     db.session.commit()
 
 
+admin.add_view(UserAdmin(User, db))
+admin.add_view(CustomView(Page, db))
+admin.add_view(CustomView(Sale, db))
+
+app_dir = op.realpath(os.path.dirname(__file__))
+database_path = op.join(app_dir, app.config["DATABASE_FILE"])
+if not os.path.exists(database_path):
+    with app.app_context():
+        build_sample_db(first_names, last_names, sample_text)
+
+
 if __name__ == "__main__":
-    admin.add_view(UserAdmin(User, db))
-    admin.add_view(CustomView(Page, db))
-    admin.add_view(CustomView(Sale, db))
-
-    app_dir = op.realpath(os.path.dirname(__file__))
-    database_path = op.join(app_dir, app.config["DATABASE_FILE"])
-    if not os.path.exists(database_path):
-        with app.app_context():
-            build_sample_db(first_names, last_names, sample_text)
-
     app.run(debug=True)

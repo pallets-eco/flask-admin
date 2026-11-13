@@ -44,17 +44,18 @@ def index(anyhost):
     )
 
 
+# Create first administrative interface at `first.localhost:5000/admin1`
+admin1 = Admin(app, url="/admin1", host="first.localhost:5000")
+admin1.add_view(FirstView())
+
+# Create second administrative interface at `second.localhost:5000/admin2`
+admin2 = Admin(app, url="/admin2", endpoint="admin2", host="second.localhost:5000")
+admin2.add_view(SecondView())
+
+# Create third administrative interface, available on any domain at `/admin3`
+admin3 = Admin(app, url="/admin3", endpoint="admin3", host="*")
+admin3.add_view(ThirdViewAllHosts())
+
+
 if __name__ == "__main__":
-    # Create first administrative interface at `first.localhost:5000/admin1`
-    admin1 = Admin(app, url="/admin1", host="first.localhost:5000")
-    admin1.add_view(FirstView())
-
-    # Create second administrative interface at `second.localhost:5000/admin2`
-    admin2 = Admin(app, url="/admin2", endpoint="admin2", host="second.localhost:5000")
-    admin2.add_view(SecondView())
-
-    # Create third administrative interface, available on any domain at `/admin3`
-    admin3 = Admin(app, url="/admin3", endpoint="admin3", host="*")
-    admin3.add_view(ThirdViewAllHosts())
-
     app.run(debug=True)

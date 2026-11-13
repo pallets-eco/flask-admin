@@ -30,7 +30,8 @@ class AnotherAdminView(BaseView):
         return self.render("test.html")
 
 
+admin.add_view(MyAdminView(name="view1", category="Test"))
+admin.add_view(AnotherAdminView(name="view2", category="Test"))
+
 if __name__ == "__main__":
-    admin.add_view(MyAdminView(name="view1", category="Test"))
-    admin.add_view(AnotherAdminView(name="view2", category="Test"))
     app.run(debug=True)

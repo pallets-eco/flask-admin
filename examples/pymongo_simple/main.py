@@ -110,8 +110,9 @@ def index():
 if __name__ == "__main__":
     with MongoDbContainer("mongo:7.0.7") as mongo:
         conn: MongoClient[Any] = MongoClient(mongo.get_connection_url())
-        db = conn.test
+        print("MongoDB is running at:", conn.address)
 
+        db = conn.test
         admin.add_view(UserView(db.user, "User"))
         admin.add_view(TweetView(db.tweet, "Tweets"))
 
