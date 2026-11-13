@@ -468,6 +468,77 @@ Now the ``wrap_in_card`` macro can be passed to the container rule like: ::
     ]
 
 
+.. _inline-models:
+
+Inline models
+-------------
+
+With the SQLAlchemy backend, :attr:`~flask_admin.contrib.sqla.ModelView.inline_models`
+lets you edit related child records inside a parent's create and edit forms.
+The child's own ``ModelView`` configuration is not applied automatically to
+these inline forms. Pass shared options to ``InlineFormAdmin`` explicitly to
+avoid defining the same field configuration twice.
+
+For example, suppose ``Order`` and ``Product`` have a parent-child relationship,
+and ``Product`` has an ``id`` primary key and a ``name`` column::
+
+    from flask_admin.contrib.sqla import ModelView
+    from flask_admin.model.form import InlineFormAdmin
+
+    class ProductView(ModelView):
+        form_columns = ("name",)
+        form_args = {"name": {"label": "Product name"}}
+
+    class OrderView(ModelView):
+        inline_models = [
+            InlineFormAdmin(
+                Product,
+                form_columns=("id", *ProductView.form_columns),
+                form_args=ProductView.form_args,
+            )
+        ]
+
+Both forms use the label "Product name" for the editable ``name`` field. The
+inline form also includes ``id`` as a hidden field so that Flask-Admin can
+identify existing products when editing them. Include your child model's
+primary key when setting ``form_columns`` for an inline form.
+
+``InlineFormAdmin(model, **kwargs)`` sets the supplied options as attributes.
+The SQLAlchemy inline form supports these form-generation and rendering options:
+
+``form_base_class``
+    Base class for the generated form. Defaults to Flask-Admin's ``BaseForm``.
+``form_columns``
+    Fields to include, in the order they should appear.
+``form_excluded_columns``
+    Fields to exclude when ``form_columns`` is not set. The relationship back
+    to the parent is excluded automatically when generating the default form.
+``form_args``
+    A dictionary mapping field names to WTForms field arguments, such as
+    labels, descriptions, and validators.
+``form_extra_fields``
+    A dictionary of additional or replacement WTForms fields. When using
+    ``form_columns``, include the extra field names there as well.
+``form_rules``
+    :ref:`Rendering rules <rendering-rules>` for the inline form's layout.
+``form_widget_args``
+    A dictionary mapping field names to widget arguments used when rendering.
+``form_label``
+    Label for the group of inline records on the parent form.
+
+For more control, subclass ``InlineFormAdmin`` and override ``get_form()`` to
+return a custom form class instead of generating one from the model, or
+``postprocess_form(form_class)`` to modify and return the form class before it
+is added to the parent form.
+
+Only share plain class-level attributes this way. Accessing
+``ProductView.form_args`` does not evaluate an instance property or run logic
+from ``ProductView.__init__``. If configuration is computed per instance,
+compute the values explicitly and pass them to ``InlineFormAdmin`` when
+constructing it. Sharing configuration also does not copy the child view's
+methods or lifecycle hooks.
+
+
 .. _database-backends:
 
 Using Different Database Backends
