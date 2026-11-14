@@ -475,12 +475,18 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         Override to implement customized behavior.
         """
 
-        def validate_name(self: type[form.BaseForm], field: Field) -> None:
-            regexp = re.compile(
-                r"^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";|/]+$"
+        if self._on_windows:
+            reg_validator = validators.Regexp(
+                flags=re.IGNORECASE,
+                regex=r"^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";|/]+$",
+                message=gettext("Invalid name"),
             )
-            if not regexp.match(field.data):
-                raise validators.ValidationError(gettext("Invalid name"))
+        else:
+            reg_validator = validators.Regexp(
+                flags=re.IGNORECASE,
+                regex=r"([/\\\x00])|[ .]+$",
+                message=gettext("Invalid name"),
+            )
 
         class NameForm(self.form_base_class):  # type: ignore[name-defined, misc]
             """
@@ -491,7 +497,11 @@ class BaseFileAdmin(BaseView, ActionsMixin):
 
             name = fields.StringField(
                 lazy_gettext("Name"),
-                validators=[validators.InputRequired(), validate_name],
+                validators=[
+                    validators.InputRequired(),
+                    reg_validator,
+                ],
+                filters=[lambda x: x if x and x == secure_filename(x) else None],
             )
             path = fields.HiddenField()
 
@@ -1025,6 +1035,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
             return redirect(self._get_dir_url(".index_view"))
 
         form = self.upload_form()
+
         if self.validate_form(form):
             try:
                 self._save_form_files(directory, path, form)
