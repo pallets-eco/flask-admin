@@ -763,6 +763,7 @@ dev = [
     { name = "flake8" },
     { name = "flask", extra = ["async"] },
     { name = "flask-admin", extra = ["all"] },
+    { name = "flask-wtf" },
     { name = "moto" },
     { name = "mypy" },
     { name = "pallets-sphinx-themes" },
@@ -801,6 +802,7 @@ tests = [
     { name = "botocore" },
     { name = "flake8" },
     { name = "flask", extra = ["async"] },
+    { name = "flask-wtf" },
     { name = "moto" },
     { name = "psycopg2-binary" },
     { name = "pytest" },
@@ -814,6 +816,7 @@ typing = [
     { name = "flake8" },
     { name = "flask", extra = ["async"] },
     { name = "flask-admin", extra = ["all"] },
+    { name = "flask-wtf" },
     { name = "moto" },
     { name = "mypy" },
     { name = "psycopg2-binary" },
@@ -878,6 +881,7 @@ dev = [
     { name = "flake8" },
     { name = "flask", extras = ["async"] },
     { name = "flask-admin", extras = ["all"], editable = "." },
+    { name = "flask-wtf" },
     { name = "moto" },
     { name = "mypy" },
     { name = "pallets-sphinx-themes" },
@@ -913,6 +917,7 @@ tests = [
     { name = "botocore", specifier = ">=1.35" },
     { name = "flake8" },
     { name = "flask", extras = ["async"] },
+    { name = "flask-wtf" },
     { name = "moto" },
     { name = "psycopg2-binary" },
     { name = "pytest" },
@@ -925,6 +930,7 @@ typing = [
     { name = "flake8" },
     { name = "flask", extras = ["async"] },
     { name = "flask-admin", extras = ["all"], editable = "." },
+    { name = "flask-wtf" },
     { name = "moto" },
     { name = "mypy" },
     { name = "psycopg2-binary" },
@@ -975,6 +981,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b7/dc/3f4c55cfc03e189e50b80843d5d3ff70c97711d924537b7a5ad8587cf7fb/flask_sqlalchemy_lite-0.2.1.tar.gz", hash = "sha256:6de2f70c835a2c0a11264cbbc0cc33e7ed9732a52ee056781c5739e960213d2f", size = 10389, upload-time = "2025-11-20T21:38:10.209Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/20/f3/df9d508d4ed9657ae23d9e936ca2f2c0556742c032598e0d79f78e64646f/flask_sqlalchemy_lite-0.2.1-py3-none-any.whl", hash = "sha256:93f1df6228389fdc60a0733353f8c1a18aaeaf03c8d6ab541bafdf2987c5e777", size = 10208, upload-time = "2025-11-20T21:38:08.729Z" },
+]
+
+[[package]]
+name = "flask-wtf"
+version = "1.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "flask" },
+    { name = "itsdangerous" },
+    { name = "wtforms" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/91/f1/605a56d4ea217b307f3e6f4d663e0351253d85d841edc93ba559f0648e19/flask_wtf-1.3.0.tar.gz", hash = "sha256:61d5dabc50c3df885c297dcbd80810443a5d632106c8a69cab8ce740f0cdd7cc", size = 50414, upload-time = "2026-04-23T07:41:55.096Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/14/d2/97adf2ec7af95522573e6dd5493ee84792d0fbfb2def010c4a581b8d6e5e/flask_wtf-1.3.0-py3-none-any.whl", hash = "sha256:dc5e3a4ce97f75c47bf6c1c72ad2c3b7bdf579a2ed13aebcc5d3d81fe2571160", size = 13959, upload-time = "2026-04-23T07:41:53.828Z" },
 ]
 
 [[package]]

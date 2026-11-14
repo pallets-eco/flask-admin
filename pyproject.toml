@@ -109,6 +109,7 @@ tests = [
     "psycopg2-binary",
     "beautifulsoup4",
     "azure-storage-blob",
+    "flask_wtf",
 ]
 typing = [
     "flask-admin[all]",
