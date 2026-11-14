@@ -475,7 +475,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         Override to implement customized behavior.
         """
 
-        if self._on_windows:
+        if self.storage.on_windows:
             reg_validator = validators.Regexp(
                 flags=re.IGNORECASE,
                 regex=r"^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";|/]+$",

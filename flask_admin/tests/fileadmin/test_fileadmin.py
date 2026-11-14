@@ -14,6 +14,14 @@ from flask_admin.contrib.fileadmin.s3 import S3FileAdmin
 from flask_admin.theme import Bootstrap4Theme
 
 
+@pytest.fixture(scope="function", autouse=True)
+def initial_files() -> None:
+    os.makedirs(op.join(op.dirname(__file__), "files"), exist_ok=True)
+    if not op.exists(op.join(op.dirname(__file__), "files", "dummy.txt")):
+        with open(op.join(op.dirname(__file__), "files", "dummy.txt"), "w") as fp:
+            fp.write("any string")
+
+
 class Base:
     class FileAdminTests:
         _test_files_root = op.join(op.dirname(__file__), "files")
@@ -241,6 +249,10 @@ class Base:
         @pytest.mark.parametrize(
             "wrongname",
             [
+                ("AUX"),
+                ("../x"),
+                ("./x"),
+                ("x/x"),
                 ("x`x"),
                 ("x'x"),
                 ("y<script>y"),
@@ -251,15 +263,15 @@ class Base:
             "ep, data",
             [
                 ("/admin/fa/mkdir/", {"name": ""}),
+                ("/admin/fa/rename/?path=dummy.txt", {"name": "", "path": "dummy.txt"}),
             ],
         )
         def test_invalid_names(
             self,
             app: Flask,
             admin: Admin,
-            request: t.Any,
             ep: str,
-            data: dict,
+            data: dict[str, str],
             wrongname: str,
         ) -> None:
             fileadmin_class = self.fileadmin_class()
@@ -276,50 +288,13 @@ class Base:
             admin.add_view(view)
             client = app.test_client()
 
-            # p = op.join(self._test_files_root, expected)
-            # if op.exists(p):
-            #     shutil.rmtree(p)
-
             # mkdir with invalid name
             data.update(dict(name=wrongname))
+
             rv = client.post(ep, data=data, follow_redirects=True)
             data = rv.data.decode("utf-8")
             assert rv.status_code == 200
-            print(data)
             assert "Invalid name" in data
-
-            # rename dir with invalid name
-            # rv = client.post(
-            #     f"/admin/myfileadmin/rename/?path={expected}",
-            #     data=dict(name=wrongname, path=f"{expected}"),
-            #     follow_redirects=True,
-            # )
-            # data = rv.data.decode("utf-8")
-            # assert rv.status_code == 200
-            # assert "Successfully renamed" in data
-            # assert expected in data
-
-            # upload file to dir
-            # rv = client.post(
-            #     f"/admin/myfileadmin/upload/{expected}/",
-            #     data=dict(upload=(BytesIO(b""), f"{wrongname}.txt")),
-            #     follow_redirects=True,
-            # )
-            # data = rv.data.decode("utf-8")
-            # assert rv.status_code == 200
-            # assert "Successfully saved file" in data
-            # assert expected in data
-
-            # # rename file
-            # rv = client.post(
-            #     f"/admin/myfileadmin/rename/?path={expected}/{expected}.txt",
-            #     data=dict(name=f"{wrongname}.txt", path=f"{expected}/{expected}.txt"),
-            #     follow_redirects=True,
-            # )
-            # data = rv.data.decode("utf-8")
-            # assert rv.status_code == 200
-            # assert "Successfully renamed" in data
-            # assert expected in data
 
 
 class TestLocalFileAdmin(Base.FileAdminTests):
