@@ -26,6 +26,7 @@ Misc:
 
 Docs:
 
+* Document SQLAlchemy inline form options and sharing configuration with a child model's own view (`#2980 <https://github.com/pallets-eco/flask-admin/issues/2980>`_).
 * SQLAlchemy backend: the ``column_select_related_list`` docstring now says ``joinedload``, which is what the list view has used since 2013, instead of ``subqueryload`` (closes #2981).
 
 Dev:
