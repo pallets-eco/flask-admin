@@ -664,4 +664,87 @@
     $(function() {
         faForm.applyGlobalStyles(document);
     });
+
+    /**
+     * Prevent double submit and show a loader when submitting forms. 
+     * If the page reloads with validation errors, re-enable the form and reset the button text.
+     */
+    window.lockBtnOnFormSubmit = function () {
+      //console.log("lockBtnOnFormSubmit called !!!");
+
+      $('form').on('submit', function () {
+        const $form = $(this);
+
+        // prevent double submit
+        if ($form.data('submitted')) {
+          return false;
+        }
+
+        $form.data('submitted', true);
+
+        const $btn = $form.find('button[type="submit"], input[type="submit"]');
+
+        // store original text
+        $btn.each(function () {
+          const $b = $(this);
+          $b.data('original-text', $b.html() || $b.val());
+        });
+
+        // disable + loader
+        $btn.prop('disabled', true);
+
+        $btn.each(function () {
+          const $b = $(this);
+          if ($b.is('button')) {
+            $b.html(`<i class="fa fa-spinner fa-spin"></i> ${  $b.data('original-text')}`);
+          } else {
+            $b.val(`⌛ ${  $b.data('original-text')}...`);
+          }
+        });
+
+        return true;
+      });
+
+      // ✅ RESET if page reloads with validation errors
+      const hasErrors = $('.has-error, .invalid-feedback, .alert-danger').length > 0;
+
+      if (hasErrors) {
+        const $form = $('form');
+
+        $form.data('submitted', false);
+
+        const $btn = $form.find('button[type="submit"], input[type="submit"]');
+
+        $btn.prop('disabled', false);
+
+        $btn.each(function () {
+          const $b = $(this);
+          if ($b.data('original-text')) {
+            if ($b.is('button')) {
+              $b.html($b.data('original-text'));
+            } else {
+              $b.val($b.data('original-text'));
+            }
+          }
+        });
+      }
+    };
+
+    // Affected forms:
+    // - /model/create.html
+    // - /model/edit.html
+    // - /file/form.html
+    // - search & filter forms 
+    window.lockBtnOnFormSubmit();
+    
+    $('#fa_modal_window').on('shown.bs.modal', function () {
+        // Affected forms:
+        // - /file/modal/form.html
+        // - /model/modal/create.html
+        // - /model/modal/edit.html
+
+        //console.log('xxxxxxxxxxx');
+        window.lockBtnOnFormSubmit();
+    }); 
+
 })();
