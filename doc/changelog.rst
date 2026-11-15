@@ -11,10 +11,10 @@ Dependencies:
 New functionality:
 
 * MongoEngine backend: support ``form_choices`` in ``ModelView``, rendering a ``Select2Field`` like the SQLAlchemy and Peewee backends. ``form_choices`` is now defined on ``BaseModelView``, and all backends build the field through a shared ``flask_admin.model.form.get_form_choices_field()`` helper (closes #2967).
+* SQLAlchemy backend: ``order_by`` in ``form_ajax_refs`` now accepts SQLAlchemy expressions such as ``Model.name.desc()`` in addition to column names, so AJAX relation lookups can be sorted in descending order (closes #3000).
 
 Bugfixes:
 
-* SQLAlchemy backend: AJAX relation lookups now accept ``order_by`` expressions such as ``Model.name.desc()`` without raising ``TypeError: Boolean value of this clause is not defined``.
 * SQLAlchemy backend: ``ItemsRequired`` once again validates multi-select relation fields without raising ``AttributeError``. Inline entries marked for deletion remain excluded from the count (closes #2385).
 * SQLAlchemy backend: ``Flask-SQLAlchemy-Lite`` models can now be used without installing ``flask-sqlalchemy`` package but only ``flask-sqlalchemy-lite`` (closes #2958).
 * SQLAlchemy backend: solved a bug raising ``RuntimeError: Working outside of application context`` when using ``ModelView(Model, db)`` with Flask-SQLAlchemy-Lite e.g. when views are added at import time (closes #2995).
