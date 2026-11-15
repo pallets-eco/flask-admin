@@ -122,8 +122,12 @@ class LocalFileStorage(BaseFileStorage):
             fp = op.join(directory, f)
             rel_path = op.join(path, f)
             is_dir = self.is_dir(fp)
-            size = op.getsize(fp)
-            last_modified = op.getmtime(fp)
+            try:
+                size = op.getsize(fp)
+                last_modified = op.getmtime(fp)
+            except FileNotFoundError:
+                size = 0
+                last_modified = 0.0
             items.append((f, rel_path, is_dir, size, last_modified))
         return items
 
@@ -143,7 +147,7 @@ class LocalFileStorage(BaseFileStorage):
         """
         Check if `path` exists
         """
-        return op.exists(path)
+        return op.lexists(path)
 
     def rename_path(self, src: T_PATH_LIKE, dst: T_PATH_LIKE) -> None:
         """
@@ -916,6 +920,9 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         if not self.is_accessible_path(path):
             flash(gettext("Permission denied."), "error")
             return redirect(self._get_dir_url(".index_view"))
+
+        if not self.storage.is_dir(directory):  # type: ignore[union-attr]
+            abort(404)
 
         # Get directory listing
         items: list[tuple[str, str | None, bool, int, int]] = []
