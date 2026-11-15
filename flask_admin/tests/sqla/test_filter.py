@@ -5,11 +5,8 @@ from datetime import time
 import pytest
 from flask import Flask
 
-from flask_admin.base import Admin
 from flask_admin.contrib.sqla import filters
 from flask_admin.tests.conftest import skip_or_return_session_or_db
-from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
-from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
 from flask_admin.tests.sqla.test_basic import create_models
 from flask_admin.tests.sqla.test_basic import CustomModelView
 from flask_admin.tests.sqla.test_basic import fill_db
@@ -982,7 +979,6 @@ def test_url_for_simple(
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
-
     Model1, Model2 = create_models(sqla_db_ext)
 
     param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
@@ -1392,7 +1388,6 @@ def test_url_for(
     arg_named_key: str,
     expected_value: str,
 ) -> None:
-
     Model1, Model2 = create_models(sqla_db_ext)
 
     col = getattr(Model1, col_name)
@@ -1420,7 +1415,6 @@ def test_url_for(
 
 
 def create_filter_params_enums_and_choices() -> list[tuple[t.Any, ...]]:
-
     params = [
         (
             filters.EnumEqualFilter,
@@ -1522,7 +1516,6 @@ def test_url_for_enums_and_choices(
     arg_named_key: str,
     expected_value: str,
 ) -> None:
-
     Model1, Model2 = create_models(sqla_db_ext)
 
     col = getattr(Model1, col_name)
