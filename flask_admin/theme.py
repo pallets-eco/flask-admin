@@ -1,6 +1,5 @@
 import typing
 from dataclasses import dataclass
-from functools import partial
 
 
 @dataclass
@@ -30,4 +29,12 @@ class BootstrapTheme(Theme):
     fluid: bool = False
 
 
-Bootstrap4Theme = partial(BootstrapTheme, folder="bootstrap4")
+@dataclass
+class Bootstrap4Theme(BootstrapTheme):
+    """Bootstrap 4 theme with typed constructor options.
+
+    .. versionchanged:: unreleased
+        Replaced the partial constructor with a dataclass subclass.
+    """
+
+    folder: typing.Literal["bootstrap4"] = "bootstrap4"
