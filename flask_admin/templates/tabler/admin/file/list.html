@@ -1,0 +1,260 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% import 'admin/actions.html' as actionslib with context %}
+{% block body %}
+  {# ── Breadcrumb ───────────────────────────────────────────────────────── #}
+  {% block breadcrums %}
+    <nav aria-label="breadcrumb" class="mb-2">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="{{ get_dir_url('.index_view', path=None) }}">
+            <i class="ti ti-home me-1"></i>{{ _gettext('Root') }}
+          </a>
+        </li>
+        {% for name, path in breadcrumbs[:-1] %}
+          <li class="breadcrumb-item">
+            <a href="{{ get_dir_url('.index_view', path=path) }}">{{ name }}</a>
+          </li>
+        {% endfor %}
+        {% if breadcrumbs %}
+          <li class="breadcrumb-item active" aria-current="page">
+            {{ breadcrumbs[-1][0] }}
+          </li>
+        {% endif %}
+      </ol>
+    </nav>
+  {% endblock %}
+  {# ── Toolbar
+──────────────────────────────────────────────────────────── #}
+  {% block toolbar %}
+    <div class="d-flex gap-2 mb-3 flex-wrap">
+      {% if admin_view.can_upload %}{%- if admin_view.upload_modal -%}
+        {{
+          lib.add_modal_button(url=get_dir_url('.upload', path=dir_path, modal=True),
+          btn_class="btn btn-primary", content='<i class="ti ti-upload me-1"></i>' ~
+          _gettext('Upload File'))
+        }}
+      {% else %}
+        <a class="btn btn-primary" href="{{ get_dir_url('.upload', path=dir_path) }}">
+          <i class="ti ti-upload me-1"></i>{{ _gettext('Upload File') }}
+        </a>
+      {%- endif -%}{% endif %}
+      {% if admin_view.can_mkdir %}{%- if admin_view.mkdir_modal -%}
+        {{
+          lib.add_modal_button(url=get_dir_url('.mkdir', path=dir_path, modal=True),
+          btn_class="btn btn-secondary", content='<i class="ti ti-folder-plus me-1"></i>' ~
+          _gettext('Create Directory'))
+        }}
+      {% else %}
+        <a class="btn btn-secondary" href="{{ get_dir_url('.mkdir', path=dir_path) }}">
+          <i class="ti ti-folder-plus me-1"></i>{{ _gettext('Create Directory') }}
+        </a>
+      {%- endif -%}{% endif %}
+      {% if actions %}{{
+        actionslib.dropdown(actions,
+        'dropdown-toggle btn btn-outline-secondary')
+      }}{% endif %}
+    </div>
+  {% endblock %}
+  {# ── File table
+───────────────────────────────────────────────────────── #}
+  {% block file_list_table %}
+    <div class="table-responsive">
+      <table class="table table-vcenter table-striped table-hover">
+        <thead>
+          <tr>
+            {% block list_header scoped %}
+              {% if actions %}
+                <th class="list-checkbox-column" style="width: 1rem">
+                  <input
+                    type="checkbox"
+                    name="rowtoggle"
+                    class="action-rowtoggle form-check-input"
+                  />
+                </th>
+              {% endif %}
+              <th style="width: 5rem">&nbsp;</th>
+              {% for column in admin_view.column_list %}
+                <th>
+                  {% if admin_view.is_column_sortable(column) %}
+                    {% if sort_column == column %}
+                      <a
+                        href="{{ sort_url(column, dir_path, True) }}"
+                        title="{{ _gettext('Sort by %(name)s', name=column) }}"
+                      >
+                        {{ admin_view.column_label(column) }}
+                        {% if sort_desc %}
+                          <i class="ti ti-chevron-up ms-1"></i>
+                        {% else %}
+                          <i class="ti ti-chevron-down ms-1"></i>
+                        {% endif %}
+                      </a>
+                    {% else %}
+                      <a
+                        href="{{ sort_url(column, dir_path) }}"
+                        title="{{ _gettext('Sort by %(name)s', name=column) }}"
+                      >
+                        {{ admin_view.column_label(column) }}
+                      </a>
+                    {% endif %}
+                  {% else %}
+                    {{ _gettext(admin_view.column_label(column)) }}
+                  {% endif %}
+                </th>
+              {% endfor %}
+            {% endblock %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for name, path, is_dir, size, date in items %}
+            <tr>
+              {% block list_row scoped %}
+                {% if actions %}
+                  <td>
+                    {% if not is_dir %}
+                      <input
+                        type="checkbox"
+                        name="rowid"
+                        class="action-checkbox form-check-input"
+                        value="{{ path }}"
+                      />
+                    {% endif %}
+                  </td>
+                {% endif %}
+                <td>
+                  {% block list_row_actions scoped %}
+                    <div class="d-flex gap-1">
+                      {% if admin_view.can_rename and path and name != '..' %}{%-
+                        if
+                        admin_view.rename_modal
+                      -%}
+                        {{
+                          lib.add_modal_button(url=get_url('.rename',
+                          path=path, modal=True), title=_gettext('Rename File'), content='<i
+                            class="ti ti-pencil"
+                          ></i
+                          >')
+                        }}
+                      {% else %}
+                        <a
+                          class="btn btn-sm btn-ghost-secondary"
+                          href="{{ get_url('.rename', path=path) }}"
+                          title="{{ _gettext('Rename File') }}"
+                        >
+                          <i class="ti ti-pencil"></i>
+                        </a>
+                      {%- endif -%}{% endif %}
+                      {%- if admin_view.can_delete and path -%}{%
+                        if
+                        is_dir
+                      %}
+                        {% if name != '..' and admin_view.can_delete_dirs %}
+                          <form
+                            method="POST"
+                            action="{{ get_url('.delete') }}"
+                            style="display: inline"
+                          >
+                            {{ delete_form.path(value=path) }}
+                            {%
+                              if delete_form.csrf_token is defined
+                              and delete_form.csrf_token
+                            %}
+                              {{ delete_form.csrf_token }}
+                            {% endif %}
+                            <button
+                              type="submit"
+                              class="btn btn-sm btn-ghost-danger"
+                              title="{{ _gettext('Delete Directory') }}"
+                              onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')"
+                            >
+                              <i class="ti ti-trash"></i>
+                            </button>
+                          </form>
+                        {% endif %}
+                      {% else %}
+                        <form
+                          method="POST"
+                          action="{{ get_url('.delete') }}"
+                          style="display: inline"
+                        >
+                          {{ delete_form.path(value=path) }}
+                          {%
+                            if delete_form.csrf_token is defined
+                            and delete_form.csrf_token
+                          %}
+                            {{ delete_form.csrf_token }}
+                          {% endif %}
+                          <button
+                            type="submit"
+                            class="btn btn-sm btn-ghost-danger"
+                            title="{{ _gettext('Delete File') }}"
+                            onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name)|tojson }}')"
+                          >
+                            <i class="ti ti-trash"></i>
+                          </button>
+                        </form>
+                      {% endif %}{%- endif -%}
+                    </div>
+                  {% endblock %}
+                </td>
+                {% if is_dir %}
+                  <td colspan="2">
+                    <a href="{{ get_dir_url('.index_view', path)|safe }}">
+                      <i class="ti ti-folder text-warning me-1"></i>{{ name }}
+                    </a>
+                  </td>
+                {% else %}
+                  <td>
+                    {% if admin_view.can_download %}
+                      {%-
+                        if admin_view.edit_modal and
+                        admin_view.is_file_editable(path)
+                      -%}
+                        {{
+                          lib.add_modal_button(url=get_file_url(path, modal=True)|safe, btn_class='',
+                          content=name)
+                        }}
+                      {% else %}
+                        <a href="{{ get_file_url(path)|safe }}">
+                          <i class="ti ti-file me-1"></i>{{ name }}
+                        </a>
+                      {%- endif -%}
+                    {% else %}
+                      <i class="ti ti-file me-1"></i>{{ name }}
+                    {% endif %}
+                  </td>
+                  {% if admin_view.is_column_visible('size') %}
+                    <td class="text-muted">{{ size|filesizeformat }}</td>
+                  {% endif %}
+                {% endif %}
+                {% if admin_view.is_column_visible('date') %}
+                  <td class="text-muted">{{ timestamp_format(date) }}</td>
+                {% endif %}
+              {% endblock %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endblock %}
+  {% block actions %}{{ actionslib.form(actions, get_url('.action_view')) }}{% endblock %}
+  {%-
+    if admin_view.rename_modal or admin_view.mkdir_modal or
+    admin_view.upload_modal or admin_view.edit_modal
+  -%}
+    {{ lib.add_modal_window() }}
+  {%- endif -%}
+{% endblock %}
+{% block tail %}
+  {{ super() }}
+  {{
+    actionslib.script(_gettext('Please select at least one file.'), actions,
+    actions_confirmation)
+  }}
+  <script
+    {{
+    admin_csp_nonce_attribute
+    }}
+    src="{{ admin_static.url(filename='admin/js/tabler_modal.js', v='1.0.0') }}"
+  ></script>
+{% endblock %}
