@@ -24,6 +24,9 @@ def initial_files() -> None:
         with open(op.join(op.dirname(__file__), "files", "dummy.txt"), "w") as fp:
             fp.write("any string")
 
+        with open(op.join(op.dirname(__file__), "files", "editable.txt"), "w") as fp:
+            fp.write("any string")
+
 
 class Base:
     class FileAdminTests:
