@@ -1,0 +1,20 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+{% from 'admin/lib.html' import extra with context %} {# backward compatible #}
+
+{% block head %}
+  {{ super() }}
+  {{ lib.form_css() }}
+{% endblock %}
+
+{% block body %}
+  <h2 class="ui header centered">{{ _gettext("Create") }}</h2>
+  {% block navlinks %}{% endblock %}
+
+  {% block create_form %}{{ lib.render_form(form, return_url, extra() , form_opts) }}{% endblock %}
+{% endblock %}
+
+{% block tail %}
+  {{ super() }}
+  {{ lib.form_js() }}
+{% endblock %}
