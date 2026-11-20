@@ -97,4 +97,8 @@ def sqla_postgres_db_ext(
 
     provider.db.init_app(app)
 
-    yield provider
+    try:
+        yield provider
+    finally:
+        provider.db.session.close()
+        provider.db.engine.dispose()
