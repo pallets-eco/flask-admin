@@ -437,10 +437,12 @@ class BaseView(BaseViewClass, metaclass=AdminViewMeta):
         :param kwargs:
             Arguments
         """
-        try:
-            return fn(self, *args, **kwargs)
-        except TypeError:
+        # Flask pluggable views (View.as_view) accept only keyword arguments and
+        # expose `view_class`. Dispatching on that directly avoids catching
+        # unrelated TypeErrors raised inside regular view functions.
+        if hasattr(fn, "view_class"):
             return fn(cls=self, **kwargs)
+        return fn(self, *args, **kwargs)
 
     def inaccessible_callback(
         self, name: t.Any, **kwargs: t.Any
