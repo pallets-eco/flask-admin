@@ -3960,9 +3960,9 @@ def test_unique_validator_uses_request_scoped_session(
     ]
     assert unique_validators
     for validator in unique_validators:
-        assert not isinstance(validator.db_session, Session), (
-            "Unique captured a concrete Session at form scaffold time"
-        )
+        assert not isinstance(
+            validator.db_session, Session
+        ), "Unique captured a concrete Session at form scaffold time"
 
     seen_sessions: list[Session] = []
 
