@@ -36,10 +36,10 @@ def bool_formatter(view: T_MODEL_VIEW, value: t.Any, name: str) -> str:
     :param value:
         Value to check
     """
-    bootstrap = "bi-check-circle-fill" if value else "bi-dash-circle-fill"
+    bi = "bi-check-circle-fill" if value else "bi-dash-circle-fill"
     fa = "fa-check-circle" if value else "fa-minus-circle"
     label = f'{name}: {"true" if value else "false"}'
-    return Markup(f'<span class="fa {fa} bi bi-{bootstrap} title="{label}"></span>')
+    return Markup(f'<span class="fa {fa} bi bi-{bi}" title="{label}"></span>')
 
 
 def list_formatter(view: T_MODEL_VIEW, values: t.Iterable[t.Any], name: str) -> str:
