@@ -19,7 +19,7 @@ class MongoFileInput:
 
     template = (
         "<div>"
-        ' <i class="icon-file"></i>%(name)s %(size)dk (%(content_type)s)'
+        ' <i class="bi bi-file-earmark"></i>%(name)s %(size)dk (%(content_type)s)'
         ' <input type="checkbox" name="%(marker)s">Delete</input>'
         "</div>"
     )

@@ -530,19 +530,19 @@
                     params: overrideXeditableParams,
                     display: function(value, response) {
                       // display boolean value as an icon
-                      var glyph = (value == '1') ? 'ok-circle' : 'minus-sign';
                       var fa = (value == '1') ? 'fa-check' : 'fa-minus-circle';
+                      var bi = (value == '1') ? 'bi-check-circle-fill' : 'bi-dash-circle-fill';
                       $(this).empty().append($('<span />', {
-                        'class': `fa ${fa} glyphicon glyphicon-${glyph} icon-${glyph}`,
+                        'class': `fa ${fa} bi ${bi}`,
                         'title': $(this).parent().data('title'),
                       }));
                     },
                     success: function(response, newValue) {
                       // update display
-                      var glyph = (newValue == '1') ? 'ok-circle' : 'minus-sign';
                       var fa = (newValue  == '1') ? 'fa-check' : 'fa-minus-circle';
+                      var bi = (newValue == '1') ? 'bi-check-circle-fill' : 'bi-dash-circle-fill';
                       $(this).empty().append($('<span />', {
-                        'class': `fa ${fa} glyphicon glyphicon-${glyph} icon-${glyph}`,
+                        'class': `fa ${fa} bi ${bi}`,
                         'title': $(this).parent().data('title'),
                       }));
                     }
