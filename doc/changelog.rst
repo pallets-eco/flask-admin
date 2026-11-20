@@ -4,6 +4,10 @@ Changelog
 [unreleased]
 ------------------
 
+Breaking changes:
+
+* ``Bootstrap4Theme`` no longer accepts a ``folder`` constructor argument. Remove ``folder="bootstrap4"`` from existing calls; use ``Theme`` or a custom theme subclass for a different template folder.
+
 Dependencies:
 
 * Dropped support for Python 3.10 and added official support for Python 3.15.
@@ -15,6 +19,7 @@ New functionality:
 Bugfixes:
 
 * SQLAlchemy backend: fixed a run-time error in ``get_one()`` when a detail view receives a comma-separated id query string (e.g. ?id=1,2).
+* Expose constructor type hints for ``Bootstrap4Theme`` by making it a dataclass subclass of ``BootstrapTheme`` (closes #2907).
 * SQLAlchemy backend: ``ItemsRequired`` once again validates multi-select relation fields without raising ``AttributeError``. Inline entries marked for deletion remain excluded from the count (closes #2385).
 * SQLAlchemy backend: ``Flask-SQLAlchemy-Lite`` models can now be used without installing ``flask-sqlalchemy`` package but only ``flask-sqlalchemy-lite`` (closes #2958).
 * SQLAlchemy backend: solved a bug raising ``RuntimeError: Working outside of application context`` when using ``ModelView(Model, db)`` with Flask-SQLAlchemy-Lite e.g. when views are added at import time (closes #2995).
