@@ -4,6 +4,35 @@ Changelog
 [unreleased]
 ------------------
 
+Dependencies:
+
+* Dropped support for Python 3.10 and added official support for Python 3.15.
+
+New functionality:
+
+* MongoEngine backend: support ``form_choices`` in ``ModelView``, rendering a ``Select2Field`` like the SQLAlchemy and Peewee backends. ``form_choices`` is now defined on ``BaseModelView``, and all backends build the field through a shared ``flask_admin.model.form.get_form_choices_field()`` helper (closes #2967).
+
+Bugfixes:
+
+* SQLAlchemy backend: fixed a run-time error in ``get_one()`` when a detail view receives a comma-separated id query string (e.g. ?id=1,2).
+* SQLAlchemy backend: ``ItemsRequired`` once again validates multi-select relation fields without raising ``AttributeError``. Inline entries marked for deletion remain excluded from the count (closes #2385).
+* SQLAlchemy backend: ``Flask-SQLAlchemy-Lite`` models can now be used without installing ``flask-sqlalchemy`` package but only ``flask-sqlalchemy-lite`` (closes #2958).
+* SQLAlchemy backend: solved a bug raising ``RuntimeError: Working outside of application context`` when using ``ModelView(Model, db)`` with Flask-SQLAlchemy-Lite e.g. when views are added at import time (closes #2995).
+* Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist
+* Peewee backend: support ``form_choices`` in ``ModelView``, rendering a ``Select2Field`` like the SQLAlchemy backend (closes #2235)
+
+Misc:
+
+* Removed the unused ``static/vendor/fontawesome-free`` directory, shrinking the package by ~13MB (closes #2324).
+
+Docs:
+
+* SQLAlchemy backend: the ``column_select_related_list`` docstring now says ``joinedload``, which is what the list view has used since 2013, instead of ``subqueryload`` (closes #2981).
+
+Dev:
+
+* SQLAlchemy backend: add regression coverage for ``form_columns`` ordering when ``form_extra_fields`` replaces a model field, while retaining coverage for model-attribute column specifications (#2965).
+
 * Support building with ``flit_core`` v4: use the PEP 621 ``authors`` key instead of the invalid singular ``author`` in ``pyproject.toml``, and widen the build-system pin from ``flit_core<4`` to ``flit_core<5`` (closes #2956).
 * SQLAlchemy backend: ``get_query_for_ids()`` now coerces string IDs for single-column primary keys to the column type when a ``python_type`` is defined. Bulk delete of records with integer primary keys no longer fails on PostgreSQL with psycopg 3 (closes #2951).
 

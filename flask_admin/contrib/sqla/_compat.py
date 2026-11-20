@@ -10,6 +10,18 @@ from flask_admin.contrib.sqla._types import T_SQLALCHEMY
 from flask_admin.contrib.sqla._types import T_SQLALCHEMY_LITE
 
 
+def _is_db_extension(
+    session: t.Any,
+) -> t.TypeGuard["T_SQLALCHEMY | T_SQLALCHEMY_LITE"]:
+    """
+    Return True if ``session`` is a Flask-SQLAlchemy or Flask-SQLAlchemy-Lite
+    extension object rather than a session.
+    """
+    return (T_SQLALCHEMY is not None and isinstance(session, T_SQLALCHEMY)) or (
+        T_SQLALCHEMY_LITE is not None and isinstance(session, T_SQLALCHEMY_LITE)
+    )
+
+
 @t.overload
 def _warn_session_deprecation(session: None, warn: bool = True) -> None: ...
 
@@ -27,7 +39,10 @@ def _warn_session_deprecation(
     Warn about deprecation of passing session objects directly.
     Raise error if session is from Flask-SQLAlchemy-Lite.
     """
-    if not hasattr(session, "session"):
+    # Check the extension type first: Flask-SQLAlchemy-Lite's ``session``
+    # property needs an app context, so ``hasattr`` would raise a
+    # ``RuntimeError`` when a view is created at import time.
+    if not _is_db_extension(session) and not hasattr(session, "session"):
         if T_SQLALCHEMY_LITE is not None and not isinstance(
             session, sqlalchemy.orm.scoping.scoped_session
         ):
@@ -73,8 +88,6 @@ def _get_deprecated_session(
     will be using different session across requests.
     See: https://github.com/pallets-eco/flask-admin/issues/2831
     """
-    if (T_SQLALCHEMY is not None and isinstance(session, T_SQLALCHEMY)) or (
-        T_SQLALCHEMY_LITE is not None and isinstance(session, T_SQLALCHEMY_LITE)
-    ):
+    if _is_db_extension(session):
         return session.session  # type: ignore[return-value]
     return session  # type: ignore[return-value]

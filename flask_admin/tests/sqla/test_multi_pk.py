@@ -8,14 +8,14 @@ from sqlalchemy import String
 
 from ... import Admin
 from ..conftest import skip_or_return_session_or_db
-from ..conftest import T_ANY_SQLA_PROVIDER
+from ..conftest import SQLAProviderProtocol
 from ..conftest import T_LITERAL_SESSION_OR_DB
 from .test_basic import CustomModelView
 
 
 def test_multiple_pk(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -59,7 +59,7 @@ def test_multiple_pk(
 
 def test_joined_inheritance(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -104,7 +104,7 @@ def test_joined_inheritance(
 
 def test_single_table_inheritance(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -121,7 +121,8 @@ def test_single_table_inheritance(
         __mapper_args__: dict[str, t.Any] = {"polymorphic_identity": "child"}
         name = Column(String(100))
 
-    sqla_db_ext.create_all()
+    with app.app_context():
+        sqla_db_ext.create_all()
 
     param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = CustomModelView(Child, param, form_columns=["id", "test", "name"])
@@ -144,7 +145,7 @@ def test_single_table_inheritance(
 
 def test_concrete_table_inheritance(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -183,7 +184,7 @@ def test_concrete_table_inheritance(
 
 def test_concrete_multipk_inheritance(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:

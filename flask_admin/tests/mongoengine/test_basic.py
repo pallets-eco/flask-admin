@@ -4,6 +4,8 @@ from bson import ObjectId
 from bson.dbref import DBRef
 from flask import Flask
 from mongoengine import Document
+from mongoengine import EmbeddedDocument
+from mongoengine import EmbeddedDocumentField
 from mongoengine import FileField
 from mongoengine import StringField
 from mongoengine.connection import get_db
@@ -14,6 +16,7 @@ from flask_admin import Admin
 from flask_admin.contrib.mongoengine import filters
 from flask_admin.contrib.mongoengine import ModelView
 from flask_admin.contrib.mongoengine.ajax import QueryAjaxModelLoader
+from flask_admin.form import Select2Field
 
 
 class Test(Document):  # type: ignore[misc]
@@ -219,3 +222,95 @@ def test_query_ajax_model_loader_initialization(db: t.Any) -> None:
 
     assert loader.name == "test_field"
     assert loader.options == {"fields": ["name"]}
+
+
+def test_form_choices(app: Flask, db: t.Any, admin: Admin) -> None:
+    class ChoicesDoc(Document):  # type: ignore[misc]
+        meta = {"collection": "choices_doc"}
+        title = StringField()
+        status = StringField(required=True)
+        priority = StringField()
+
+    status_choices = [("draft", "Draft"), ("published", "Published")]
+    priority_choices = [("low", "Low"), ("high", "High")]
+
+    class ChoicesDocView(ModelView):
+        form_choices = {"status": status_choices, "priority": priority_choices}
+
+    view = ChoicesDocView(ChoicesDoc, endpoint="choicesdoc")
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    assert isinstance(form_obj.status, Select2Field)  # type: ignore[attr-defined]
+    assert form_obj.status.choices == status_choices  # type: ignore[attr-defined]
+    assert form_obj.status.allow_blank is False  # type: ignore[attr-defined]
+
+    assert isinstance(form_obj.priority, Select2Field)  # type: ignore[attr-defined]
+    assert form_obj.priority.choices == priority_choices  # type: ignore[attr-defined]
+    assert form_obj.priority.allow_blank is True  # type: ignore[attr-defined]
+
+    # Fields not in form_choices should convert normally
+    assert not isinstance(form_obj.title, Select2Field)  # type: ignore[attr-defined]
+
+
+def test_form_choices_with_form_overrides(app: Flask, db: t.Any, admin: Admin) -> None:
+    class ChoicesDoc(Document):  # type: ignore[misc]
+        meta = {"collection": "choices_doc"}
+        status = StringField()
+
+    class ChoicesDocView(ModelView):
+        form_choices = {"status": [("draft", "Draft")]}
+        form_overrides = {"status": fields.TextAreaField}
+
+    view = ChoicesDocView(ChoicesDoc, endpoint="choicesdoc")
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    # form_overrides should take priority over form_choices
+    assert isinstance(form_obj.status, fields.TextAreaField)  # type: ignore[attr-defined]
+
+
+def test_form_choices_replace_model_choices(
+    app: Flask, db: t.Any, admin: Admin
+) -> None:
+    class ChoicesDoc(Document):  # type: ignore[misc]
+        meta = {"collection": "choices_doc"}
+        status = StringField(choices=("a", "b"))
+
+    choices = [("a", "Option A"), ("b", "Option B")]
+
+    class ChoicesDocView(ModelView):
+        form_choices = {"status": choices}
+
+    view = ChoicesDocView(ChoicesDoc, endpoint="choicesdoc")
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    assert isinstance(form_obj.status, Select2Field)  # type: ignore[attr-defined]
+    assert form_obj.status.choices == choices  # type: ignore[attr-defined]
+
+
+def test_form_choices_not_applied_to_embedded_documents(
+    app: Flask, db: t.Any, admin: Admin
+) -> None:
+    class Inner(EmbeddedDocument):  # type: ignore[misc]
+        status = StringField()
+
+    class ChoicesDoc(Document):  # type: ignore[misc]
+        meta = {"collection": "choices_doc"}
+        status = StringField()
+        inner = EmbeddedDocumentField(Inner)
+
+    class ChoicesDocView(ModelView):
+        form_choices = {"status": [("draft", "Draft")]}
+
+    view = ChoicesDocView(ChoicesDoc, endpoint="choicesdoc")
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+
+    assert isinstance(form_obj.status, Select2Field)  # type: ignore[attr-defined]
+    assert not isinstance(form_obj.inner.form.status, Select2Field)  # type: ignore[attr-defined]

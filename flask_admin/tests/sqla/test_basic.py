@@ -56,7 +56,12 @@ from flask_admin.form.fields import DateTimeField
 from flask_admin.form.fields import Select2Field
 from flask_admin.tests import flask_babel_test_decorator
 from flask_admin.tests.conftest import skip_or_return_session_or_db
-from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
+
+try:
+    from flask_admin.tests.conftest import SQLAProvider
+except ImportError:
+    SQLAProvider = None  # type: ignore[misc, assignment]
+from flask_admin.tests.conftest import SQLAProviderProtocol
 from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
 
 
@@ -94,7 +99,7 @@ class CustomModelView(ModelView):
     form_choices = {"choice_field": [("choice-1", "One"), ("choice-2", "Two")]}
 
 
-def create_models(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> tuple[type, type]:
+def create_models(sqla_db_ext: SQLAProviderProtocol) -> tuple[type, type]:
     class Model1(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
         __tablename__ = "model1"
 
@@ -150,7 +155,7 @@ def create_models(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> tuple[type, type]:
     return Model1, Model2
 
 
-def fill_db(sqla_db_ext: T_ANY_SQLA_PROVIDER, Model1: type, Model2: type) -> None:
+def fill_db(sqla_db_ext: SQLAProviderProtocol, Model1: type, Model2: type) -> None:
     model1_obj1 = Model1(test1="test1_val_1", test2="test2_val_1", bool_field=True)
     model1_obj2 = Model1(test1="test1_val_2", test2="test2_val_2", bool_field=False)
     model1_obj3 = Model1(test1="test1_val_3", test2="test2_val_3")
@@ -229,7 +234,7 @@ def fill_db(sqla_db_ext: T_ANY_SQLA_PROVIDER, Model1: type, Model2: type) -> Non
 )
 def test_model(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -399,7 +404,7 @@ def test_model(
 @pytest.mark.xfail(raises=Exception)
 def test_no_pk(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -414,7 +419,7 @@ def test_no_pk(
 
 def test_list_columns(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -462,7 +467,7 @@ def test_list_columns(
 
 def test_complex_list_columns(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -490,7 +495,7 @@ def test_complex_list_columns(
 
 def test_exclude_columns(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -539,7 +544,7 @@ def test_exclude_columns(
 
 def test_column_searchable_list(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -580,7 +585,7 @@ def test_column_searchable_list(
 
 def test_extra_args_search(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -616,7 +621,7 @@ def test_extra_args_search(
 
 def test_extra_args_filter(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -646,7 +651,7 @@ def test_extra_args_filter(
 
 def test_complex_searchable_list(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -688,7 +693,7 @@ def test_complex_searchable_list(
 
 def test_complex_searchable_list_missing_children(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -713,7 +718,7 @@ def test_complex_searchable_list_missing_children(
 
 def test_column_editable_list(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -805,7 +810,7 @@ def test_column_editable_list(
 
 def test_details_view(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -863,9 +868,58 @@ def test_details_view(
         assert "test1_val_1" not in data
 
 
+def test_single_pk_multiple_ids_in_query(
+    app: Flask,
+    sqla_db_ext: SQLAProviderProtocol,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view_no_details = CustomModelView(Model1, param)
+        admin.add_view(view_no_details)
+
+        # fields are scaffolded
+        view_w_details = CustomModelView(Model2, param, can_view_details=True)
+        admin.add_view(view_w_details)
+
+        # show only specific fields in details w/ column_details_list
+        string_field_view = CustomModelView(
+            Model2,
+            param,
+            can_view_details=True,
+            column_details_list=["string_field"],
+            endpoint="sf_view",
+        )
+        admin.add_view(string_field_view)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # test single-PK query string
+        rv = client.get("/admin/model2/details/?id=1")
+        data = rv.data.decode("utf-8")
+        assert "String Field" in data
+        assert "test2_val_1" in data
+        assert "test1_val_1" in data
+
+        # test single-PK with multiple IDs in query string
+        rv = client.get("/admin/model2/details/?id=1,2", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        assert "Record does not exist" in data
+
+        # test single-PK with multiple IDs in query string
+        rv = client.get("/admin/model2/edit/?id=1,2", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        assert "Record does not exist" in data
+
+
 def test_editable_list_special_pks(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -913,7 +967,7 @@ def test_editable_list_special_pks(
 
 def test_column_filters(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -1868,7 +1922,7 @@ def test_column_filters(
 
 def test_column_filters_sqla_obj(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -1884,7 +1938,7 @@ def test_column_filters_sqla_obj(
 
 def test_column_filters_dotted_path(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -1918,7 +1972,7 @@ def test_column_filters_dotted_path(
 
 def test_column_filters_dotted_path_unresolvable(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -1939,7 +1993,7 @@ def test_column_filters_dotted_path_unresolvable(
 
 def test_column_filters_dotted_path_relationship_raises(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -1959,7 +2013,7 @@ def test_column_filters_dotted_path_relationship_raises(
 
 def test_column_filters_dotted_path_reuse_same_model(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -1985,7 +2039,7 @@ def test_column_filters_dotted_path_reuse_same_model(
 
 def test_column_filters_dotted_path_rebind_different_model_raises(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2011,7 +2065,7 @@ def test_column_filters_dotted_path_rebind_different_model_raises(
 
 def test_enum_filter_dotted_path(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2039,7 +2093,7 @@ def test_enum_filter_dotted_path(
 
 def test_hybrid_property(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2118,7 +2172,7 @@ def test_hybrid_property(
 
 def test_hybrid_property_nested(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2173,7 +2227,7 @@ def test_hybrid_property_nested(
 
 def test_url_args(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2239,7 +2293,7 @@ def test_url_args(
 
 def test_non_int_pk(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2277,7 +2331,7 @@ def test_non_int_pk(
 
 def test_form_columns(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2357,10 +2411,43 @@ def test_form_columns(
         assert "int_field" in form4._fields
 
 
+def test_form_columns_order_with_extra_fields(
+    app: Flask,
+    sqla_db_ext: SQLAProviderProtocol,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+
+        class Model(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "model"
+            id = Column(Integer, primary_key=True)
+            int_field = Column(Integer)
+            datetime_field = Column(DateTime)
+            text_field = Column(Text)
+            secret = Column(String)
+
+        class ExtraFieldModelView(CustomModelView):
+            form_columns = ["secret", "text_field", "int_field", "datetime_field"]
+            form_extra_fields = {"secret": fields.PasswordField("secret")}
+
+        sqla_db_ext.create_all()
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = ExtraFieldModelView(Model, param)
+        generated_form = view.create_form()
+
+        assert isinstance(generated_form._fields["secret"], PasswordField)
+        assert list(generated_form._fields) == [
+            "secret",
+            "text_field",
+            "int_field",
+            "datetime_field",
+        ]
+
+
 @pytest.mark.xfail(raises=Exception)
 def test_complex_form_columns(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2375,7 +2462,7 @@ def test_complex_form_columns(
 
 def test_form_args(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2405,7 +2492,7 @@ def test_form_args(
 
 def test_form_override(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2435,7 +2522,7 @@ def test_form_override(
 
 def test_form_onetoone(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2481,7 +2568,7 @@ def test_relations() -> None:
 
 def test_on_model_change_delete(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2525,7 +2612,7 @@ def test_on_model_change_delete(
 
 def test_multiple_delete(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2551,7 +2638,7 @@ def test_multiple_delete(
 
 def test_default_sort(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2628,7 +2715,7 @@ def test_default_sort(
 
 def test_complex_sort(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2693,7 +2780,7 @@ def test_complex_sort(
 @pytest.mark.xfail(raises=Exception)
 def test_complex_sort_exception(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2722,7 +2809,7 @@ def test_complex_sort_exception(
 
 def test_default_complex_sort(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2771,7 +2858,7 @@ def test_default_complex_sort(
 )
 def test_extra_fields(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2801,7 +2888,7 @@ def test_extra_fields(
 
 def test_extra_field_order(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2874,7 +2961,7 @@ def test_modelview_localization(
     locale: str,
     expect_text: str,
     session_or_db: T_LITERAL_SESSION_OR_DB,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
 ) -> None:
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture
@@ -2916,7 +3003,7 @@ def test_modelview_named_filter_localization(
     request: pytest.FixtureRequest,
     app: Flask,
     session_or_db: T_LITERAL_SESSION_OR_DB,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
 ) -> None:
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture
@@ -2945,7 +3032,7 @@ def test_modelview_named_filter_localization(
 
 def test_custom_form_base(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -2968,7 +3055,7 @@ def test_custom_form_base(
 
 def test_ajax_fk(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3036,7 +3123,7 @@ def test_ajax_fk(
 
 def test_ajax_fk_multi(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3109,7 +3196,7 @@ def test_ajax_fk_multi(
 
 def test_safe_redirect(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3165,7 +3252,7 @@ def test_safe_redirect(
 
 def test_relative_redirect_on_save_and_add_another(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3208,7 +3295,7 @@ def test_relative_redirect_on_save_and_add_another(
 
 def test_simple_list_pager(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3231,7 +3318,7 @@ def test_simple_list_pager(
 
 def test_customising_page_size(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3323,7 +3410,7 @@ def test_customising_page_size(
 
 def test_unlimited_page_size(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3372,7 +3459,7 @@ def test_unlimited_page_size(
 
 def test_advanced_joins(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3456,7 +3543,7 @@ def test_advanced_joins(
 
 def test_multipath_joins(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3495,7 +3582,7 @@ def test_different_bind_joins(
     babel: object | None,
     app_with_binds: Flask,
     session_or_db: T_LITERAL_SESSION_OR_DB,
-    sqla_db_ext_with_binds: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext_with_binds: SQLAProviderProtocol,
 ) -> None:
     admin = Admin(app_with_binds)
 
@@ -3512,7 +3599,8 @@ def test_different_bind_joins(
         first_id = Column(Integer, ForeignKey(Model1.id))
         first = relationship(Model1)
 
-    sqla_db_ext_with_binds.create_all()
+    with app_with_binds.app_context():
+        sqla_db_ext_with_binds.create_all()
 
     param = skip_or_return_session_or_db(sqla_db_ext_with_binds, session_or_db)
 
@@ -3527,7 +3615,7 @@ def test_different_bind_joins(
 
 def test_model_default(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3548,7 +3636,7 @@ def test_model_default(
 
 def test_export_csv(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3602,7 +3690,7 @@ STRING_CONSTANT = "Anyway, here's Wonderwall"
 
 def test_string_null_behavior(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3700,7 +3788,7 @@ def test_string_null_behavior(
 
 def test_form_overrides(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3746,7 +3834,7 @@ def match_page_title_and_icon(data: str, title: str, icon_html: str) -> bool:
 
 def test_page_title(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3821,18 +3909,17 @@ def test_page_title(
     raises=TypeError,
     strict=True,
 )
-def test_sqlalite_session_raises(app: Flask, sqla_db_ext: T_ANY_SQLA_PROVIDER) -> None:
+def test_sqlalite_session_raises(app: Flask, sqla_db_ext: SQLAProviderProtocol) -> None:
     if sqla_db_ext.__class__.__name__ != "SQLALiteProvider":
         pytest.skip("Only relevant for SQLALiteProvider")
 
-    Model, _ = create_models(sqla_db_ext)
     with app.app_context():
-        sqla_db_ext.create_all()
+        Model, _ = create_models(sqla_db_ext)
 
-    ModelView(Model, sqla_db_ext.db.session)  # type: ignore[arg-type]
+        ModelView(Model, sqla_db_ext.db.session)
 
 
-def _current_session(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> Session:
+def _current_session(sqla_db_ext: SQLAProviderProtocol) -> Session:
     """Return the concrete ``Session`` bound to the current app context."""
     session = sqla_db_ext.db.session
     if isinstance(session, scoped_session):
@@ -3842,7 +3929,7 @@ def _current_session(sqla_db_ext: T_ANY_SQLA_PROVIDER) -> Session:
 
 def test_unique_validator_uses_request_scoped_session(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -3855,11 +3942,12 @@ def test_unique_validator_uses_request_scoped_session(
         id = Column(Integer, primary_key=True)
         value = Column(String, unique=True)
 
-    sqla_db_ext.create_all()
+    with app.app_context():
+        sqla_db_ext.create_all()
 
-    # The ``sqla_db_ext`` fixture has already pushed an app context; this is the
-    # "startup" session that the validator must not hold on to.
-    scaffold_session = _current_session(sqla_db_ext)
+        # The ``sqla_db_ext`` fixture has already pushed an app context; this is the
+        # "startup" session that the validator must not hold on to.
+        scaffold_session = _current_session(sqla_db_ext)
 
     param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = ModelView(UniqueTable, param)

@@ -88,8 +88,13 @@ class Unique:
 
 class ItemsRequired(InputRequired):
     """
-    A version of the ``InputRequired`` validator that works with relations,
-    to require a minimum number of related items.
+    A version of the ``InputRequired`` validator for collection-valued
+    relation fields and inline forms, requiring a minimum number of related
+    items. Fields exposing ``entries`` and a callable ``should_delete``
+    exclude entries marked for deletion from the count.
+
+    .. versionchanged:: 2.2.2
+        Support multi-select relation fields as well as inline forms.
     """
 
     def __init__(self, min: int = 1, message: T_TRANSLATABLE | None = None) -> None:
@@ -97,10 +102,12 @@ class ItemsRequired(InputRequired):
         self.min = min
 
     def __call__(self, form: BaseForm, field: Field) -> None:
-        items = filter_list(
-            lambda e: not field.should_delete(e),  # type:ignore[attr-defined]
-            field.entries,  # type:ignore[attr-defined]
-        )
+        entries = getattr(field, "entries", None)
+        should_delete = getattr(field, "should_delete", None)
+        if entries is not None and callable(should_delete):
+            items = filter_list(lambda e: not should_delete(e), entries)
+        else:
+            items = field.data or []
         if len(items) < self.min:
             if self.message is None:
                 message = field.ngettext(

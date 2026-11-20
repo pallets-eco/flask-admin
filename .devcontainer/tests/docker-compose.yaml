@@ -4,7 +4,7 @@ services:
       context: ../..
       dockerfile: .devcontainer/tests/Dockerfile
       args:
-        IMAGE: python:3.10-slim
+        IMAGE: python:3.11-slim
 
     volumes:
       - ../..:/workspace

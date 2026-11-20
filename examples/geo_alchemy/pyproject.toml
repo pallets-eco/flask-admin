@@ -3,12 +3,11 @@ name = "example-geo-alchemy"
 version = "0.1.0"
 description = "GeoAlchemy Example."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.14"
 dependencies = [
     "flask-admin[sqlalchemy-with-utils,geoalchemy]",
     "testcontainers[postgres]",
-    "psycopg2",
-    # "psycopg2-binary",
+    "psycopg2-binary",
 ]
 
 [tool.uv.sources]

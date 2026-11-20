@@ -10,7 +10,7 @@ from ... import Admin
 from ...contrib.sqla import ModelView
 from .. import flask_babel_test_decorator
 from ..conftest import skip_or_return_session_or_db
-from ..conftest import T_ANY_SQLA_PROVIDER
+from ..conftest import SQLAProviderProtocol
 from ..conftest import T_LITERAL_SESSION_OR_DB
 from .test_basic import create_models
 from .test_basic import CustomModelView
@@ -21,7 +21,7 @@ def test_column_label_translation(
     request: pytest.FixtureRequest,
     app: Flask,
     session_or_db: T_LITERAL_SESSION_OR_DB,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
 ) -> None:
     # We need to configure the default Babel locale _before_ the `babel` fixture is
     # initialised, so we have to use `request.getfixturevalue` to pull the fixture
@@ -35,27 +35,27 @@ def test_column_label_translation(
 
         label = gettext("Name")
 
-        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
-        view = CustomModelView(
-            Model1,
-            param,
-            column_list=["test1", "test3"],
-            column_labels=dict(test1=label),
-            column_filters=("test1",),
-        )
-        admin.add_view(view)
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+    view = CustomModelView(
+        Model1,
+        param,
+        column_list=["test1", "test3"],
+        column_labels=dict(test1=label),
+        column_filters=("test1",),
+    )
+    admin.add_view(view)
 
-        client = app.test_client()
+    client = app.test_client()
 
-        rv = client.get("/admin/model1/?flt1_0=test")
-        assert rv.status_code == 200
-        assert '{"Nombre":' in rv.data.decode("utf-8")
+    rv = client.get("/admin/model1/?flt1_0=test")
+    assert rv.status_code == 200
+    assert '{"Nombre":' in rv.data.decode("utf-8")
 
 
 @flask_babel_test_decorator
 def test_unique_validator_translation_is_dynamic(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:

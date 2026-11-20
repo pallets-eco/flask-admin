@@ -19,13 +19,13 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.contrib.sqla.fields import InlineModelFormList
 from flask_admin.contrib.sqla.validators import ItemsRequired
 from flask_admin.tests.conftest import skip_or_return_session_or_db
-from flask_admin.tests.conftest import T_ANY_SQLA_PROVIDER
+from flask_admin.tests.conftest import SQLAProviderProtocol
 from flask_admin.tests.conftest import T_LITERAL_SESSION_OR_DB
 
 
 def test_inline_form(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -140,7 +140,7 @@ def test_inline_form(
 
 def test_inline_form_required(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -208,7 +208,7 @@ def test_inline_form_required(
 
 def test_inline_form_ajax_fk(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -268,7 +268,7 @@ def test_inline_form_ajax_fk(
 
 def test_inline_form_self(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
@@ -296,7 +296,7 @@ def test_inline_form_self(
 
 def test_inline_form_base_class(
     app: Flask,
-    sqla_db_ext: T_ANY_SQLA_PROVIDER,
+    sqla_db_ext: SQLAProviderProtocol,
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:

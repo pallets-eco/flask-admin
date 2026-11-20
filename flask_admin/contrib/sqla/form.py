@@ -24,6 +24,7 @@ from flask_admin.model.fields import AjaxSelectMultipleField
 from flask_admin.model.fields import InlineFormField
 from flask_admin.model.form import converts
 from flask_admin.model.form import FieldPlaceholder
+from flask_admin.model.form import get_form_choices_field
 from flask_admin.model.form import InlineFormAdmin
 from flask_admin.model.form import InlineModelConverterBase
 from flask_admin.model.form import ModelConverterBase
@@ -358,15 +359,11 @@ class AdminModelConverter(ModelConverterBase):
                 return override(**kwargs)
 
             # Check if a list of 'form_choices' are specified
-            form_choices = getattr(self.view, "form_choices", None)
-            if mapper.class_ == self.view.model and form_choices:
-                choices = form_choices.get(prop.key)
-                if choices:
-                    return form.Select2Field(  # type: ignore[misc]
-                        choices=choices,
-                        allow_blank=column.nullable,  # type: ignore[arg-type]
-                        **kwargs,
-                    )
+            choices_field = get_form_choices_field(
+                self.view, mapper.class_, prop.key, bool(column.nullable), **kwargs
+            )
+            if choices_field is not None:
+                return choices_field
 
             # Run converter
             converter = self.get_converter(column)

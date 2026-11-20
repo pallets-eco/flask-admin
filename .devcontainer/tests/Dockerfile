@@ -1,8 +1,8 @@
-ARG IMAGE=python:3.10-slim
+ARG IMAGE=python:3.11-slim
 FROM ${IMAGE}
 
 ENV UV_PROJECT_ENVIRONMENT=/venv
-ENV UV_PYTHON=python3.10
+ENV UV_PYTHON=python3.11
 ENV UV_CACHE_DIR=/root/.cache/uv
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \

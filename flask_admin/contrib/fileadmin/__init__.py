@@ -4,10 +4,10 @@ import platform
 import posixpath
 import re
 import shutil
-import sys
 import typing as t
 import warnings
 from datetime import datetime
+from datetime import UTC
 from functools import partial
 from operator import itemgetter
 from urllib.parse import quote
@@ -37,12 +37,7 @@ from flask_admin.babel import lazy_gettext
 from flask_admin.base import BaseView
 from flask_admin.base import expose
 
-if sys.version_info >= (3, 11):
-    from datetime import UTC
-
-    utc_fromtimestamp = partial(datetime.fromtimestamp, tz=UTC)
-else:
-    utc_fromtimestamp = datetime.utcfromtimestamp
+utc_fromtimestamp = partial(datetime.fromtimestamp, tz=UTC)
 
 
 class BaseFileStorage:

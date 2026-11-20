@@ -87,7 +87,7 @@ class ModelView(BaseModelView):
         ObsoleteAttr("column_select_related", "list_select_related", None),
     )
     """
-        List of parameters for SQLAlchemy `subqueryload`. Overrides
+        List of parameters for SQLAlchemy `joinedload`. Overrides
         `column_auto_select_related` property.
 
         For example::
@@ -100,7 +100,7 @@ class ModelView(BaseModelView):
             class PostAdmin(ModelView):
                 column_select_related_list = (Post.user, Post.city)
 
-        Please refer to the `subqueryload` on list of possible values.
+        Please refer to the `joinedload` on list of possible values.
     """
 
     column_display_all_relations: bool | None = t_cast(
@@ -305,18 +305,6 @@ class ModelView(BaseModelView):
     """
 
     column_type_formatters: T_COLUMN_TYPE_FORMATTERS = DEFAULT_FORMATTERS
-
-    form_choices: dict[str, list[tuple[str, str]]] | None = None
-    """
-        Map choices to form fields
-
-        Example::
-
-            class MyModelView(BaseModelView):
-                form_choices = {'my_form_field': [
-                    ('db_value', 'display_value'),
-                ]}
-    """
 
     form_optional_types: t.Sequence[type] = (Boolean,)
     """
@@ -1336,7 +1324,11 @@ class ModelView(BaseModelView):
             Model id
         """
         session = _get_deprecated_session(self.session)
-        return session.get(self.model, tools.iterdecode(id))
+
+        if isinstance(self._primary_key, tuple):
+            return session.get(self.model, tools.iterdecode(id))
+
+        return session.get(self.model, (id,))
 
     # Error handler
     def handle_view_exception(self, exc: Exception) -> bool:

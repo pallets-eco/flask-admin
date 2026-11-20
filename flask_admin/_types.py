@@ -1,7 +1,7 @@
-import sys
 import typing as t
 from enum import Enum
 from os import PathLike
+from typing import NotRequired
 
 import wtforms.widgets
 from flask import Response
@@ -11,11 +11,6 @@ from wtforms import Field
 from wtforms.form import BaseForm
 from wtforms.utils import UnsetValue
 from wtforms.widgets import Input
-
-if sys.version_info >= (3, 11):
-    from typing import NotRequired
-else:
-    from typing_extensions import NotRequired
 
 if t.TYPE_CHECKING:
     # optional dependencies
