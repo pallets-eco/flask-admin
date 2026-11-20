@@ -544,6 +544,46 @@ def test_with_async_routes(app: Flask, admin: Admin) -> None:
     assert rv.data == b"Success!"
 
 
+def test_run_view_does_not_mask_type_error(app: Flask, admin: Admin) -> None:
+    """A TypeError raised inside an exposed view must propagate unchanged
+    and must not cause _run_view to invoke the view a second time with cls=self."""
+    app.testing = True
+    calls = 0
+    plugview_calls = 0
+
+    class FailingView(BaseView):
+        @expose("/")
+        def index(self) -> str:
+            nonlocal calls
+            calls += 1
+            raise TypeError("real error inside view")
+
+        @base.expose_plugview("/plug/<item>")
+        class PlugView(MethodView):
+            def get(self, cls: "FailingView", item: str) -> str:
+                nonlocal plugview_calls
+                plugview_calls += 1
+                if item == "boom":
+                    raise TypeError("real error inside plugview")
+                return f"{cls.__class__.__name__}:{item}"
+
+    admin.add_view(FailingView())
+    client = app.test_client()
+
+    with pytest.raises(TypeError, match="real error inside view"):
+        client.get("/admin/failingview/")
+    assert calls == 1
+
+    rv = client.get("/admin/failingview/plug/ok")
+    assert rv.status_code == 200
+    assert rv.data == b"FailingView:ok"
+    assert plugview_calls == 1
+
+    with pytest.raises(TypeError, match="real error inside plugview"):
+        client.get("/admin/failingview/plug/boom")
+    assert plugview_calls == 2
+
+
 def check_class_name() -> None:
     view = MockView()
     assert view.name == "Mock View"
