@@ -36,6 +36,8 @@ class QueryAjaxModelLoader(AjaxModelLoader):
             Fields to run query against
         :param filters:
             Additional filters to apply to the loader
+        :param order_by:
+            Column name or SQLAlchemy expression used to sort results
         """
         super().__init__(name, options)
 
@@ -114,7 +116,7 @@ class QueryAjaxModelLoader(AjaxModelLoader):
             ]
             query = query.filter(and_(*filters))
 
-        if self.order_by:
+        if self.order_by is not None:
             query = query.order_by(self.order_by)
 
         return query.offset(offset).limit(limit).all()
