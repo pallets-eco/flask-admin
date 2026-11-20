@@ -1,5 +1,6 @@
 import typing
 from dataclasses import dataclass
+from dataclasses import field
 
 
 @dataclass
@@ -35,6 +36,8 @@ class Bootstrap4Theme(BootstrapTheme):
 
     .. versionchanged:: unreleased
         Replaced the partial constructor with a dataclass subclass.
+        The ``folder`` constructor argument is no longer accepted. Use
+        :class:`Theme` or a custom theme subclass for a different template folder.
     """
 
-    folder: typing.Literal["bootstrap4"] = "bootstrap4"
+    folder: typing.Literal["bootstrap4"] = field(default="bootstrap4", init=False)

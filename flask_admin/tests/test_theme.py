@@ -1,4 +1,4 @@
-from typing import get_type_hints
+import pytest
 
 from flask_admin.theme import Bootstrap4Theme
 from flask_admin.theme import BootstrapTheme
@@ -16,7 +16,6 @@ def test_bootstrap4_defaults() -> None:
 
 def test_bootstrap4_custom_options() -> None:
     theme = Bootstrap4Theme(
-        folder="bootstrap4",
         base_template="custom.html",
         swatch="cerulean",
         fluid=True,
@@ -28,9 +27,7 @@ def test_bootstrap4_custom_options() -> None:
     assert theme.fluid is True
 
 
-def test_bootstrap4_constructor_type_hints() -> None:
-    hints = get_type_hints(Bootstrap4Theme.__init__)
-
-    assert hints["base_template"] is str
-    assert hints["swatch"] is str
-    assert hints["fluid"] is bool
+@pytest.mark.parametrize("folder", ["bootstrap4", "bootstrap3"])
+def test_bootstrap4_rejects_folder_argument(folder: str) -> None:
+    with pytest.raises(TypeError, match="unexpected keyword argument 'folder'"):
+        Bootstrap4Theme(folder=folder)  # type: ignore[call-arg]

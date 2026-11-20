@@ -4,6 +4,10 @@ Changelog
 [unreleased]
 ------------------
 
+Breaking changes:
+
+* ``Bootstrap4Theme`` no longer accepts a ``folder`` constructor argument. Remove ``folder="bootstrap4"`` from existing calls; use ``Theme`` or a custom theme subclass for a different template folder.
+
 Dependencies:
 
 * Dropped support for Python 3.10 and added official support for Python 3.15.
