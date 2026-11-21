@@ -23,13 +23,19 @@
   </ul>
   {% endblock %}
 
-  {% block details_search %}
-    <div class="form-inline fa_filter_container col-lg-6">
-      <label for="fa_filter">{{ _gettext('Filter') }}</label>
-      <input id="fa_filter" type="text" class="ml-3 form-control">
-    </div>
+  {% block details_actions %}
+  <div class="form-inline fa_filter_container  d-flex justify-content-between">
+    {% block details_search %}
+        <div class="form-inline">
+        <label for="fa_filter">{{ _gettext('Filter') }}</label>
+        <input id="fa_filter" type="text" class="ml-3 form-control">
+        </div>
+    {% endblock %}
+    {% block details_delete %}
+        {{ lib.render_delete_form()  }}
+    {% endblock %}
+  </div>
   {% endblock %}
-
   {% block details_table %}
     <table class="table table-hover table-bordered searchable">
     {% for c, name in details_columns %}
