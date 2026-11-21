@@ -1,0 +1,7 @@
+
+<div>
+  <input class="form-control" {{ html_params(**text) | safe }}>
+  <input  type="checkbox" name="{{marker}}" id="{{marker}}">
+  <label for="{{marker}}">Delete</label>
+  <input {{ html_params(**file) | safe }}>
+</div>
