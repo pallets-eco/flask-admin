@@ -507,13 +507,13 @@ msgstr "ファイル名を変更"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:92
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "\\'%(name)s\\' を削除するよろしいです ' を再帰的にですか？"
+msgid "Are you sure you want to delete '%(name)s' recursively?"
+msgstr "'%(name)s' を削除するよろしいです ' を再帰的にですか？"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:103
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "\\本当に '%(name)s\\' を削除してもいいですか？"
+msgid "Are you sure you want to delete '%(name)s'?"
+msgstr "\\本当に '%(name)s' を削除してもいいですか？"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
 msgid "Please select at least one file."

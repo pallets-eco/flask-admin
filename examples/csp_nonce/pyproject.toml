@@ -5,7 +5,7 @@ description = "CSP Nonce Example."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "flask-admin",
+"flask-admin[sqlalchemy]",
     "flask-talisman",
 ]
 

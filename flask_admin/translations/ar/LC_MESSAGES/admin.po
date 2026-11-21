@@ -518,13 +518,13 @@ msgstr "إعادة تسمية الملف"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:92
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "هل أنت متأكد من أنك تريد حذف \\'%(name)s\\' بشكل متكرر؟"
+msgid "Are you sure you want to delete '%(name)s' recursively?"
+msgstr "هل أنت متأكد من أنك تريد حذف '%(name)s' بشكل متكرر؟"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:103
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "هل أنت متأكد من أنك تريد حذف \\'%(name)s\\ '؟"
+msgid "Are you sure you want to delete '%(name)s'?"
+msgstr "هل أنت متأكد من أنك تريد حذف '%(name)s'؟"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
 msgid "Please select at least one file."

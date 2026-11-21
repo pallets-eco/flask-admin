@@ -509,13 +509,13 @@ msgstr "Μετονοσία αρχείου"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:92
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε \\'%(name)s\\' αναδρομικά;"
+msgid "Are you sure you want to delete '%(name)s' recursively?"
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε '%(name)s' αναδρομικά;"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:103
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε \\'%(name)s\\';"
+msgid "Are you sure you want to delete '%(name)s'?"
+msgstr "Είστε βέβαιοι ότι θέλετε να διαγράψετε '%(name)s';"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
 msgid "Please select at least one file."

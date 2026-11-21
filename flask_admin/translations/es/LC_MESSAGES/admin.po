@@ -509,13 +509,13 @@ msgstr "Renombrar El Archivo"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:92
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "¿Está seguro de que desea borrar \\'%(name)s\\' de forma recursiva?"
+msgid "Are you sure you want to delete '%(name)s' recursively?"
+msgstr "¿Está seguro de que desea borrar '%(name)s' de forma recursiva?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:103
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "¿Está seguro de que desea borrar \\'%(name)s\\'?"
+msgid "Are you sure you want to delete '%(name)s'?"
+msgstr "¿Está seguro de que desea borrar '%(name)s'?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
 msgid "Please select at least one file."

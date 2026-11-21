@@ -508,13 +508,13 @@ msgstr "Gi Filen Nytt Navn"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:92
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "Er du sikker på at du vil slette \\'%(name)s\\' rekursivt?"
+msgid "Are you sure you want to delete '%(name)s' recursively?"
+msgstr "Er du sikker på at du vil slette '%(name)s' rekursivt?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:103
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "Er du sikker på at du vil slette \\'%(name)s\\'?"
+msgid "Are you sure you want to delete '%(name)s'?"
+msgstr "Er du sikker på at du vil slette '%(name)s'?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
 msgid "Please select at least one file."
