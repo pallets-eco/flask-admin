@@ -3326,7 +3326,7 @@ def test_customising_page_size(
         M1, _ = create_models(sqla_db_ext)
 
         sqla_db_ext.db.session.add_all(
-            [M1(test1=str(f"instance-{x + 1:03d}")) for x in range(101)]
+            [M1(test1=str(f"instance-{x+1:03d}")) for x in range(101)]
         )
 
         param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
@@ -4035,63 +4035,65 @@ def test_context_sensitive_column_defaults(
     with app.app_context():
         sqla_db_ext.create_all()
 
-        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
-        view = CustomModelView(ContextDefaultModel, param)
-        admin.add_view(view)
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+    view = CustomModelView(ContextDefaultModel, param)
+    admin.add_view(view)
 
-        client = app.test_client()
+    client = app.test_client()
 
-        rv = client.get("/admin/contextdefaultmodel/new/")
-        assert rv.status_code == 200
-        assert b'value="zero-val"' in rv.data
-        assert b'value="preview"' in rv.data
+    rv = client.get("/admin/contextdefaultmodel/new/")
+    assert rv.status_code == 200
+    assert b'value="zero-val"' in rv.data
+    assert b'value="preview"' in rv.data
 
-        rv = client.post(
-            "/admin/contextdefaultmodel/new/",
-            data={
-                "first_name": "John",
-                "counter": "30",
-                "greeting": "",
-                "computed_int": "",
-                "callable_obj": "",
-                "guarded": "",
-                "zero_arg": "zero-val",
-            },
-        )
-        assert rv.status_code == 302
+    rv = client.post(
+        "/admin/contextdefaultmodel/new/",
+        data={
+            "first_name": "John",
+            "counter": "30",
+            "greeting": "",
+            "computed_int": "",
+            "callable_obj": "",
+            "guarded": "",
+            "zero_arg": "zero-val",
+        },
+    )
+    assert rv.status_code == 302
 
+    with app.app_context():
         created = _current_session(sqla_db_ext).query(ContextDefaultModel).one()
-        assert created.greeting == "Mr. John"
-        assert created.computed_int == 42
-        assert created.callable_obj == "obj:John"
-        assert created.guarded == "ctx:John"
-        assert created.zero_arg == "zero-val"
+    assert created.greeting == "Mr. John"
+    assert created.computed_int == 42
+    assert created.callable_obj == "obj:John"
+    assert created.guarded == "ctx:John"
+    assert created.zero_arg == "zero-val"
 
-        rv = client.post(
-            "/admin/contextdefaultmodel/new/",
-            data={
-                "first_name": "Jane",
-                "counter": "10",
-                "greeting": "Dr. Jane",
-                "computed_int": "99",
-                "callable_obj": "custom",
-                "guarded": "manual",
-                "zero_arg": "override",
-            },
-        )
-        assert rv.status_code == 302
+    rv = client.post(
+        "/admin/contextdefaultmodel/new/",
+        data={
+            "first_name": "Jane",
+            "counter": "10",
+            "greeting": "Dr. Jane",
+            "computed_int": "99",
+            "callable_obj": "custom",
+            "guarded": "manual",
+            "zero_arg": "override",
+        },
+    )
+    assert rv.status_code == 302
 
+    with app.app_context():
         overridden = (
             _current_session(sqla_db_ext)
             .query(ContextDefaultModel)
             .filter_by(first_name="Jane")
             .one()
         )
-        assert overridden.greeting == "Dr. Jane"
-        assert overridden.computed_int == 99
-        assert overridden.callable_obj == "custom"
-        assert overridden.guarded == "manual"
-        assert overridden.zero_arg == "override"
+    assert overridden.greeting == "Dr. Jane"
+    assert overridden.computed_int == 99
+    assert overridden.callable_obj == "custom"
+    assert overridden.guarded == "manual"
+    assert overridden.zero_arg == "override"
 
 
 def test_zero_arg_default_attribute_error_is_not_swallowed(
@@ -4115,10 +4117,10 @@ def test_zero_arg_default_attribute_error_is_not_swallowed(
     with app.app_context():
         sqla_db_ext.create_all()
 
-        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
-        view = CustomModelView(BrokenDefaultModel, param)
-        admin.add_view(view)
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+    view = CustomModelView(BrokenDefaultModel, param)
+    admin.add_view(view)
 
-        with app.test_request_context("/"):
-            with pytest.raises(AttributeError):
-                view.create_form()
+    with app.test_request_context("/"):
+        with pytest.raises(AttributeError):
+            view.create_form()
