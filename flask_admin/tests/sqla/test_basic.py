@@ -2444,6 +2444,41 @@ def test_form_columns_order_with_extra_fields(
         ]
 
 
+def test_form_columns_order_with_replaced_field(
+    app: Flask,
+    sqla_db_ext: SQLAProviderProtocol,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+
+        class Model(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+            __tablename__ = "model"
+            id = Column(Integer, primary_key=True)
+            int_field = Column(Integer)
+            datetime_field = Column(DateTime)
+            text_field = Column(Text)
+
+        class ReplacedFieldModelView(CustomModelView):
+            form_columns = ["text_field", "int_field", "datetime_field"]
+
+            def scaffold_form(self) -> type[Form]:
+                form_class = super().scaffold_form()
+                form_class.int_field = fields.IntegerField("int_field")
+                return form_class
+
+        sqla_db_ext.create_all()
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view = ReplacedFieldModelView(Model, param)
+        generated_form = view.create_form()
+
+        assert isinstance(generated_form._fields["int_field"], fields.IntegerField)
+        assert list(generated_form._fields) == [
+            "text_field",
+            "int_field",
+            "datetime_field",
+        ]
+
+
 @pytest.mark.xfail(raises=Exception)
 def test_complex_form_columns(
     app: Flask,
