@@ -81,7 +81,7 @@ class NestedRule(BaseRule):
         :param rules:
             Child rule list
         :param separator:
-            Default separator between rules when rendering them.
+            Default HTML separator between rules when rendering them.
         """
         if rules is None:
             rules = []
@@ -288,8 +288,8 @@ class Container(Macro):
 
         The container is nothing but a Jinja Macro
         that is placed within the current jinja context. The rule inside the container
-        is represented by `{{ caller() }}` as it is shown in the follwoing Jinja
-        [snippet](/advanced/index.html#built-in-rules):
+        is represented by `{{ caller() }}` as it is explained in
+        :ref:`Snippet <built-in-rules>`.
         """
         super().__init__(macro_name, **kwargs)
         self.child_rule = child_rule
@@ -343,7 +343,7 @@ class Container(Macro):
 
 class Field(Macro):
     """
-    Form field rule.
+    Form field rule to be rendered with a custom macro.
     """
 
     def __init__(self, field_name: str, render_field: str = "lib.render_field") -> None:
@@ -399,7 +399,7 @@ class Field(Macro):
 
 class Header(Macro):
     """
-    Render header text.
+    Header text to be rendered with a custom macro.
     """
 
     def __init__(self, text: str, header_macro: str = "lib.render_header") -> None:
@@ -415,8 +415,8 @@ class Header(Macro):
 
 
 class FieldSet(NestedRule):
-    """
-    Field set with header.
+    """`
+    A set of rules to be rendered with an optional header.
     """
 
     def __init__(
@@ -433,7 +433,7 @@ class FieldSet(NestedRule):
         :param header:
             Header text
         :param separator:
-            Child rule separator
+            Child rule HTML separator
         """
         if header:
             rule_set = [Header(header)] + list(rules)
@@ -449,6 +449,12 @@ class Row(NestedRule):
     """
 
     def __init__(self, *columns: str | BaseRule, **kw: t.Any) -> None:
+        """
+        Constructor.
+
+        :param rules:
+            Child rules to be rendered in a single row.
+        """
         super().__init__()
         self.rules: list[str | BaseRule] = columns  # type:ignore[assignment]
 
@@ -486,7 +492,7 @@ class Group(Macro):
         **kwargs: t.Any,
     ) -> None:
         """
-        [Bootstrap Input group](https://getbootstrap.com/docs/4.6/components/input-group/).
+        `Bootstrap Input Group <https://getbootstrap.com/docs/4.6/components/input-group/>`_.
         It renders the target field whatever its type is
         (text, radio, checkbox..etc), allowing prepended and appended boxes to
         be filled with any HTML content.

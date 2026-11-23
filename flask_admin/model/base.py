@@ -538,7 +538,8 @@ class BaseModelView(BaseView, ActionsMixin):
 
     column_choices: dict[str, t.Sequence[tuple[str, str]]] | None = None
     """
-        Map choices to columns in list view
+        Map choices to columns in list view. Usually used with form_choice fields
+        when rendering the column as a select field.
 
         Example::
 
@@ -830,7 +831,10 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 form_ajax_refs = {
                     'user': QueryAjaxModelLoader(
-                        'user', db.session, User, fields=['email'], page_size=10
+                        'user', db.session, User,
+                        fields=['email'],
+                        page_size=10,
+                        filters=["is_active=True", "id>1000"]
                     )
                 }
 

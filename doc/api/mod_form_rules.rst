@@ -20,3 +20,7 @@
 	.. autoclass:: Header
 
 	.. autoclass:: FieldSet
+
+	.. autoclass:: Row
+
+	.. autoclass:: Group
