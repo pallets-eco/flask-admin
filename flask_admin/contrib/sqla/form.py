@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import typing as t
 import warnings
 from collections.abc import Callable
@@ -63,6 +64,49 @@ from .validators import TimeZoneValidator
 from .validators import Unique
 from .validators import valid_color
 from .validators import valid_currency
+
+
+def _takes_context(fn: Callable[..., t.Any]) -> bool:
+    """Return True if ``fn`` requires a single positional ``context`` argument."""
+    try:
+        sig = inspect.signature(fn)
+    except (TypeError, ValueError):
+        return False
+    required_positional = [
+        p
+        for p in sig.parameters.values()
+        if p.kind
+        in (
+            inspect.Parameter.POSITIONAL_ONLY,
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        )
+        and p.default is inspect.Parameter.empty
+    ]
+    return len(required_positional) == 1
+
+
+def _make_callable_default(arg: Callable[[t.Any], t.Any]) -> Callable[[], t.Any]:
+    """Wrap a SQLAlchemy callable column default for WTForms field initialization.
+
+    Context-sensitive defaults expect a SQLAlchemy ``ExecutionContext`` which is
+    not available when building a form, so calling them with ``None`` raises
+    ``AttributeError`` or ``TypeError``. For such callables, fall back to ``None``
+    instead of crashing so SQLAlchemy can evaluate the default on insert.
+    """
+    if _takes_context(arg):
+
+        def _call_context_default() -> t.Any:
+            try:
+                return arg(None)
+            except (AttributeError, TypeError):
+                return None
+
+        return _call_context_default
+
+    def _call_default() -> t.Any:
+        return arg(None)
+
+    return _call_default
 
 
 class AdminModelConverter(ModelConverterBase):
@@ -341,7 +385,7 @@ class AdminModelConverter(ModelConverterBase):
 
                 if value is not None:
                     if getattr(default, "is_callable", False):
-                        value = lambda: default.arg(None)  # noqa: E731
+                        value = _make_callable_default(default.arg)
                     else:
                         if not getattr(default, "is_scalar", True):
                             value = None

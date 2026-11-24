@@ -19,6 +19,7 @@ Bugfixes:
 * SQLAlchemy backend: ``ItemsRequired`` once again validates multi-select relation fields without raising ``AttributeError``. Inline entries marked for deletion remain excluded from the count (closes #2385).
 * SQLAlchemy backend: ``Flask-SQLAlchemy-Lite`` models can now be used without installing ``flask-sqlalchemy`` package but only ``flask-sqlalchemy-lite`` (closes #2958).
 * SQLAlchemy backend: solved a bug raising ``RuntimeError: Working outside of application context`` when using ``ModelView(Model, db)`` with Flask-SQLAlchemy-Lite e.g. when views are added at import time (closes #2995).
+* SQLAlchemy backend: context-sensitive column ``default`` callables no longer crash form rendering with ``AttributeError`` when called with ``None`` at form-scaffolding time; instead the field default falls back to ``None`` so SQLAlchemy evaluates the default on insert (closes #2010).
 * Peewee backend: return None from ajax get_one() when no record matches rather than raising DoesNotExist
 * Peewee backend: support ``form_choices`` in ``ModelView``, rendering a ``Select2Field`` like the SQLAlchemy backend (closes #2235)
 
