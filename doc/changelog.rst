@@ -11,6 +11,7 @@ Dependencies:
 New functionality:
 
 * MongoEngine backend: support ``form_choices`` in ``ModelView``, rendering a ``Select2Field`` like the SQLAlchemy and Peewee backends. ``form_choices`` is now defined on ``BaseModelView``, and all backends build the field through a shared ``flask_admin.model.form.get_form_choices_field()`` helper (closes #2967).
+* SQLAlchemy backend: ``order_by`` in ``form_ajax_refs`` now accepts SQLAlchemy expressions such as ``Model.name.desc()`` in addition to column names, so AJAX relation lookups can be sorted in descending order (closes #3000).
 
 Bugfixes:
 
