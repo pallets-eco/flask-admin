@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 import wtforms
+import wtforms.fields
 from sqlalchemy import ARRAY
 from sqlalchemy import Column
 from sqlalchemy import Float
@@ -13,6 +14,7 @@ from werkzeug.datastructures import MultiDict
 from wtforms.fields import FieldList
 from wtforms.fields.simple import StringField
 
+from flask_admin.contrib.sqla.fields import QuerySelectField
 from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
 from flask_admin.contrib.sqla.form import AdminModelConverter
 from flask_admin.contrib.sqla.validators import ItemsRequired
@@ -213,3 +215,36 @@ def test_items_required_field_list_without_deletion_protocol() -> None:
     form = SelectionForm(MultiDict({"choices-0": "one"}))
 
     assert form.validate()
+
+
+def test_query_select_field_renders_and_validates() -> None:
+    class _DummyRecord:
+        def __init__(self, record_id: int, label: str) -> None:
+            self.id = record_id
+            self.label = label
+
+        def __str__(self) -> str:
+            return self.label
+
+    records = [_DummyRecord(1, "Alpha"), _DummyRecord(2, "Beta")]
+
+    class RelationForm(wtforms.Form):
+        item = QuerySelectField(
+            query_factory=lambda: records,
+            get_pk=lambda obj: obj.id,
+            allow_blank=True,
+        )
+
+    form = RelationForm(MultiDict([("item", "2")]))
+    assert form.validate()
+    assert form.item.data is records[1]
+
+    choice_cls = getattr(wtforms.fields, "Choice", None)
+    iterated = list(form.item.iter_choices())
+    if choice_cls is not None:
+        assert all(isinstance(c, choice_cls) for c in iterated)
+
+    rendered = str(form.item())
+    assert 'value="__None"' in rendered
+    assert 'value="1"' in rendered
+    assert 'value="2"' in rendered

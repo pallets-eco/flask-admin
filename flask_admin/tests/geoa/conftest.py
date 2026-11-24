@@ -17,7 +17,7 @@ def sqla_db_ext(
     # need postgres for spatial types
     uri = os.getenv(
         "SQLALCHEMY_DATABASE_URI",
-        "postgresql://postgres:postgres@localhost/flask_admin_test",
+        "postgresql+psycopg2://postgres:postgres@localhost/flask_admin_test",
     )
 
     configure_sqla(app, uri, request)

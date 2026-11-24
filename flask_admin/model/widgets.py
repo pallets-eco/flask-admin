@@ -7,6 +7,7 @@ from wtforms import Field
 from wtforms import SelectField
 from wtforms.widgets import html_params
 
+from flask_admin._compat import _iter_raw_choices
 from flask_admin._compat import as_unicode
 from flask_admin._compat import text_type
 from flask_admin._types import T_AJAX_SELECT_FIELD
@@ -132,9 +133,8 @@ class XEditableWidget:
         elif field.type in ["Select2Field", "SelectField"]:
             field = t.cast(Select2Field | SelectField, field)
             kwargs["data-type"] = "select2"
-            choices = [  # type:ignore[misc, str-unpack]
-                {"value": x, "text": y}
-                for x, y in field.choices  # type: ignore[union-attr]
+            choices = [
+                {"value": x, "text": y} for x, y, _ in _iter_raw_choices(field.choices)
             ]
 
             # prepend a blank field to choices if allow_blank = True

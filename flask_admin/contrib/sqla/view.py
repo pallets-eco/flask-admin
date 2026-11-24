@@ -18,6 +18,7 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm.base import instance_state
 from sqlalchemy.orm.base import manager_of_class
 from sqlalchemy.sql.elements import BinaryExpression
+from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.expression import cast as sql_cast
 from sqlalchemy.sql.expression import desc
 from wtforms import Form
@@ -1041,7 +1042,11 @@ class ModelView(BaseModelView):
             column = sort_field if alias is None else getattr(alias, sort_field.key)
 
             if sort_desc:
-                query = query.order_by(desc(column))
+                desc_clause = desc(column)
+                if isinstance(desc_clause, ColumnElement):
+                    query = query.order_by(desc_clause)
+                else:
+                    query = query.order_by(*desc_clause.clauses)
             else:
                 query = query.order_by(column)
 

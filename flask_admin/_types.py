@@ -148,8 +148,8 @@ T_COLUMN_LIST = t.Sequence[
 T_TYPE_FORMATTER = t.Callable[[T_MODEL_VIEW, t.Any, str], str | Markup]
 T_COLUMN_TYPE_FORMATTERS = dict[type, T_TYPE_FORMATTER]
 T_TRANSLATABLE = t.Union[str, T_LAZY_STRING]
-# Compatibility for 3-tuples and 4-tuples in iter_choices
-# https://wtforms.readthedocs.io/en/3.2.x/changes/#version-3-2-0
+# Compatibility for 3-tuples (<3.2), 4-tuples (3.2), and Choice NamedTuples (>=3.3)
+# in iter_choices: https://wtforms.readthedocs.io/en/3.3.x/changes/#version-3-3-0
 T_ITER_CHOICES = t.Union[
     tuple[t.Any, T_TRANSLATABLE, bool, dict[str, t.Any]],
     tuple[t.Any, T_TRANSLATABLE, bool],

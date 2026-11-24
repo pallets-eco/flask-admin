@@ -7,6 +7,7 @@ Changelog
 Dependencies:
 
 * Dropped support for Python 3.10 and added official support for Python 3.15.
+* Added compatibility for WTForms 3.3 (``SelectChoice`` / ``Choice`` in ``Select2Field``, ``XEditableWidget``, and model converters; ``flask_admin.form.DateTimeField`` in Peewee and MongoEngine converters) and SQLAlchemy 2.1 (``desc()`` ordering compatibility) (relates to #2993).
 
 New functionality:
 

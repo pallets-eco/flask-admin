@@ -3,10 +3,12 @@ import typing as t
 from bson import ObjectId
 from bson.dbref import DBRef
 from flask import Flask
+from mongoengine import DateTimeField as MongoDateTimeField
 from mongoengine import Document
 from mongoengine import EmbeddedDocument
 from mongoengine import EmbeddedDocumentField
 from mongoengine import FileField
+from mongoengine import ListField
 from mongoengine import StringField
 from mongoengine.connection import get_db
 from wtforms import fields
@@ -16,6 +18,8 @@ from flask_admin import Admin
 from flask_admin.contrib.mongoengine import filters
 from flask_admin.contrib.mongoengine import ModelView
 from flask_admin.contrib.mongoengine.ajax import QueryAjaxModelLoader
+from flask_admin.form import DateTimeField
+from flask_admin.form import DateTimePickerWidget
 from flask_admin.form import Select2Field
 
 
@@ -243,11 +247,18 @@ def test_form_choices(app: Flask, db: t.Any, admin: Admin) -> None:
     form_obj = view.create_form()
 
     assert isinstance(form_obj.status, Select2Field)  # type: ignore[attr-defined]
-    assert form_obj.status.choices == status_choices  # type: ignore[attr-defined]
+    assert [
+        (val, label)
+        for val, label, *_ in form_obj.status.iter_choices()  # type: ignore[attr-defined]
+    ] == status_choices
     assert form_obj.status.allow_blank is False  # type: ignore[attr-defined]
 
     assert isinstance(form_obj.priority, Select2Field)  # type: ignore[attr-defined]
-    assert form_obj.priority.choices == priority_choices  # type: ignore[attr-defined]
+    assert [
+        (val, label)
+        for val, label, *_ in form_obj.priority.iter_choices()  # type: ignore[attr-defined]
+        if val != "__None"
+    ] == priority_choices
     assert form_obj.priority.allow_blank is True  # type: ignore[attr-defined]
 
     # Fields not in form_choices should convert normally
@@ -290,7 +301,11 @@ def test_form_choices_replace_model_choices(
     form_obj = view.create_form()
 
     assert isinstance(form_obj.status, Select2Field)  # type: ignore[attr-defined]
-    assert form_obj.status.choices == choices  # type: ignore[attr-defined]
+    assert [
+        (val, label)
+        for val, label, *_ in form_obj.status.iter_choices()  # type: ignore[attr-defined]
+        if val != "__None"
+    ] == choices
 
 
 def test_form_choices_not_applied_to_embedded_documents(
@@ -314,3 +329,28 @@ def test_form_choices_not_applied_to_embedded_documents(
 
     assert isinstance(form_obj.status, Select2Field)  # type: ignore[attr-defined]
     assert not isinstance(form_obj.inner.form.status, Select2Field)  # type: ignore[attr-defined]
+
+
+def test_datetime_field_and_model_choices_conversion(
+    app: Flask, db: t.Any, admin: Admin
+) -> None:
+    class EventDoc(Document):  # type: ignore[misc]
+        meta = {"collection": "event_doc"}
+        created_at = MongoDateTimeField()
+        status = StringField(choices=(("a", "Alpha"), ("b", "Beta")))
+        tags = ListField(StringField(choices=[("x", "X"), ("y", "Y")]))
+
+    view = ModelView(EventDoc, endpoint="eventdoc")
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+    assert isinstance(form_obj.created_at, DateTimeField)  # type: ignore[attr-defined]
+    assert isinstance(form_obj.created_at.widget, DateTimePickerWidget)  # type: ignore[attr-defined]
+    assert [
+        (val, label)
+        for val, label, *_ in form_obj.status.iter_choices()  # type: ignore[attr-defined]
+    ] == [("a", "Alpha"), ("b", "Beta")]
+    assert [
+        (val, label)
+        for val, label, *_ in form_obj.tags.iter_choices()  # type: ignore[attr-defined]
+    ] == [("x", "X"), ("y", "Y")]

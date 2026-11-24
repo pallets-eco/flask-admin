@@ -3,12 +3,14 @@ import json
 import re
 import time
 import typing as t
-from enum import Enum
+from enum import EnumMeta
 
 from wtforms import fields
 from wtforms.form import BaseForm
 
+from flask_admin._compat import _choices_wtforms_compat
 from flask_admin._compat import _iter_choices_wtforms_compat
+from flask_admin._compat import _iter_raw_choices
 from flask_admin._compat import as_unicode
 from flask_admin._compat import text_type
 from flask_admin.babel import gettext
@@ -32,6 +34,9 @@ __all__ = [
 ]
 
 
+# TODO: switch base class to fields.DateTimeLocalField once WTForms < 3.0
+# support is dropped (wtforms.fields.DateTimeField is deprecated in 3.3 and
+# scheduled for removal in 3.4).
 class DateTimeField(fields.DateTimeField):
     """
     Allows modifying the datetime format of a DateTimeField using form_args.
@@ -139,6 +144,9 @@ class Select2Field(fields.SelectField):
 
     You must include select2.js, form-x.x.x.js and select2 stylesheet for it to
     work.
+
+    On WTForms >= 3.3, legacy tuple, dict, and ``Enum`` ``choices`` are
+    automatically converted to ``wtforms.fields.SelectChoice`` instances.
     """
 
     widget = admin_widgets.Select2Widget()
@@ -148,7 +156,13 @@ class Select2Field(fields.SelectField):
         label: T_TRANSLATABLE | None = None,
         validators: list[T_VALIDATOR] | None = None,
         coerce: t.Callable[[t.Any], t.Any] = text_type,
-        choices: tuple[str, ...] | Enum | None = None,
+        choices: (
+            t.Sequence[t.Any]
+            | dict[t.Any, t.Any]
+            | EnumMeta
+            | t.Callable[..., t.Any]
+            | None
+        ) = None,
         allow_blank: bool = False,
         blank_text: T_TRANSLATABLE | None = None,
         **kwargs: t.Any,
@@ -157,7 +171,7 @@ class Select2Field(fields.SelectField):
             label,
             validators,
             coerce,
-            choices,  # type: ignore[arg-type]
+            _choices_wtforms_compat(choices),
             **kwargs,
         )
         self.allow_blank = allow_blank
@@ -169,17 +183,13 @@ class Select2Field(fields.SelectField):
                 "__None", self.blank_text, self.data is None
             )
 
-        for choice in self.choices or ():
-            if isinstance(choice, tuple):
-                yield _iter_choices_wtforms_compat(
-                    choice[0], choice[1], self.coerce(choice[0]) == self.data
-                )
-            else:
-                yield _iter_choices_wtforms_compat(
-                    choice.value,  # type: ignore[attr-defined]
-                    choice.name,  # type: ignore[attr-defined]
-                    self.coerce(choice.value) == self.data,  # type: ignore[attr-defined]
-                )
+        for val, label, render_kw in _iter_raw_choices(self.choices):
+            yield _iter_choices_wtforms_compat(
+                val,
+                label,
+                self.coerce(val) == self.data,
+                render_kw,
+            )
 
     def process_data(self, value: t.Any) -> None:
         if value is None:
