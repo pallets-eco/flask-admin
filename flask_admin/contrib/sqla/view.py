@@ -246,6 +246,9 @@ class ModelView(BaseModelView):
     """
         Inline related-model editing for models with parent-child relations.
 
+        See :ref:`inline-models` for supported form options and an example of
+        sharing configuration with the child model's own view.
+
         Accepts enumerable with one of the following possible values:
 
         1. Child model class::

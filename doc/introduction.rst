@@ -483,10 +483,12 @@ Look for more details and examples of form rules in the page of :ref:`rendering-
 
 To **manage related models inline**::
 
-    inline_models = ['post', ]
+    inline_models = [Post]
 
-These inline forms can be customized. Have a look at the API documentation for
-:meth:`~flask_admin.contrib.sqla.ModelView.inline_models`.
+See :ref:`inline-models` for supported form options and an example of sharing
+configuration with the child model's own view. The API documentation for
+:attr:`~flask_admin.contrib.sqla.ModelView.inline_models` describes the accepted
+configuration formats.
 
 **Exporting:**
 **************
