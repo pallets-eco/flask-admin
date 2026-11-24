@@ -509,13 +509,13 @@ msgstr "Faili ümbernimetamine"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:92
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "Kas soovite kindlasti kustutada \\'%(name)s\\' rekursiivselt?"
+msgid "Are you sure you want to delete '%(name)s' recursively?"
+msgstr "Kas soovite kindlasti kustutada '%(name)s' rekursiivselt?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:103
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "Kas soovite kindlasti kustutada \\'%(name)s\\'?"
+msgid "Are you sure you want to delete '%(name)s'?"
+msgstr "Kas soovite kindlasti kustutada '%(name)s'?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
 msgid "Please select at least one file."

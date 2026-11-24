@@ -37,12 +37,21 @@ of how to configure Flask-Admin to inject CSP nonce values::
         app,
         content_security_policy={
             "default-src": "'self'",
+            "script-src": "'self' 'strict-dynamic'",
+            "style-src": "'self' 'unsafe-inline' fonts.googleapis.com ",
+            "font-src": "'self' fonts.gstatic.com data: ",
+            "img-src": "'self' data: ",
         },
         content_security_policy_nonce_in=["script-src", "style-src"]
     )
-    csp_nonce_generator = app.jinja_env.globals["csp_nonce"]  # this is talisman's generator function
 
-    admin = admin.Admin(app, name="Example", theme=Bootstrap4Theme(), csp_nonce_generator=csp_nonce_generator)
+    # A function that generates a nonce code for each request
+    csp_nonce_generator = app.jinja_env.globals["csp_nonce"]
+
+    admin = admin.Admin(app,
+                name="Example",
+                theme=Bootstrap4Theme(),
+                csp_nonce_generator=csp_nonce_generator)
 
 If you decide to use a content security policy, you should pay close attention to the policy you set to
 make sure it is appropriate for your project's security needs.

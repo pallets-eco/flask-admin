@@ -511,13 +511,13 @@ msgstr "Přejmenovat Soubor"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:92
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\' recursively?"
-msgstr "Opravdu chcete vymazat \\'%(name)s\\' rekurzivně?"
+msgid "Are you sure you want to delete '%(name)s' recursively?"
+msgstr "Opravdu chcete vymazat '%(name)s' rekurzivně?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:103
 #, python-format
-msgid "Are you sure you want to delete \\'%(name)s\\'?"
-msgstr "Opravdu chcete vymazat \\'%(name)s\\'?"
+msgid "Are you sure you want to delete '%(name)s'?"
+msgstr "Opravdu chcete vymazat '%(name)s'?"
 
 #: ../flask_admin/templates/bootstrap4/admin/file/list.html:191
 msgid "Please select at least one file."
