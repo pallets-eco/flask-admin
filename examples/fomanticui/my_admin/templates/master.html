@@ -1,0 +1,36 @@
+{% extends 'admin/base.html' %}
+
+{% block brand %}
+    <img class="logo d-none"
+         style="filter: invert(1);
+                width: 30px;
+                margin: 0 4px 0 0"
+         src="https://flask-admin.readthedocs.io/en/latest/_static/logo.png" />
+    {{ admin_view.admin.name }}
+{% endblock %}
+
+{% block access_control %}
+    <div class="right menu">
+        <div class="ui dropdown item">
+            johndoe@gmail.com
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a href="#" class="item">Profile</a>
+                <div class="item">
+                    <i class="dropdown icon"></i>
+                    <span class="text">Settings</span>
+                    <div class="menu">
+                        <a href="#" class="item">General</a>
+                        <a href="#" class="item">Security</a>
+                        <a href="#" class="item">Notifications</a>
+                    </div>
+                </div>
+                <a href="#" class="item">Change Password</a>
+                <div class="divider"></div>
+                <a href="#" class="item">
+                    <span class="ui red text">Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
