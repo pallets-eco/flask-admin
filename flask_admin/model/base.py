@@ -65,6 +65,7 @@ from flask_admin.base import BaseView
 from flask_admin.base import expose
 from flask_admin.form import BaseForm
 from flask_admin.form import FormOpts
+from flask_admin.form import recreate_field
 from flask_admin.form import rules
 from flask_admin.helpers import flash_errors
 from flask_admin.helpers import get_form_data
@@ -697,6 +698,18 @@ class BaseModelView(BaseView, ActionsMixin):
 
             class MyModelView(BaseModelView):
                 form_columns = ('name', User.last_name)
+
+        The order of the names is the order in which the fields are rendered,
+        also when a field of the generated form class is replaced, for example
+        in a ``scaffold_form()`` override::
+
+            class MyModelView(BaseModelView):
+                form_columns = ('name', 'email')
+
+                def scaffold_form(self):
+                    form_class = super().scaffold_form()
+                    form_class.email = EmailField('Email')
+                    return form_class
 
         SQLA Note: Model attributes must be on the same model as your ModelView
         or you will need to use `inline_models`.
@@ -1445,7 +1458,54 @@ class BaseModelView(BaseView, ActionsMixin):
         if self.form is not None:
             return self.form
 
-        return self.scaffold_form()
+        form_class = self.scaffold_form()
+        self._order_form_fields(form_class)
+
+        return form_class
+
+    def _order_form_fields(self, form_class: type[Form]) -> None:
+        """
+        Put the fields of a generated form in ``form_columns`` order.
+
+        WTForms renders the fields in the order in which they were created.
+        A view that replaces a field of the form class returned by
+        ``scaffold_form`` creates it last, so the field would be rendered at
+        the end instead of where ``form_columns`` puts it. Recreating the
+        fields in ``form_columns`` order keeps the documented order.
+
+        Views naming model attributes instead of strings in ``form_columns``
+        are left untouched, since their fields already follow the generated
+        order.
+        """
+        if not self.form_columns:
+            return
+
+        columns = list(self.form_columns)
+        names = [column for column in columns if isinstance(column, str)]
+        if len(names) != len(columns):
+            return
+
+        fields = {
+            name: field
+            for name, field in vars(form_class).items()
+            if isinstance(field, UnboundField)
+        }
+
+        ordered = [name for name in names if name in fields]
+        if not ordered:
+            return
+
+        rest = sorted(
+            (name for name in fields if name not in ordered),
+            key=lambda name: (fields[name].creation_counter, name),
+        )
+        current = sorted(fields, key=lambda name: (fields[name].creation_counter, name))
+
+        if current == ordered + rest:
+            return
+
+        for name in ordered + rest:
+            setattr(form_class, name, recreate_field(fields[name]))
 
     def get_list_form(self) -> type[Form]:
         """
