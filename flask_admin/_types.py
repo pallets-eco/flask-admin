@@ -1,5 +1,6 @@
 import typing as t
 from enum import Enum
+from enum import EnumMeta
 from os import PathLike
 from typing import NotRequired
 
@@ -154,6 +155,33 @@ T_ITER_CHOICES = t.Union[
     tuple[t.Any, T_TRANSLATABLE, bool, dict[str, t.Any]],
     tuple[t.Any, T_TRANSLATABLE, bool],
 ]
+
+
+class _ChoiceObjectProtocol(t.Protocol):
+    value: t.Any
+    label: T_TRANSLATABLE
+    render_kw: dict[str, t.Any] | None
+
+
+class _SelectChoiceProtocol(_ChoiceObjectProtocol, t.Protocol):
+    optgroup: str | None
+
+
+T_CHOICE_TUPLE: t.TypeAlias = (
+    tuple[t.Any, T_TRANSLATABLE] | tuple[t.Any, T_TRANSLATABLE, dict[str, t.Any] | None]
+)
+T_CHOICE_ITEM: t.TypeAlias = (
+    T_CHOICE_TUPLE | Enum | str | _SelectChoiceProtocol | _ChoiceObjectProtocol
+)
+T_CHOICES_MAPPING: t.TypeAlias = t.Mapping[
+    t.Any,
+    T_TRANSLATABLE | t.Mapping[t.Any, T_TRANSLATABLE] | t.Iterable[T_CHOICE_ITEM],
+]
+T_CHOICES_ITERABLE: t.TypeAlias = (
+    t.Iterable[T_CHOICE_ITEM] | T_CHOICES_MAPPING | EnumMeta
+)
+T_CHOICES_CALLABLE: t.TypeAlias = t.Callable[..., T_CHOICES_ITERABLE | None]
+T_CHOICES: t.TypeAlias = T_CHOICES_ITERABLE | T_CHOICES_CALLABLE | None
 T_OPTION = tuple[str, T_TRANSLATABLE]
 T_OPTION_LIST = t.Sequence[T_OPTION]
 T_OPTIONS = t.Union[None, T_OPTION_LIST, t.Callable[[], T_OPTION_LIST]]

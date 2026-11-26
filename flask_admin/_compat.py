@@ -19,6 +19,9 @@ from types import MappingProxyType
 import wtforms
 import wtforms.fields
 
+from flask_admin._types import T_CHOICE_ITEM
+from flask_admin._types import T_CHOICES
+from flask_admin._types import T_CHOICES_ITERABLE
 from flask_admin._types import T_ITER_CHOICES
 from flask_admin._types import T_TRANSLATABLE
 
@@ -26,8 +29,10 @@ text_type = str
 string_types = (str,)
 
 _WTFORMS_VERSION = tuple(int(part) for part in wtforms.__version__.split(".")[:2])
-_WTFORMS_CHOICE: t.Any = getattr(wtforms.fields, "Choice", None)
-_WTFORMS_SELECT_CHOICE: t.Any = getattr(wtforms.fields, "SelectChoice", None)
+_WTFORMS_CHOICE: type[t.Any] | None = getattr(wtforms.fields, "Choice", None)
+_WTFORMS_SELECT_CHOICE: type[t.Any] | None = getattr(
+    wtforms.fields, "SelectChoice", None
+)
 
 K = t.TypeVar("K")
 V = t.TypeVar("V")
@@ -90,7 +95,12 @@ def _iter_choices_wtforms_compat(
     return val, label, selected
 
 
-def _to_select_choice(item: t.Any, optgroup: str | None = None) -> t.Any:
+def _to_select_choice(
+    item: T_CHOICE_ITEM, optgroup: str | None = None
+) -> T_CHOICE_ITEM:
+    if _WTFORMS_SELECT_CHOICE is None:
+        return item
+
     if isinstance(item, _WTFORMS_SELECT_CHOICE):
         if optgroup and not item.optgroup:
             return _WTFORMS_SELECT_CHOICE(
@@ -115,7 +125,7 @@ def _to_select_choice(item: t.Any, optgroup: str | None = None) -> t.Any:
     return item
 
 
-def _choices_wtforms_compat(choices: t.Any) -> t.Any:
+def _choices_wtforms_compat(choices: T_CHOICES) -> T_CHOICES:
     """Convert legacy tuple/dict/Enum choices to ``SelectChoice`` on WTForms >= 3.3.
 
     On WTForms < 3.3, returns ``choices`` unchanged.
@@ -133,10 +143,10 @@ def _choices_wtforms_compat(choices: t.Any) -> t.Any:
     if callable(choices):
         return choices
 
-    if isinstance(choices, dict):
-        result: list[t.Any] = []
+    if isinstance(choices, t.Mapping):
+        result: list[T_CHOICE_ITEM] = []
         for key, value in choices.items():
-            if isinstance(value, dict):
+            if isinstance(value, t.Mapping):
                 for inner_val, inner_label in value.items():
                     result.append(
                         _WTFORMS_SELECT_CHOICE(
@@ -153,7 +163,9 @@ def _choices_wtforms_compat(choices: t.Any) -> t.Any:
     return [_to_select_choice(item) for item in choices]
 
 
-def _unpack_choice(choice: t.Any) -> tuple[t.Any, t.Any, dict[str, t.Any]]:
+def _unpack_choice(
+    choice: T_CHOICE_ITEM,
+) -> tuple[t.Any, T_TRANSLATABLE, dict[str, t.Any]]:
     """Extract ``(value, label, render_kw)`` from a ``SelectChoice``, ``Choice``,
     tuple, ``Enum`` member, or ``str``.
     """
@@ -175,19 +187,25 @@ def _unpack_choice(choice: t.Any) -> tuple[t.Any, t.Any, dict[str, t.Any]]:
     if isinstance(choice, str):
         return choice, choice, {}
 
-    return choice.value, choice.label, getattr(choice, "render_kw", None) or {}
+    return choice.value, choice.label, choice.render_kw or {}
 
 
 def _iter_raw_choices(
-    choices: t.Any,
-) -> t.Iterator[tuple[t.Any, t.Any, dict[str, t.Any]]]:
+    choices: T_CHOICES_ITERABLE | None,
+) -> t.Iterator[tuple[t.Any, T_TRANSLATABLE, dict[str, t.Any]]]:
     """Yield ``(value, label, render_kw)`` tuples from any supported ``choices``."""
     if choices is None:
         return
 
-    if isinstance(choices, dict):
+    if isinstance(choices, EnumMeta):
+        members: t.Iterable[Enum] = choices
+        for member in members:
+            yield member.value, member.name, {}
+        return
+
+    if isinstance(choices, t.Mapping):
         for key, value in choices.items():
-            if isinstance(value, dict):
+            if isinstance(value, t.Mapping):
                 for inner_val, inner_label in value.items():
                     yield inner_val, inner_label, {}
             elif isinstance(value, list | tuple | set):

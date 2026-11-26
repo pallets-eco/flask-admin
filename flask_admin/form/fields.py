@@ -3,7 +3,6 @@ import json
 import re
 import time
 import typing as t
-from enum import EnumMeta
 
 from wtforms import fields
 from wtforms.form import BaseForm
@@ -15,6 +14,7 @@ from flask_admin._compat import as_unicode
 from flask_admin._compat import text_type
 from flask_admin.babel import gettext
 
+from .._types import T_CHOICES
 from .._types import T_ITER_CHOICES
 from .._types import T_TRANSLATABLE
 from .._types import T_VALIDATOR
@@ -156,13 +156,7 @@ class Select2Field(fields.SelectField):
         label: T_TRANSLATABLE | None = None,
         validators: list[T_VALIDATOR] | None = None,
         coerce: t.Callable[[t.Any], t.Any] = text_type,
-        choices: (
-            t.Sequence[t.Any]
-            | dict[t.Any, t.Any]
-            | EnumMeta
-            | t.Callable[..., t.Any]
-            | None
-        ) = None,
+        choices: T_CHOICES = None,
         allow_blank: bool = False,
         blank_text: T_TRANSLATABLE | None = None,
         **kwargs: t.Any,
@@ -171,7 +165,7 @@ class Select2Field(fields.SelectField):
             label,
             validators,
             coerce,
-            _choices_wtforms_compat(choices),
+            _choices_wtforms_compat(choices),  # type: ignore[arg-type]
             **kwargs,
         )
         self.allow_blank = allow_blank
