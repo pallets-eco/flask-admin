@@ -487,7 +487,7 @@ When your forms contain foreign keys, have those **related models loaded via aja
 To filter the results that are loaded via ajax, you can use::
 
     form_ajax_refs = {
-        'active_user': QueryAjaxModelLoader('user', db.session, User,
+        'active_user': QueryAjaxModelLoader('user', db, User,
                                      filters=["is_active=True", "id>1000"])
     }
 

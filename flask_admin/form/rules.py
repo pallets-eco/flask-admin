@@ -429,11 +429,11 @@ class FieldSet(NestedRule):
         Constructor.
 
         :param rules:
-            Child rules
+            List of column names and/or child rules.
         :param header:
-            Header text
+            Optional header text.
         :param separator:
-            Child rule HTML separator
+            HTML separator for child rules.
         """
         if header:
             rule_set = [Header(header)] + list(rules)
@@ -452,8 +452,8 @@ class Row(NestedRule):
         """
         Constructor.
 
-        :param rules:
-            Child rules to be rendered in a single row.
+        :param columns:
+            list of column names and/or rules to be rendered in a single row.
         """
         super().__init__()
         self.rules: list[str | BaseRule] = columns  # type:ignore[assignment]
@@ -484,6 +484,13 @@ class Row(NestedRule):
 
 
 class Group(Macro):
+    """
+    `Bootstrap Input Group <https://getbootstrap.com/docs/4.6/components/input-group/>`_.
+    It renders the target field whatever its type is
+    (text, radio, checkbox..etc), allowing prepended and appended boxes to
+    be filled with any HTML content.
+    """
+
     def __init__(
         self,
         field_name: str,
@@ -492,11 +499,29 @@ class Group(Macro):
         **kwargs: t.Any,
     ) -> None:
         """
-        `Bootstrap Input Group <https://getbootstrap.com/docs/4.6/components/input-group/>`_.
-        It renders the target field whatever its type is
-        (text, radio, checkbox..etc), allowing prepended and appended boxes to
-        be filled with any HTML content.
+        Constructor.
+
+        :param field_name:
+            Name of the target field.
+        :param prepend:
+            Content (text, HTML, or field) to prepend to the input group.
+        :param append:
+            Content (text, HTML, or field) to append to the input group.
+        :param render_field:
+            Name of the macro used to render the field. Defaults to "lib.render_field".
+        :param kwargs:
+            Additional keyword arguments passed to the macro.
+
+        Usage::
+
+            rules.Group(
+                "dialling_code",
+                prepend="➕",
+                append='<i class="fa fa-phone"></i>',
+            ),
+
         """
+
         render_field = kwargs.get("render_field", "lib.render_field")
         super().__init__(render_field)
         self.field_name = field_name
@@ -527,8 +552,6 @@ class Group(Macro):
                 if cnf["type"] in ("field", "html", "text"):
                     cnf["pos"] = "append"
                     self._addons.append(cnf)
-
-        print(self._addons)
 
     @property
     def visible_fields(self) -> list[str]:

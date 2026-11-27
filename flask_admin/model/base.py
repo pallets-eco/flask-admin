@@ -831,7 +831,7 @@ class BaseModelView(BaseView, ActionsMixin):
             class MyModelView(BaseModelView):
                 form_ajax_refs = {
                     'user': QueryAjaxModelLoader(
-                        'user', db.session, User,
+                        'user', db, User,
                         fields=['email'],
                         page_size=10,
                         filters=["is_active=True", "id>1000"]
