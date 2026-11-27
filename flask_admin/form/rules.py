@@ -81,7 +81,7 @@ class NestedRule(BaseRule):
         :param rules:
             Child rule list
         :param separator:
-            Default separator between rules when rendering them.
+            Default HTML separator between rules when rendering them.
         """
         if rules is None:
             rules = []
@@ -288,8 +288,8 @@ class Container(Macro):
 
         The container is nothing but a Jinja Macro
         that is placed within the current jinja context. The rule inside the container
-        is represented by `{{ caller() }}` as it is shown in the follwoing Jinja
-        [snippet](/advanced/index.html#built-in-rules):
+        is represented by `{{ caller() }}` as it is explained in
+        :ref:`Snippet <built-in-rules>`.
         """
         super().__init__(macro_name, **kwargs)
         self.child_rule = child_rule
@@ -343,7 +343,7 @@ class Container(Macro):
 
 class Field(Macro):
     """
-    Form field rule.
+    Form field rule to be rendered with a custom macro.
     """
 
     def __init__(self, field_name: str, render_field: str = "lib.render_field") -> None:
@@ -399,7 +399,7 @@ class Field(Macro):
 
 class Header(Macro):
     """
-    Render header text.
+    Header text to be rendered with a custom macro.
     """
 
     def __init__(self, text: str, header_macro: str = "lib.render_header") -> None:
@@ -415,8 +415,8 @@ class Header(Macro):
 
 
 class FieldSet(NestedRule):
-    """
-    Field set with header.
+    """`
+    A set of rules to be rendered with an optional header.
     """
 
     def __init__(
@@ -429,11 +429,11 @@ class FieldSet(NestedRule):
         Constructor.
 
         :param rules:
-            Child rules
+            List of column names and/or child rules.
         :param header:
-            Header text
+            Optional header text.
         :param separator:
-            Child rule separator
+            HTML separator for child rules.
         """
         if header:
             rule_set = [Header(header)] + list(rules)
@@ -449,6 +449,12 @@ class Row(NestedRule):
     """
 
     def __init__(self, *columns: str | BaseRule, **kw: t.Any) -> None:
+        """
+        Constructor.
+
+        :param columns:
+            list of column names and/or rules to be rendered in a single row.
+        """
         super().__init__()
         self.rules: list[str | BaseRule] = columns  # type:ignore[assignment]
 
@@ -478,6 +484,13 @@ class Row(NestedRule):
 
 
 class Group(Macro):
+    """
+    `Bootstrap Input Group <https://getbootstrap.com/docs/4.6/components/input-group/>`_.
+    It renders the target field whatever its type is
+    (text, radio, checkbox..etc), allowing prepended and appended boxes to
+    be filled with any HTML content.
+    """
+
     def __init__(
         self,
         field_name: str,
@@ -486,11 +499,29 @@ class Group(Macro):
         **kwargs: t.Any,
     ) -> None:
         """
-        [Bootstrap Input group](https://getbootstrap.com/docs/4.6/components/input-group/).
-        It renders the target field whatever its type is
-        (text, radio, checkbox..etc), allowing prepended and appended boxes to
-        be filled with any HTML content.
+        Constructor.
+
+        :param field_name:
+            Name of the target field.
+        :param prepend:
+            Content (text, HTML, or field) to prepend to the input group.
+        :param append:
+            Content (text, HTML, or field) to append to the input group.
+        :param render_field:
+            Name of the macro used to render the field. Defaults to "lib.render_field".
+        :param kwargs:
+            Additional keyword arguments passed to the macro.
+
+        Usage::
+
+            rules.Group(
+                "dialling_code",
+                prepend="➕",
+                append='<i class="fa fa-phone"></i>',
+            ),
+
         """
+
         render_field = kwargs.get("render_field", "lib.render_field")
         super().__init__(render_field)
         self.field_name = field_name
@@ -521,8 +552,6 @@ class Group(Macro):
                 if cnf["type"] in ("field", "html", "text"):
                     cnf["pos"] = "append"
                     self._addons.append(cnf)
-
-        print(self._addons)
 
     @property
     def visible_fields(self) -> list[str]:

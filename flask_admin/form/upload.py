@@ -188,6 +188,8 @@ class FileUploadField(fields.StringField):
                 class MyForm(BaseForm):
                     upload = FileUploadField('File', namegen=prefix_name)
 
+        :param permission:
+            File permission for uploaded files. Defaults to 438 (or `0o666` octal).
         :param allowed_extensions:
             List of allowed extensions. If not provided, will allow any file.
         :param allow_overwrite:
@@ -433,6 +435,8 @@ class ImageUploadField(FileUploadField):
             Width and height is in pixels. If `force` is set to `True`, will try to fit
             image into dimensions and keep aspect ratio, otherwise will just resize to
             target size.
+        :param permission:
+            File permission for uploaded files. Defaults to 438 (or `0o666` octal).
         :param url_relative_path:
             Relative path from the root of the static directory URL. Only gets used
             when generating preview image URLs.

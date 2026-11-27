@@ -226,10 +226,24 @@ instance running on the same machine as your app, you can::
     admin.add_view(rediscli.RedisCli(Redis()))
 
 
+.. _form-overrides:
+
 Replacing Individual Form Fields
 --------------------------------
 
 The `form_overrides` attribute allows you to replace individual fields within a form.
+To replace an individual form field with a custom field, use the `form_overrides`
+attribute and provide any additional arguments using `form_args`::
+
+    class MyView(ModelView):
+        form_overrides = {
+            'languages': CheckboxListField,
+        }
+
+        form_args = {
+            'languages': {'query_factory': Language.query},
+        }
+
 A common use-case for this would be to add a *What-You-See-Is-What-You-Get* (WYSIWIG) editor, or to handle
 file / image uploads that need to be tied to a field in your model.
 
@@ -266,6 +280,37 @@ File & Image Fields
 Flask-Admin comes with a built-in :meth:`~flask_admin.form.upload.FileUploadField`
 and :meth:`~flask_admin.form.upload.ImageUploadField`. To make use
 of them, you'll need to specify an upload directory and add them to the forms in question.
+Then, add the fields to your form using the `form_overrides` attribute::
+
+    class FileView(ModelView):
+        # Override form field to use Flask-Admin FileUploadField
+        form_overrides = {"path": FileUploadField}
+
+        # Pass additional parameters to FileUploadField constructor
+        form_args = {
+            "path": {"label": "Attachment", "base_path": file_path, "allow_overwrite": False}
+        }
+
+        # Pass additional HTML attributes
+        form_widget_args = {
+            "path": {"data-foo": "bar"},
+        }
+
+Or this to do the exact same thing using `form_extra_fields`::
+
+    class FileView(ModelView):
+
+        form_extra_fields = {
+            "path": form.FileUploadField(
+                "Attachment",
+                base_path=file_path,
+                allow_overwrite=False,
+                render_kw={"data-foo": "bar"}
+            )
+        }
+
+
+
 Image handling also requires you to have `Pillow <https://pypi.python.org/pypi/Pillow/2.8.2>`_
 installed if you need to do any processing on the image files.
 
@@ -398,6 +443,8 @@ using the :class:`flask_admin.form.rules.Text` class::
     class RuleView(sqla.ModelView):
         form_create_rules = ('email', rules.Text('Foobar'), 'first_name', 'last_name')
 
+.. _built-in-rules:
+
 Built-in Rules
 **************
 
@@ -428,12 +475,49 @@ Form Rendering Rule                               Description                   
                                                   with any HTML content.
 ================================================= ==================================================== ======================
 
+**Rules and Groups**
+The Group rule corresponds to the `Bootstrap Input Group <https://getbootstrap.com/docs/4.6/components/input-group/>`_
+renders the target field with a ability to prepend and append a content. Both prepended
+and appended content can be presented in as a text, HTML snippet, or another form field.
+Here is an example of using the Group rule::
+
+    form_create_rules = [
+        # simple prepended text.
+        rules.Group('dialling_code', prepend='+'),
+
+        # two prepended texts.
+        rules.Group('total', prepend=('+','$')),
+
+        # another way to prepend text.
+        rules.Group('dialling_code', prepend={"type": "text", "text": "+"}),
+
+        # prepended HTML content.
+        rules.Group("dialling_code",
+            prepend={
+                "type": "html",
+                "html": """<span class="input-group-prepend">
+                              <i class="fa fa-plus"></i>
+                        </span>""",
+            },
+        ),
+
+        # multiple fields and text.
+        rules.Group(
+            "full_name",
+            prepend={"type": "text", "text": "@"},
+            append=(
+                {"type": "field", "name": "social"},
+                {"type": "text", "text": "#"},
+            ),
+        ),
+    ]
+
 **Rules and Macros**
-Each one of the ``Macro`` and ``Container`` rules needs a macros to be deifined
+Each one of the ``Macro`` and ``Container`` rules needs a macro to be defined
 in advance. As an example of Container rule, Let's say we want to warp some fields winthin a
-[Bootstrap Card](https://getbootstrap.com/docs/4.6/components/card/), then we can define a Jinja Macro
-that includes ``caller()`` which is a functoin to be placed where we want to render the contained rule.
-We can extend the ``create.html`` as the following::
+`Bootstrap Card <https://getbootstrap.com/docs/4.6/components/card/>`_, then we can define
+a Jinja Macro that includes ``caller()`` which is a function to be placed where we want to
+render the contained rule. We can extend the ``create.html`` as the following::
 
     {% extends 'admin/model/create.html' %}
 

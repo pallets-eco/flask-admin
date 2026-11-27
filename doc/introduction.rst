@@ -292,12 +292,26 @@ To **make columns searchable**, or to use them for filtering, specify a list of 
 To make **columns sortable**, specify a list of column names like the example below. The
 default sort can be specified using the *column_default_sort* attribute::
 
+    column_default_sort = ('name', True)
     column_sortable_list = ['name', 'email', 'country']
 
 See more details and examples of sortable columns in the API documentation
-for :meth:`~flask_admin.model.BaseModelView.column_sortable_list`.
+for :meth:`~flask_admin.model.BaseModelView.column_sortable_list` and
+:meth:`~flask_admin.model.BaseModelView.column_default_sort`.
 
-A value can presented in different ways by specifying a **formatter function** for the column::
+You can specify a list of choices for a column using the **Column Choices** attribute.
+This will render the column values as a select field in the list view and filter options.
+For example, you can define the choices as follows::
+
+    column_choices = {
+        'status': [
+            ('active', 'Active'),
+            ('inactive', 'Inactive')
+        ]
+    }
+
+Moreover, a value can presented in different ways by specifying a **formatter function** for
+the column::
 
     column_formatters = {
         "price" : lambda v, c, m, p: m.price*2,
@@ -408,7 +422,12 @@ Each field in the form can be customized by specifying a dictionary of **form ov
         'description': TextAreaField
     }
 
-Or using **form extra fields** to add additional fields to the form::
+**Note:** the ``form_overrides`` totally recreate the form field, so any additional
+parameters specified in *column_labels*, *column_descriptions* and/or *form_choices* for
+that field will be ignored, yet you can still use *form_args* and *form_widget_args*
+to customize the field. :ref:`Form Overrides<form-overrides>`
+
+To **add extra fields** to the form::
 
     from wtforms import StringField, validators
 
@@ -468,7 +487,7 @@ When your forms contain foreign keys, have those **related models loaded via aja
 To filter the results that are loaded via ajax, you can use::
 
     form_ajax_refs = {
-        'active_user': QueryAjaxModelLoader('user', db.session, User,
+        'active_user': QueryAjaxModelLoader('user', db, User,
                                      filters=["is_active=True", "id>1000"])
     }
 
