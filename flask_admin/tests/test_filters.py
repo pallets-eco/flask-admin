@@ -190,7 +190,6 @@ def test_filter(
     cleaned_val: t.Any,
     stringified_val: t.Any,
 ) -> None:
-    
     stringified_val = stringified_val or str(filter_value)
     flt = FilterClass(column="f1", name="F1_LABEL")
     is_execption = isinstance(cleaned_val, type) and issubclass(cleaned_val, Exception)

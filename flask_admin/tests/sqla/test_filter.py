@@ -1542,7 +1542,8 @@ def test_column_filters_sqla_obj(
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
-    Model1, Model2 = create_models(sqla_db_ext)
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
 
     param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = CustomModelView(Model1, param, column_filters=[Model1.test1])  # type: ignore[attr-defined]

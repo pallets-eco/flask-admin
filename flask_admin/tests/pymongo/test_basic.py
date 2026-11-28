@@ -159,8 +159,6 @@ def test_url_for(
         view = MyView(db.test, endpoint="user")
         admin.add_view(view)
 
-    # print(view.column_filters)
-
     with app.test_request_context("http://localhost/admin/user/"):
         d1 = filter_value
         filtered_url = view.url_for(filters=[(FilterClass(col, "f1"), d1)])

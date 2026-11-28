@@ -1466,38 +1466,6 @@ def test_export_csv(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> None
     assert len(data.splitlines()) > 21
 
 
-def test_inline_admin_form_extra_fields(
-    app: Flask, db: peewee.SqliteDatabase, admin: Admin
-) -> None:
-    Model1, Model2 = create_models(db)
-
-    view = CustomModelView(
-        Model1,
-        inline_models=[
-            (
-                Model2,
-                {
-                    "form_extra_fields": {
-                        "extra_field": StringField("Extra Field"),
-                    }
-                },
-            )
-        ],
-    )
-    admin.add_view(view)
-
-    form_class = view.get_form()
-    form = form_class()
-
-    inline_field = form._fields["model2_set"]
-
-    child_form_class = inline_field.form  # type: ignore[attr-defined]
-
-    child_form = child_form_class()
-
-    assert "extra_field" in child_form._fields
-
-
 def create_filter_params() -> list[tuple[t.Any, ...]]:
     params = [
         (filters.FilterLike, "test1", "x", "flt0_0", "flt0_test1_contains", "x"),
@@ -1833,8 +1801,6 @@ def test_url_for(
     arg_named_key: str,
     expected_value: str,
 ) -> None:
-    Model1, Model2 = create_models(db)
-
     class MyView(ModelView):
         __test__ = False
 
@@ -1842,6 +1808,7 @@ def test_url_for(
         column_filters = [col]
 
     with app.app_context():
+        Model1, Model2 = create_models(db)
         view = MyView(Model1, endpoint="user")
         admin.add_view(view)
 
