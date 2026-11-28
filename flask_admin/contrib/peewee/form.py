@@ -200,9 +200,8 @@ class CustomModelConverter(ModelConverter):  # type: ignore[misc]
 
     def handle_datetime(
         self, model: t.Any, field: Field, **kwargs: t.Any
-    ) -> tuple[str, fields.DateTimeField]:
-        kwargs["widget"] = form.DateTimePickerWidget()
-        return field.name, fields.DateTimeField(**kwargs)
+    ) -> tuple[str, form.DateTimeField]:
+        return field.name, form.DateTimeField(**kwargs)
 
     def handle_time(
         self, model: t.Any, field: Field, **kwargs: t.Any

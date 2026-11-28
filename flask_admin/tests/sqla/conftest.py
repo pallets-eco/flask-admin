@@ -81,7 +81,7 @@ def sqla_postgres_db_ext(
 ) -> t.Generator[Admin, t.Any, None]:
     uri = os.getenv(
         "SQLALCHEMY_DATABASE_URI",
-        "postgresql://postgres:postgres@localhost/flask_admin_test",
+        "postgresql+psycopg2://postgres:postgres@localhost/flask_admin_test",
     )
     configure_sqla(app, uri, request)
     # SQLALiteProvider needs special handling for Python 3.12+ with SQLite

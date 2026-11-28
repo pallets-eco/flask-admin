@@ -15,7 +15,6 @@ from wtforms import fields
 from wtforms import validators
 from wtforms.fields import BooleanField
 from wtforms.fields import DateField
-from wtforms.fields import DateTimeField
 from wtforms.fields import DecimalField
 from wtforms.fields import FileField
 from wtforms.fields import FloatField
@@ -27,6 +26,7 @@ from wtforms.fields.core import UnboundField
 from wtforms.form import BaseForm
 
 from flask_admin import form
+from flask_admin._compat import _choices_wtforms_compat
 from flask_admin._compat import _iter_choices_wtforms_compat
 from flask_admin._compat import iteritems
 from flask_admin.form.validators import FieldListInputRequired
@@ -331,7 +331,9 @@ class CustomModelConverter:
                 return choices_field
 
         if field.choices:
-            kwargs["choices"] = list(self._convert_choices(field.choices))
+            kwargs["choices"] = _choices_wtforms_compat(
+                list(self._convert_choices(field.choices))
+            )
 
             if ftype in self.converters:
                 kwargs["coerce"] = self.coerce(ftype)
@@ -513,9 +515,8 @@ class CustomModelConverter:
         model: type[T_MONGO_ENGINE_DOCUMENT],
         field: BaseField,
         kwargs: dict[str, t.Any],
-    ) -> DateTimeField:
-        kwargs["widget"] = form.DateTimePickerWidget()
-        return fields.DateTimeField(**kwargs)
+    ) -> form.DateTimeField:
+        return form.DateTimeField(**kwargs)
 
     def conv_List(
         self,

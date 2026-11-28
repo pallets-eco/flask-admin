@@ -475,7 +475,7 @@ class AdminModelConverter(ModelConverterBase):
         field_args["choices"] = available_choices
         field_args["validators"].append(validators.AnyOf(accepted_values))
         field_args["coerce"] = lambda v: v.name if isinstance(v, Enum) else text_type(v)
-        return form.Select2Field(**field_args)  # type: ignore[arg-type]
+        return form.Select2Field(**field_args)
 
     @converts("sqlalchemy_utils.types.choice.ChoiceType")
     def convert_choice_type(
@@ -507,7 +507,7 @@ class AdminModelConverter(ModelConverterBase):
         field_args["choices"] = available_choices
         field_args["validators"].append(validators.AnyOf(accepted_values))
         field_args["coerce"] = choice_type_coerce_factory(column.type)
-        return form.Select2Field(**field_args)  # type: ignore[arg-type]
+        return form.Select2Field(**field_args)
 
     @converts("Text", "LargeBinary", "Binary", "CIText")  # includes UnicodeText
     def conv_Text(

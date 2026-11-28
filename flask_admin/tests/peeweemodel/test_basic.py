@@ -1077,11 +1077,18 @@ def test_form_choices(app: Flask, db: peewee.SqliteDatabase, admin: Admin) -> No
 
     # Check that select field is rendered with correct choices
     assert isinstance(form_obj.status, form.Select2Field)  # type: ignore[attr-defined]
-    assert form_obj.status.choices == status_choices  # type: ignore[attr-defined]
+    assert [
+        (val, label)
+        for val, label, *_ in form_obj.status.iter_choices()  # type: ignore[attr-defined]
+    ] == status_choices
 
     # Nullable field should allow blank
     assert isinstance(form_obj.priority, form.Select2Field)  # type: ignore[attr-defined]
-    assert form_obj.priority.choices == priority_choices  # type: ignore[attr-defined]
+    assert [
+        (val, label)
+        for val, label, *_ in form_obj.priority.iter_choices()  # type: ignore[attr-defined]
+        if val != "__None"
+    ] == priority_choices
     assert form_obj.priority.allow_blank is True  # type: ignore[attr-defined]
 
     # Non-nullable field should not allow blank
@@ -1182,7 +1189,11 @@ def test_form_choices_with_custom_converter_field(
 
     # DateField goes through a converter that returns a plain tuple
     assert isinstance(form_obj.day, form.Select2Field)  # type: ignore[attr-defined]
-    assert form_obj.day.choices == choices  # type: ignore[attr-defined]
+    assert [
+        (val, label)
+        for val, label, *_ in form_obj.day.iter_choices()  # type: ignore[attr-defined]
+        if val != "__None"
+    ] == choices
     assert isinstance(form_obj.day.widget, Select2Widget)  # type: ignore[attr-defined]
 
 
@@ -1214,9 +1225,17 @@ def test_form_choices_drops_converter_specific_kwargs(
     form_obj = view.create_form()
 
     assert isinstance(form_obj.amount, form.Select2Field)  # type: ignore[attr-defined]
-    assert form_obj.amount.choices == amount_choices  # type: ignore[attr-defined]
+    assert [
+        (val, label)
+        for val, label, *_ in form_obj.amount.iter_choices()  # type: ignore[attr-defined]
+        if val != "__None"
+    ] == amount_choices
     assert isinstance(form_obj.owner, form.Select2Field)  # type: ignore[attr-defined]
-    assert form_obj.owner.choices == owner_choices  # type: ignore[attr-defined]
+    assert [
+        (val, label)
+        for val, label, *_ in form_obj.owner.iter_choices()  # type: ignore[attr-defined]
+        if val != "__None"
+    ] == owner_choices
 
 
 def test_form_choices_not_applied_to_inline_models(
@@ -1489,3 +1508,21 @@ def test_inline_admin_form_extra_fields(
     child_form = child_form_class()
 
     assert "extra_field" in child_form._fields
+
+
+def test_datetime_field_uses_flask_admin_field(
+    app: Flask, db: peewee.SqliteDatabase, admin: Admin
+) -> None:
+    class Event(peewee.Model):
+        created_at = peewee.DateTimeField(null=True)
+
+        class Meta:
+            database = db
+
+    Event.create_table()
+    view = CustomModelView(Event)
+    admin.add_view(view)
+
+    form_obj = view.create_form()
+    assert isinstance(form_obj.created_at, form.DateTimeField)  # type: ignore[attr-defined]
+    assert isinstance(form_obj.created_at.widget, form.DateTimePickerWidget)  # type: ignore[attr-defined]
