@@ -249,7 +249,6 @@ class Base:
         @pytest.mark.parametrize(
             "wrongname",
             [
-                ("AUX"),
                 ("../x"),
                 ("./x"),
                 ("x/x"),
@@ -303,6 +302,34 @@ class TestLocalFileAdmin(Base.FileAdminTests):
 
     def fileadmin_args(self) -> tuple[tuple[t.Any, t.Any], dict[t.Any, t.Any]]:
         return (self._test_files_root, "/files"), {}
+
+    @pytest.mark.parametrize(
+        "wrongname",
+        [
+            ("AUX"),
+            ("COM1"),
+            ("LPT1"),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "ep, data",
+        [
+            ("/admin/fa/mkdir/", {"name": ""}),
+            ("/admin/fa/rename/?path=dummy.txt", {"name": "", "path": "dummy.txt"}),
+        ],
+    )
+    def test_invalid_windows_names(
+        self,
+        app: Flask,
+        admin: Admin,
+        ep: str,
+        data: dict[str, str],
+        wrongname: str,
+    ) -> None:
+        if os.name != "nt":
+            pytest.skip("Windows-specific test")
+
+        super().test_invalid_names(app, admin, ep, data, wrongname)
 
     def test_fileadmin_sort_bogus_url_param(self, app: Flask, admin: Admin) -> None:
         fileadmin_class = self.fileadmin_class()
