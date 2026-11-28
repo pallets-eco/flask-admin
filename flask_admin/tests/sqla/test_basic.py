@@ -868,6 +868,55 @@ def test_details_view(
         assert "test1_val_1" not in data
 
 
+def test_single_pk_multiple_ids_in_query(
+    app: Flask,
+    sqla_db_ext: SQLAProviderProtocol,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
+
+        param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+        view_no_details = CustomModelView(Model1, param)
+        admin.add_view(view_no_details)
+
+        # fields are scaffolded
+        view_w_details = CustomModelView(Model2, param, can_view_details=True)
+        admin.add_view(view_w_details)
+
+        # show only specific fields in details w/ column_details_list
+        string_field_view = CustomModelView(
+            Model2,
+            param,
+            can_view_details=True,
+            column_details_list=["string_field"],
+            endpoint="sf_view",
+        )
+        admin.add_view(string_field_view)
+
+        fill_db(sqla_db_ext, Model1, Model2)
+
+        client = app.test_client()
+
+        # test single-PK query string
+        rv = client.get("/admin/model2/details/?id=1")
+        data = rv.data.decode("utf-8")
+        assert "String Field" in data
+        assert "test2_val_1" in data
+        assert "test1_val_1" in data
+
+        # test single-PK with multiple IDs in query string
+        rv = client.get("/admin/model2/details/?id=1,2", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        assert "Record does not exist" in data
+
+        # test single-PK with multiple IDs in query string
+        rv = client.get("/admin/model2/edit/?id=1,2", follow_redirects=True)
+        data = rv.data.decode("utf-8")
+        assert "Record does not exist" in data
+
+
 def test_editable_list_special_pks(
     app: Flask,
     sqla_db_ext: SQLAProviderProtocol,
@@ -3942,3 +3991,136 @@ def test_unique_validator_uses_request_scoped_session(
     # Nothing is left holding a connection open after the request ends.
     assert not request_session.in_transaction()
     assert not scaffold_session.in_transaction()
+
+
+def test_context_sensitive_column_defaults(
+    app: Flask,
+    sqla_db_ext: SQLAProviderProtocol,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """Context-sensitive SQLAlchemy column defaults must not crash form rendering
+    and should still be evaluated by SQLAlchemy on insert when left blank."""
+
+    def add_mr(context: t.Any) -> str:
+        name: str = context.get_current_parameters().get("first_name") or ""
+        return f"Mr. {name}" if name else name
+
+    def plus_12(context: t.Any) -> int:
+        counter: int = context.get_current_parameters()["counter"]
+        return counter + 12
+
+    def guarded_context(context: t.Any) -> str:
+        if context is None:
+            return "preview"
+        return f"ctx:{context.get_current_parameters().get('first_name', '')}"
+
+    class CallableContextDefault:
+        def __call__(self, context: t.Any) -> str:
+            return f"obj:{context.get_current_parameters().get('first_name', '')}"
+
+    class ContextDefaultModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+        __tablename__ = "context_default_model"
+        id = Column(Integer, primary_key=True)
+        first_name = Column(String(100), nullable=False)
+        counter = Column(Integer, nullable=False)
+        greeting = Column(String(100), nullable=True, default=add_mr)
+        computed_int = Column(Integer, nullable=True, default=plus_12)
+        callable_obj = Column(
+            String(100), nullable=True, default=CallableContextDefault()
+        )
+        guarded = Column(String(100), nullable=True, default=guarded_context)
+        zero_arg = Column(String(100), nullable=True, default=lambda: "zero-val")
+
+    with app.app_context():
+        sqla_db_ext.create_all()
+
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+    view = CustomModelView(ContextDefaultModel, param)
+    admin.add_view(view)
+
+    client = app.test_client()
+
+    rv = client.get("/admin/contextdefaultmodel/new/")
+    assert rv.status_code == 200
+    assert b'value="zero-val"' in rv.data
+    assert b'value="preview"' in rv.data
+
+    rv = client.post(
+        "/admin/contextdefaultmodel/new/",
+        data={
+            "first_name": "John",
+            "counter": "30",
+            "greeting": "",
+            "computed_int": "",
+            "callable_obj": "",
+            "guarded": "",
+            "zero_arg": "zero-val",
+        },
+    )
+    assert rv.status_code == 302
+
+    with app.app_context():
+        created = _current_session(sqla_db_ext).query(ContextDefaultModel).one()
+    assert created.greeting == "Mr. John"
+    assert created.computed_int == 42
+    assert created.callable_obj == "obj:John"
+    assert created.guarded == "ctx:John"
+    assert created.zero_arg == "zero-val"
+
+    rv = client.post(
+        "/admin/contextdefaultmodel/new/",
+        data={
+            "first_name": "Jane",
+            "counter": "10",
+            "greeting": "Dr. Jane",
+            "computed_int": "99",
+            "callable_obj": "custom",
+            "guarded": "manual",
+            "zero_arg": "override",
+        },
+    )
+    assert rv.status_code == 302
+
+    with app.app_context():
+        overridden = (
+            _current_session(sqla_db_ext)
+            .query(ContextDefaultModel)
+            .filter_by(first_name="Jane")
+            .one()
+        )
+    assert overridden.greeting == "Dr. Jane"
+    assert overridden.computed_int == 99
+    assert overridden.callable_obj == "custom"
+    assert overridden.guarded == "manual"
+    assert overridden.zero_arg == "override"
+
+
+def test_zero_arg_default_attribute_error_is_not_swallowed(
+    app: Flask,
+    sqla_db_ext: SQLAProviderProtocol,
+    admin: Admin,
+    session_or_db: T_LITERAL_SESSION_OR_DB,
+) -> None:
+    """AttributeError from a zero-arg column default must propagate rather than
+    being mistaken for a context-sensitive default."""
+
+    def broken_default() -> str:
+        none_val: t.Any = None
+        return str(none_val.missing_attribute)
+
+    class BrokenDefaultModel(sqla_db_ext.Base):  # type: ignore[misc, name-defined]
+        __tablename__ = "broken_default_model"
+        id = Column(Integer, primary_key=True)
+        name = Column(String(100), nullable=True, default=broken_default)
+
+    with app.app_context():
+        sqla_db_ext.create_all()
+
+    param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
+    view = CustomModelView(BrokenDefaultModel, param)
+    admin.add_view(view)
+
+    with app.test_request_context("/"):
+        with pytest.raises(AttributeError):
+            view.create_form()
