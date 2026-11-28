@@ -14,6 +14,14 @@ from flask_admin.contrib.fileadmin.s3 import S3FileAdmin
 from flask_admin.theme import Bootstrap4Theme
 
 
+@pytest.fixture(scope="function", autouse=True)
+def initial_files() -> None:
+    os.makedirs(op.join(op.dirname(__file__), "files"), exist_ok=True)
+    if not op.exists(op.join(op.dirname(__file__), "files", "dummy.txt")):
+        with open(op.join(op.dirname(__file__), "files", "dummy.txt"), "w") as fp:
+            fp.write("any string")
+
+
 class Base:
     class FileAdminTests:
         _test_files_root = op.join(op.dirname(__file__), "files")
@@ -238,6 +246,55 @@ class Base:
             data = rv.data.decode("utf-8")
             assert "fa_modal_window" not in data
 
+        @pytest.mark.parametrize(
+            "wrongname",
+            [
+                ("../x"),
+                ("./x"),
+                ("x/x"),
+                ("x`x"),
+                ("x'x"),
+                ("y<script>y"),
+                ("y<script>alert('err')</script>y"),
+            ],
+        )
+        @pytest.mark.parametrize(
+            "ep, data",
+            [
+                ("/admin/fa/mkdir/", {"name": ""}),
+                ("/admin/fa/rename/?path=dummy.txt", {"name": "", "path": "dummy.txt"}),
+            ],
+        )
+        def test_invalid_names(
+            self,
+            app: Flask,
+            admin: Admin,
+            ep: str,
+            data: dict[str, str],
+            wrongname: str,
+        ) -> None:
+            fileadmin_class = self.fileadmin_class()
+            fileadmin_args, fileadmin_kwargs = self.fileadmin_args()
+
+            class MyFileAdmin(fileadmin_class):  # type: ignore[valid-type, misc]
+                allowed_extensions = ("txt",)
+
+            view_kwargs = dict(fileadmin_kwargs)
+            view_kwargs.setdefault("name", "Files")
+            view_kwargs.setdefault("endpoint", "fa")
+            view = MyFileAdmin(*fileadmin_args, **view_kwargs)
+
+            admin.add_view(view)
+            client = app.test_client()
+
+            # mkdir/rename with invalid name
+            data.update({"name": wrongname})
+
+            rv = client.post(ep, data=data, follow_redirects=True)
+            data = rv.data.decode("utf-8")
+            assert rv.status_code == 200
+            assert "Invalid name" in data
+
 
 class TestLocalFileAdmin(Base.FileAdminTests):
     def fileadmin_class(self) -> type[FileAdmin]:  # type: ignore[override]
@@ -245,6 +302,34 @@ class TestLocalFileAdmin(Base.FileAdminTests):
 
     def fileadmin_args(self) -> tuple[tuple[t.Any, t.Any], dict[t.Any, t.Any]]:
         return (self._test_files_root, "/files"), {}
+
+    @pytest.mark.parametrize(
+        "wrongname",
+        [
+            ("AUX"),
+            ("COM1"),
+            ("LPT1"),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "ep, data",
+        [
+            ("/admin/fa/mkdir/", {"name": ""}),
+            ("/admin/fa/rename/?path=dummy.txt", {"name": "", "path": "dummy.txt"}),
+        ],
+    )
+    def test_invalid_windows_names(
+        self,
+        app: Flask,
+        admin: Admin,
+        ep: str,
+        data: dict[str, str],
+        wrongname: str,
+    ) -> None:
+        if os.name != "nt":
+            pytest.skip("Windows-specific test")
+
+        super().test_invalid_names(app, admin, ep, data, wrongname)
 
     def test_fileadmin_sort_bogus_url_param(self, app: Flask, admin: Admin) -> None:
         fileadmin_class = self.fileadmin_class()

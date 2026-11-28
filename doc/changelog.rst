@@ -14,6 +14,7 @@ New functionality:
 
 Bugfixes:
 
+* Prevent XSS security issue on mkdir/renaming dirs or files by properly validating and escaping user input(closes #1506).
 * ``BaseView._run_view()`` no longer catches ``TypeError`` and retries with ``cls=self``; instead it checks for Flask pluggable views (``view_class``) directly so ``TypeError`` raised inside view methods propagates with its real traceback and views are not invoked twice (closes #2358).
 * SQLAlchemy backend: fixed a run-time error in ``get_one()`` when a detail view receives a comma-separated id query string (e.g. ?id=1,2).
 * SQLAlchemy backend: ``ItemsRequired`` once again validates multi-select relation fields without raising ``AttributeError``. Inline entries marked for deletion remain excluded from the count (closes #2385).
