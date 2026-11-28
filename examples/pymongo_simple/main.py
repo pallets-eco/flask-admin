@@ -112,6 +112,51 @@ if __name__ == "__main__":
         conn: MongoClient[Any] = MongoClient(mongo.get_connection_url())
         db = conn.test
 
+        # Insert 5 users
+        users = [
+            {"name": "Alice", "email": "alice@example.com", "password": "pass123"},
+            {"name": "Bob", "email": "bob@example.com", "password": "pass456"},
+            {"name": "Charlie", "email": "charlie@example.com", "password": "pass789"},
+            {"name": "Diana", "email": "diana@example.com", "password": "pass321"},
+            {"name": "Eve", "email": "eve@example.com", "password": "pass654"},
+        ]
+        user_ids = db.user.insert_many(users).inserted_ids
+
+        # Insert some tweets
+        tweets = [
+            {
+                "name": "tweet1",
+                "user_id": user_ids[0],
+                "text": "Hello World!",
+                "testie": True,
+            },
+            {
+                "name": "tweet2",
+                "user_id": user_ids[1],
+                "text": "Flask is awesome",
+                "testie": False,
+            },
+            {
+                "name": "tweet3",
+                "user_id": user_ids[0],
+                "text": "Learning MongoDB",
+                "testie": True,
+            },
+            {
+                "name": "tweet4",
+                "user_id": user_ids[2],
+                "text": "Python rocks!",
+                "testie": False,
+            },
+            {
+                "name": "tweet5",
+                "user_id": user_ids[3],
+                "text": "Admin interface demo",
+                "testie": True,
+            },
+        ]
+        db.tweet.insert_many(tweets)
+
         admin.add_view(UserView(db.user, "User"))
         admin.add_view(TweetView(db.tweet, "Tweets"))
 
