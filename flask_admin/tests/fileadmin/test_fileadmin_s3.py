@@ -51,6 +51,32 @@ class TestS3FileAdmin(Base.FileAdminTests):
     def fileadmin_args(self) -> tuple[tuple[t.Any], dict[str, str]]:  # type: ignore[override]
         return (boto3.client("s3"),), {"bucket_name": _bucket_name}
 
+    @pytest.mark.parametrize(
+        "wrongname",
+        [
+            ("."),
+            (".."),
+            ("x" * 256),
+            ("\x00"),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "ep, data",
+        [
+            ("/admin/fa/mkdir/", {"name": ""}),
+            ("/admin/fa/rename/?path=dummy.txt", {"name": "", "path": "dummy.txt"}),
+        ],
+    )
+    def test_invalid_linux_names(
+        self,
+        app: Flask,
+        admin: Admin,
+        ep: str,
+        data: dict[str, str],
+        wrongname: str,
+    ) -> None:
+        super().test_invalid_names(app, admin, ep, data, wrongname)
+
     @pytest.mark.skip
     def test_file_admin_edit(self) -> None:  # type: ignore[override]
         """Override the inherited test as S3FileAdmin has no edit file functionality."""

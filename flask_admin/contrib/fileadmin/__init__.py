@@ -475,7 +475,10 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         Override to implement customized behavior.
         """
 
-        if self.storage.on_windows:
+        if not hasattr(self, "storage"):
+            raise RuntimeError("Storage backend not initialized")
+
+        if self.storage and self.storage.on_windows:
             reg_validator = validators.Regexp(
                 flags=re.IGNORECASE,
                 regex=r"^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";|/]+$",
@@ -484,7 +487,7 @@ class BaseFileAdmin(BaseView, ActionsMixin):
         else:
             reg_validator = validators.Regexp(
                 flags=re.IGNORECASE,
-                regex=r"([/\\\x00])|[ .]+$",
+                regex=r"^(?!\.{1,2}$)[^/\x00]{1,255}$",
                 message=gettext("Invalid name"),
             )
 
@@ -501,6 +504,8 @@ class BaseFileAdmin(BaseView, ActionsMixin):
                     validators.InputRequired(),
                     reg_validator,
                 ],
+                # ``secure_filename`` works for both Windows and *nix systems.
+                # Even if valid names with invalid characters will be sanitized.
                 filters=[lambda x: x if x and x == secure_filename(x) else None],
             )
             path = fields.HiddenField()

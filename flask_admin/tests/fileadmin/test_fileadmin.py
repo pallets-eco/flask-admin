@@ -288,8 +288,8 @@ class Base:
             admin.add_view(view)
             client = app.test_client()
 
-            # mkdir with invalid name
-            data.update(dict(name=wrongname))
+            # mkdir/rename with invalid name
+            data.update({"name": wrongname})
 
             rv = client.post(ep, data=data, follow_redirects=True)
             data = rv.data.decode("utf-8")

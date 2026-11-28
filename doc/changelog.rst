@@ -14,6 +14,7 @@ New functionality:
 
 Bugfixes:
 
+* Prevent XSS security issue on mkdir/renaming dirs or files by properly validating and escaping user input(closes #1506).
 * SQLAlchemy backend: ``ItemsRequired`` once again validates multi-select relation fields without raising ``AttributeError``. Inline entries marked for deletion remain excluded from the count (closes #2385).
 * SQLAlchemy backend: ``Flask-SQLAlchemy-Lite`` models can now be used without installing ``flask-sqlalchemy`` package but only ``flask-sqlalchemy-lite`` (closes #2958).
 * SQLAlchemy backend: solved a bug raising ``RuntimeError: Working outside of application context`` when using ``ModelView(Model, db)`` with Flask-SQLAlchemy-Lite e.g. when views are added at import time (closes #2995).
