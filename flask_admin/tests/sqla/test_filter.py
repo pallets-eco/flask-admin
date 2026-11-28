@@ -979,7 +979,8 @@ def test_url_for_simple(
     admin: Admin,
     session_or_db: T_LITERAL_SESSION_OR_DB,
 ) -> None:
-    Model1, Model2 = create_models(sqla_db_ext)
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
 
     param = skip_or_return_session_or_db(sqla_db_ext, session_or_db)
     view = CustomModelView(
@@ -1388,7 +1389,8 @@ def test_url_for(
     arg_named_key: str,
     expected_value: str,
 ) -> None:
-    Model1, Model2 = create_models(sqla_db_ext)
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
 
     col = getattr(Model1, col_name)
 
@@ -1516,7 +1518,8 @@ def test_url_for_enums_and_choices(
     arg_named_key: str,
     expected_value: str,
 ) -> None:
-    Model1, Model2 = create_models(sqla_db_ext)
+    with app.app_context():
+        Model1, Model2 = create_models(sqla_db_ext)
 
     col = getattr(Model1, col_name)
 
